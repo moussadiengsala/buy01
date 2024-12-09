@@ -1,0 +1,78 @@
+<button (click)="editProduct()" class="py-2 px-4 hover:bg-zinc-800 cursor-pointer w-full h-full text-center">Edit</button>
+
+<!-- Edit Product Popup -->
+<div *ngIf="isEditProductVisible && this.product" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-black p-5 rounded shadow-lg w-96 text-white">
+        <h3 class="text-xl font-bold mb-4">Edit Product</h3>
+    
+        <form [formGroup]="editProductForm" (ngSubmit)="saveProduct()" class="flex flex-col gap-4 justify-center items-center w-full">
+          
+          <!-- Name Field -->
+          <div class="w-full flex gap-2 flex-col">
+            <label for="name">Product Name</label>
+            <input id="name" type="text" formControlName="name" class="h-10 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"/>
+            <small *ngIf="name.invalid && (name.dirty || name.touched)" class="block text-red-500">
+              <div *ngIf="name.errors?.['required']">Name is required.</div>
+            </small>
+          </div>
+    
+          <!-- Description Field -->
+          <div class="w-full flex gap-2 flex-col">
+            <label for="description">Description</label>
+            <textarea id="description" formControlName="description" class="h-20 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"></textarea>
+            <small *ngIf="description.invalid && (description.dirty || description.touched)" class="block text-red-500">
+              <div *ngIf="description.errors?.['required']">Description is required.</div>
+            </small>
+          </div>
+    
+          <!-- Price Field -->
+          <div class="w-full flex gap-2 flex-col">
+            <label for="price">Price</label>
+            <input id="price" type="number" formControlName="price" class="h-10 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"/>
+            <small *ngIf="price.invalid && (price.dirty || price.touched)" class="block text-red-500">
+              <div *ngIf="price.errors?.['required']">Price is required.</div>
+              <div *ngIf="price.errors?.['min']">Price cannot be negative.</div>
+            </small>
+          </div>
+    
+          <!-- Quantity Field -->
+          <div class="w-full flex gap-2 flex-col">
+            <label for="quantity">Quantity</label>
+            <input id="quantity" type="number" formControlName="quantity" class="h-10 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"/>
+            <small *ngIf="quantity.invalid && (quantity.dirty || quantity.touched)" class="block text-red-500">
+              <div *ngIf="quantity.errors?.['required']">Quantity is required.</div>
+              <div *ngIf="quantity.errors?.['min']">Quantity must be at least 1.</div>
+            </small>
+          </div>
+    
+          <!-- Buttons -->
+          <div class="flex justify-end w-full">
+            <button type="button" class="bg-gray-400 px-4 py-2 rounded mr-2" (click)="closeAddPopup()">Cancel</button>
+            <button type="submit" class="bg-blue-500 px-4 py-2 rounded text-white" [disabled]="editProductForm.invalid">Save</button>
+          </div>
+        </form>
+    
+        <div *ngIf="messageAction" class="p-4 rounded-md" 
+                    [ngClass]="{
+                        'bg-red-100 border-red-400 text-red-700': messageAction.severity === 'error',
+                        'bg-green-100 border-green-400 text-green-700': messageAction.severity === 'success',
+                        'bg-yellow-100 border-yellow-400 text-yellow-700': messageAction.severity === 'warn',
+                        'bg-blue-100 border-blue-400 text-blue-700': messageAction.severity === 'info'
+                    }"
+                    role="alert"
+                >
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i *ngIf="messageAction.severity === 'success'" class="pi pi-check-circle text-green-600"></i>
+                            <i *ngIf="messageAction.severity === 'error'" class="pi pi-times-circle text-red-600"></i>
+                            <i *ngIf="messageAction.severity === 'warn'" class="pi pi-exclamation-triangle text-yellow-600"></i>
+                            <i *ngIf="messageAction.severity === 'info'" class="pi pi-info-circle text-blue-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-bold">{{ messageAction.summary }}</h4>
+                            <p class="mt-1">{{ messageAction.detail }}</p>
+                        </div>
+                    </div>
+                </div>
+      </div>
+</div>

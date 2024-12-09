@@ -1,0 +1,129 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - data:/data
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=letsplay
+    networks:
+      - backend
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - backend
+
+#
+#  registery:
+#    build:
+#      context: ./registery/
+#      dockerfile: Dockerfile
+#    container_name: registery
+#    ports:
+#      - 8761:8761
+#    environment:
+#      SPRING_APPLICATION_NAME: registery
+#      SERVER_PORT: 8761
+#      EUREKA_INSTANCE_HOSTNAME: registery
+#      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+#      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+#    networks:
+#      - backend
+#
+#  gateway:
+#    build:
+#      context: ./gateways/
+#      dockerfile: Dockerfile
+#    container_name: gateways
+#    ports:
+#      - 8082:8082
+#    environment:
+#      SPRING_APPLICATION_NAME: gateways
+#      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registery:8761/eureka/
+#      SERVER_SSL_KEY_STORE: classpath:keystore.p12
+#      SERVER_SSL_KEY_STORE_PASSWORD: password
+#      SERVER_SSL_KEY_STORE_TYPE: PKCS12
+#      SERVER_SSL_KEY_ALIAS: gateway
+#    depends_on:
+#      - registery
+#    networks:
+#      - backend
+#
+#  users:
+#    build:
+#      context: ./users/
+#      dockerfile: Dockerfile
+#    container_name: users-services
+#    ports:
+#      - 8083:8083
+#    environment:
+#      SPRING_APPLICATION_NAME: users
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://registery:8761/eureka/
+##      EUREKA_INSTANCE_PREFER_IP_ADDRESS: true
+##      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registery:8761/eureka/
+#      SPRING_DATA_MONGODB_USERNAME: rootuser
+#      SPRING_DATA_MONGODB_PASSWORD: password
+#      SPRING_DATA_MONGODB_DATABASE: letsplay
+#      SPRING_DATA_MONGODB_PORT: 27017
+#      SPRING_DATA_MONGODB_HOST: mongodb
+##      SPRING_DATA_MONGODB_AUTO_INDEX_CREATION: true
+##      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+#
+#    depends_on:
+#      registery:
+#        condition: service_started
+#      mongodb:
+#        condition: service_started
+#      gateway:
+#        condition: service_started
+#    networks:
+#      - backend
+#
+#
+#  products:
+#    build:
+#      context: ./products/
+#      dockerfile: Dockerfile
+#    container_name: products-services
+#    ports:
+#      - 8084:8084
+#    environment:
+#      SPRING_APPLICATION_NAME: products
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://registery:8761/eureka/
+##      EUREKA_INSTANCE_PREFER_IP_ADDRESS: true
+##      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registery:8761/eureka/
+#      SPRING_DATA_MONGODB_USERNAME: rootuser
+#      SPRING_DATA_MONGODB_PASSWORD: password
+#      SPRING_DATA_MONGODB_DATABASE: letsplay
+#      SPRING_DATA_MONGODB_PORT: 27017
+#      SPRING_DATA_MONGODB_HOST: mongodb
+#    depends_on:
+#      registery:
+#        condition: service_started
+#      mongodb:
+#        condition: service_started
+#      gateway:
+#        condition: service_started
+#    networks:
+#      - backend
+
+volumes:
+  data: {}
+networks:
+  backend:
+    driver: bridge
+#  default:
+#    name: mongodb_network

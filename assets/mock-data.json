@@ -1,0 +1,54 @@
+{
+    "users": [
+      {
+        "id": "u1",
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "password": "password123",
+        "role": "seller",
+        "avatar": "/images/avatars/john_doe.png",
+        "products": [
+          {
+            "id": "p1",
+            "name": "Product A",
+            "description": "This is product A",
+            "price": 29.99,
+            "quantity": 10,
+            "media": [
+              {
+                "id": "m1",
+                "imagePath": "/images/products/productA_1.png"
+              },
+              {
+                "id": "m2",
+                "imagePath": "/images/products/productA_2.png"
+              }
+            ]
+          },
+          {
+            "id": "p2",
+            "name": "Product B",
+            "description": "This is product B",
+            "price": 49.99,
+            "quantity": 5,
+            "media": [
+              {
+                "id": "m3",
+                "imagePath": "/images/products/productB_1.png"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "password": "securepassword456",
+        "role": "client",
+        "avatar": "/images/avatars/jane_smith.png",
+        "products": []
+      }
+    ]
+}
+  

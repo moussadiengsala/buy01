@@ -1,0 +1,108 @@
+<div class="flex flex-col w-full p-3">
+    <h2 class="text-xl font-bold capitalize tablet:text-2xl desktop:text-4xl tablet:max-w-lg desktop:max-w-4xl">
+        <span>Customer Overview</span>
+    </h2>
+
+    <div class="my-7 flex flex-col space-y-7">
+
+        <div class="grid grid-rows-2 tablet:grid-rows-1 tablet:grid-cols-2 gap-2">
+            <div class="bg-sky-500/20 border-2 border-sky-500/50 rounded-md p-4 flex flex-col">
+                <i class="pi pi-user"></i>
+                <div class="flex flex-col space-y-2 font-bold text-base mt-4 justify-end">
+                    <span>Jhon Doe</span>
+                    <span>moisedieng&#64;gmail.com</span>
+                </div>
+            </div>  
+
+            <div class="bg-sky-500/20 border-2 border-sky-500/50 rounded-md p-4 flex flex-col">
+                <i class="pi pi-inbox"></i>
+                <div class="flex flex-col space-y-2 font-bold text-base mt-4">
+                    <span class="text-4xl text-sky-500">12</span>
+                    <span>Products</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="flex flex-col space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold capitalize desktop:text-xl">
+                    <span>My Products</span>
+                </h3>
+                <app-add-product />
+            </div>
+
+            <div>
+
+                <div class="">
+                    <p-table [value]="products" [tableStyle]="{'min-width': '60rem', 'background-color':'#27272a'}" ngSkipHydration
+                    class="bg-zinc-900">
+                        
+                        <ng-template pTemplate="header" class="">
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Edit</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product>
+                            
+                            <tr>
+                                <td><img [src]="product.media[0].imagePath" alt="{{ product.name }}" [alt]="product.name" width="100" class="shadow-4" /></td>
+                                <td>{{product.name}}</td>
+                                <td>{{product.price | currency:'USD'}}</td>
+                                <td>{{product.description}}</td>
+                                <td>{{ product.quantity }}</td>
+                                <td>
+                                    <div class="card flex justify-content-center">
+                                        <div class="flex justify-content-center relative">
+                                            <p-button (onClick)="toggleMenu($event, product.id)" class="border-none" icon="pi pi-ellipsis-v"></p-button>
+                                            <!-- Hardcoded menu, toggled based on isDisplayMenu -->
+                                            <div *ngIf="isDisplayMenu[product.id]" class="absolute bg-zinc-900 shadow-lg rounded w-32 z-[99] -top-full right-full">
+                                            <ul class="list-none p-2">
+                                                <li class="">
+                                                    <app-edit-product [product]="product" />
+                                                </li>
+                                                <li class="py-2 px-4 hover:bg-zinc-800 cursor-pointer" (click)="handleDelete(product.id)">Delete</li>
+                                                <li class="py-2 px-4 hover:bg-zinc-800 cursor-pointer" (click)="handleDelete(product.id)">
+                                                    <a class="py-2 px-4 hover:bg-zinc-800 cursor-pointer" 
+                                                    routerLink="/media-management"
+                                                    [queryParams]="{ product_id: product.id }"
+                                                    routerLinkActive="active" 
+                                                    ariaCurrentWhenActive="page"
+                                                        >media</a>
+                                                </li>
+                                            </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </ng-template>
+                    </p-table>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+
+  <!-- Confirmation Delete Popup -->
+<div *ngIf="isConfirmDeleteVisible && selectedDeleteProduct" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-black p-5 rounded shadow-lg w-96 text-white space-y-4">
+      <h3 class="text-xl font-bold mb-4">Confirm Deletion</h3>
+      <p>Are you sure you want to delete "{{ selectedDeleteProduct.name }}"?</p>
+      <div class="flex justify-end">
+        <button type="button" class="bg-gray-400 px-4 py-2 rounded mr-2" (click)="closeDeletePopup()">Cancel</button>
+        <button type="button" class="bg-red-500 px-4 py-2 rounded text-white" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+</div>
+  
+  

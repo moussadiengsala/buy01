@@ -1,0 +1,28 @@
+<div class="w-full p-3">
+    <header>
+        <div class='relative flex flex-col justify-center items-center space-y-5 w-full py-14'>
+            <h2 class="text-xs text-zinc-500 capitalize text-center w-full max-w-xl">
+                Shop the latest trends, essentials, and must-haves all in one place.
+                Enjoy fast shipping and unbeatable prices.
+            </h2>
+            <h2 class="text-xl font-bold capitalize text-center tablet:text-4xl desktop:text-6xl tablet:max-w-lg desktop:max-w-4xl">
+                Discover Products You’ll Love, Delivered to Your Doorstep
+            </h2>
+            <p class="text-zinc-500 text-center text-xs desktop:text-sm">Free shipping on orders over $50 | 24/7 Customer Support | Easy Returns</p>
+            <button class="bg-sky-500 px-5 py-2 rounded-sm">Shop Now</button>
+        </div>
+    </header>
+
+    <section class="flex flex-col items-center my-7">
+        <h2 class="text-xl font-bold capitalize text-center tablet:text-2xl desktop:text-4xl tablet:max-w-lg desktop:max-w-4xl">
+            <span>TRENDING NOW</span>
+        </h2>
+
+        <div class="flex flex-col tablet:flex-row justify-center gap-6 mt-10">
+            <!-- Loop through products using *ngFor -->
+            <div *ngFor="let item of products; trackBy: trackByProductId" class="max-w-xl">
+                <app-product [product]="item"></app-product>
+            </div>
+        </div>
+    </section>
+</div>
