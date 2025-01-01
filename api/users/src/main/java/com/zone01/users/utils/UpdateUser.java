@@ -79,7 +79,7 @@ public class UpdateUser {
 
         // Role update with validation
         if (updates.containsKey("role")) {
-            Role role = (Role) updates.get("role");
+            Role role = Role.valueOf((String) updates.get("role"));
             validateField("role", role,
                     value -> value == Role.CLIENT || value == Role.SELLER,
                     "Invalid role. Must be CLIENT or SELLER");

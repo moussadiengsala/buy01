@@ -1,6 +1,10 @@
 spring:
   application:
     name: media
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
   data:
     mongodb:
       authentication-database: admin

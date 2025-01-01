@@ -1,4 +1,4 @@
-package com.zone01.products.products;
+package com.zone01.products.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

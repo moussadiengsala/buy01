@@ -1,6 +1,5 @@
-package com.zone01.products.products;
+package com.zone01.products.utils;
 
-import com.zone01.products.utils.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;

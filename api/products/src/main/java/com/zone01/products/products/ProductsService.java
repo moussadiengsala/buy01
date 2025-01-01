@@ -1,41 +1,38 @@
 package com.zone01.products.products;
 
-import com.mongodb.client.MongoIterable;
 import com.zone01.products.config.AccessValidation;
-import com.zone01.products.utils.Response;
+import com.zone01.products.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class ProductsService {
     private final ProductsRepository productsRepository;
-    private final MediaClient mediaClient;
+//    private final MediaClient mediaClient;
 
     @Autowired
-    public ProductsService(ProductsRepository productsRepository, MediaClient mediaClient) {
-        this.mediaClient = mediaClient;
+    public ProductsService(ProductsRepository productsRepository) {
         this.productsRepository = productsRepository;
     }
 
-    public List<Products> getAllProducts() {
-        return productsRepository.findAll();
+    public Page<Products> getAllProducts(int page, int size) {
+        return productsRepository.findAll(PageRequest.of(page, size));
     }
 
     public Optional<Products> getProductById(String id) {
         return productsRepository.findById(id);
     }
 
-    public List<Products> getProductByUserId(String id) {
-        return productsRepository.findProductsByUserID(id);
+    public Page<Products> getProductByUserId(String id, int page, int size) {
+        return productsRepository.findProductsByUserID(id, PageRequest.of(page, size));
     }
 
     public Products createProduct(Products product, HttpServletRequest request) {
@@ -110,13 +107,13 @@ public class ProductsService {
     }
 
     public Response<Products> deleteProduct(String id, HttpServletRequest request) {
-        // Authorize and get the product
         Response<Products> authorizationResponse = authorizeAndGetProduct(request, id);
         if (authorizationResponse.getStatus() != HttpStatus.OK.value()) {
             return authorizationResponse;
         }
 
-        Response<Object> mediaResponse = mediaClient.deleteMediaByProductId(id);
+        String authorizationHeader = request.getHeader("Authorization");
+//        Response<Object> mediaResponse = mediaClient.deleteMediaByProductId(id, authorizationHeader);
         productsRepository.deleteById(id);
 
         // Return success response

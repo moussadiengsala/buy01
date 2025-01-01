@@ -18,7 +18,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v1/media")
 public class MediaController {
     private final MediaService mediaService;
 
@@ -57,10 +57,10 @@ public class MediaController {
     @PostMapping("/{product_id}")
     public ResponseEntity<Response<Object>> createMedia(
             @PathVariable String product_id,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam("files") List<MultipartFile> files,
             HttpServletRequest request
     ) {
-        Response<Object> createdMedia = mediaService.createMedia(product_id, file, request);
+        Response<Object> createdMedia = mediaService.createMedia(product_id, files, request);
         return ResponseEntity.status(createdMedia.getStatus()).body(createdMedia);
     }
 

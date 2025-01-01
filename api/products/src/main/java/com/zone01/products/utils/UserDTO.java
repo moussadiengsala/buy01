@@ -1,9 +1,7 @@
-package com.zone01.products.products;
+package com.zone01.products.utils;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.Collection;
 
 @Data
 @Builder

@@ -1,11 +1,8 @@
 package com.zone01.products.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.products.products.Role;
-import com.zone01.products.products.UserDTO;
-import com.zone01.products.products.UsersClient;
+import com.zone01.products.utils.UserDTO;
 import com.zone01.products.utils.Response;
-import feign.FeignException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,14 +10,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.asm.TypeReference;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,8 +30,12 @@ import java.util.regex.Pattern;
 @Slf4j  // For logging
 public class AccessValidation extends OncePerRequestFilter {
     private static final String USER = "currentUser";
-    private final UsersClient usersClient;
     private final ObjectMapper jacksonObjectMapper;
+
+    private final ReplyingKafkaTemplate<String, String, Response<?>> kafkaTemplate;
+    private static final long REPLY_TIMEOUT_SECONDS = 30;
+    private static final String REQUEST_TOPIC = "auth-request-product";
+//    private static final String REPLY_TOPIC = "auth-response";
 
     @Override
     protected void doFilterInternal(
@@ -38,7 +43,6 @@ public class AccessValidation extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
         if ("GET".equals(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
@@ -53,19 +57,32 @@ public class AccessValidation extends OncePerRequestFilter {
         }
 
         try {
-            // Validate token and fetch user permissions from the users service
-            Response<UserDTO> userResponse = usersClient.validateAccess(authHeader);
+            // Create a ProducerRecord with reply topic header
+            ProducerRecord<String, String> record =
+                    new ProducerRecord<>(REQUEST_TOPIC, authHeader);
+            record.headers().add("X-Correlation-PRODUCT", UUID.randomUUID().toString().getBytes());
+            record.headers().add("X-Correlation-Source", "product".getBytes());
 
-            if (userResponse == null || userResponse.getData() == null) {
+            // Send and receive the response
+            RequestReplyFuture<String, String, Response<?>> replyFuture =
+                    kafkaTemplate.sendAndReceive(record);
+
+            // Wait for response
+            Response<?> userResponse = replyFuture.get(REPLY_TIMEOUT_SECONDS, TimeUnit.SECONDS).value();
+
+            if (userResponse == null || userResponse.getData() == null || userResponse.getStatus() != 200) {
                 log.warn("User validation failed: {}", userResponse != null ? userResponse.getMessage() : "No response from user service");
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "User validation failed or user does not have required permissions.");
+//                response.sendError(HttpServletResponse.SC_FORBIDDEN, "User validation failed or user does not have required permissions.");
+                setErrorResponse(response, userResponse.getStatus(), null, userResponse.getMessage());
                 return;
             }
 
-            request.setAttribute(USER, userResponse.getData());
+            UserDTO user = jacksonObjectMapper.convertValue(userResponse.getData(), UserDTO.class);
+            request.setAttribute(USER, user);
 
         } catch (Exception e) {
             String errorMessage = e.getMessage();
+            System.out.println(errorMessage);
             String jsonPart = extractJsonFromErrorMessage(errorMessage);
 
             if (jsonPart != null) {

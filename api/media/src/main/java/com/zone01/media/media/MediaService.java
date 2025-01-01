@@ -2,11 +2,13 @@ package com.zone01.media.media;
 
 import com.zone01.media.config.AccessValidation;
 import com.zone01.media.utils.FileServices;
-import com.zone01.media.utils.ProductValidationServices;
+import com.zone01.media.config.kafka.ProductServices;
 import com.zone01.media.utils.Response;
 import jakarta.servlet.http.HttpServletRequest;
 //import jakarta.ws.rs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,13 +19,20 @@ import java.util.*;
 public class MediaService {
 
     private final MediaRepository mediaRepository;
-    private final ProductValidationServices productValidationServices;
+    private final ProductServices productServices;
     private final FileServices fileServices;
 
+    @Value("${media.max.file.size:2097152}") // Default 2MB
+    private long maxFileSize;
+    @Value("${media.allowed.content.types:image/jpeg,image/png,image/gif,image/webp}")
+    private List<String> allowedContentTypes;
+    @Value("${media.upload.base.dir:uploads}")
+    private String baseUploadDirectory;
+
     @Autowired
-    public MediaService(MediaRepository mediaRepository, ProductValidationServices productValidationServices) {
+    public MediaService(MediaRepository mediaRepository, ProductServices productServices) {
         this.mediaRepository = mediaRepository;
-        this.productValidationServices = productValidationServices;
+        this.productServices = productServices;
         this.fileServices = new FileServices();
     }
 
@@ -37,39 +46,45 @@ public class MediaService {
 
     public Response<Object> createMedia(
             String productId,
-            MultipartFile file,
+            List<MultipartFile> files,
             HttpServletRequest request
     ) {
         try {
             // Validate user and product
             UserDTO currentUser = AccessValidation.getCurrentUser(request);
-            Response<Object> productValidationResponse = productValidationServices.validateProduct(productId, currentUser);
+            Response<Object> productValidationResponse = productServices.getProductByID(productId);
 
             if (productValidationResponse.getData() == null) {
                 return productValidationResponse;
             }
 
-            // Validate file
-            Response<Object> fileValidationResponse = fileServices.validateFile(file);
-            if (fileValidationResponse != null) {
-                return fileValidationResponse;
+            // Validate and save each file
+            List<String> savedFiles = new ArrayList<>();
+            for (MultipartFile file : files) {
+                // Validate file
+                Response<Object> fileValidationResponse = fileServices.validateFile(file, maxFileSize, allowedContentTypes);
+                System.out.println(fileValidationResponse);
+                if (fileValidationResponse != null) {
+                    return fileValidationResponse;
+                }
+
+                // Save file securely
+                String filename = fileServices.saveFile(file, productId, baseUploadDirectory);
+                savedFiles.add(filename);
+
+                // Create and save media record
+                Media newMedia = Media.builder()
+                        .imagePath(filename)
+                        .productID(productId)
+                        .build();
+
+                mediaRepository.save(newMedia);
             }
-
-            // Save file securely
-            String filename = fileServices.saveFile(file, productId);
-
-            // Create and save media record
-            Media newMedia = Media.builder()
-                    .imagePath(filename)
-                    .productID(productId)
-                    .build();
-
-            Media savedMedia = mediaRepository.save(newMedia);
 
             return Response.<Object>builder()
                     .status(HttpStatus.CREATED.value())
                     .message("Media uploaded successfully")
-                    .data(savedMedia)
+                    .data(savedFiles)
                     .build();
 
         } catch (Exception e) {
@@ -100,8 +115,8 @@ public class MediaService {
             // Validate user access to product
             Media media = existingMedia.get();
             UserDTO currentUser = AccessValidation.getCurrentUser(request);
-            Response<Object> productValidationResponse =
-                    productValidationServices.validateProduct(media.getProductID(), currentUser);
+            Response<Object> productValidationResponse = productServices.getProductByID(media.getProductID());
+
 
             if (productValidationResponse.getData() == null) {
                 return productValidationResponse;
@@ -109,7 +124,7 @@ public class MediaService {
 
             // Validate and save new file if provided
             if (newFile != null && !newFile.isEmpty()) {
-                Response<Object> fileValidationResponse = fileServices.validateFile(newFile);
+                Response<Object> fileValidationResponse = fileServices.validateFile(newFile, maxFileSize, allowedContentTypes);
                 if (fileValidationResponse != null) {
                     return fileValidationResponse;
                 }
@@ -118,7 +133,7 @@ public class MediaService {
                 fileServices.deleteOldFile(media.getImagePath());
 
                 // Save new file
-                String newFilename = fileServices.saveFile(newFile, media.getProductID());
+                String newFilename = fileServices.saveFile(newFile, media.getProductID(), baseUploadDirectory);
                 media.setImagePath(newFilename);
             }
 
@@ -155,8 +170,7 @@ public class MediaService {
             // Validate user access to product
             Media media = existingMedia.get();
             UserDTO currentUser = AccessValidation.getCurrentUser(request);
-            Response<Object> productValidationResponse =
-                    productValidationServices.validateProduct(media.getProductID(), currentUser);
+            Response<Object> productValidationResponse = productServices.getProductByID(media.getProductID());
 
             if (productValidationResponse.getData() == null) {
                 return productValidationResponse;
@@ -184,8 +198,7 @@ public class MediaService {
         try {
             // Validate user access to product
             UserDTO currentUser = AccessValidation.getCurrentUser(request);
-            Response<Object> productValidationResponse =
-                    productValidationServices.validateProduct(productId, currentUser);
+            Response<Object> productValidationResponse = productServices.getProductByID(productId);
 
             // Check if user has valid access to the product
             if (productValidationResponse.getData() == null) {

@@ -2,6 +2,7 @@ package com.zone01.media.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,22 +14,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class FileServices {
-    @Value("${media.max.file.size:2097152}") // Default 2MB
-    private long maxFileSize;
-
-    @Value("${media.allowed.content.types:image/jpeg,image/png,image/gif,image/webp}")
-    private List<String> allowedContentTypes;
-
-    @Value("${media.upload.base.dir:uploads}")
-    private String baseUploadDirectory;
 
     public void deleteOldFile(String filename) throws IOException {
         Path filePath = Paths.get("uploads").resolve(filename).normalize();
         Files.deleteIfExists(filePath);
     }
 
-    public Response<Object> validateFile(MultipartFile file) {
+    public Response<Object> validateFile(MultipartFile file, long maxFileSize, List<String> allowedContentTypes) {
         // Check if file is empty
         if (file == null || file.isEmpty()) {
             return Response.<Object>builder()
@@ -41,7 +35,7 @@ public class FileServices {
         if (file.getSize() > maxFileSize) {
             return Response.<Object>builder()
                     .status(HttpStatus.BAD_REQUEST.value())
-                    .message("File size exceeds maximum limit of 10MB")
+                    .message("File size exceeds maximum limit of " + maxFileSize / 1024 / 1024 + " MB")
                     .build();
         }
 
@@ -57,7 +51,7 @@ public class FileServices {
         return null; // Validation passed
     }
 
-    public String saveFile(MultipartFile file, String productId) throws IOException {
+    public String saveFile(MultipartFile file, String productId, String baseUploadDirectory) throws IOException {
         // Generate secure filename with additional sanitization
         String originalFilename = Optional.ofNullable(file.getOriginalFilename())
                 .map(this::sanitizeFilename)

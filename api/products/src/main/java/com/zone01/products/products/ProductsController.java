@@ -3,15 +3,12 @@ package com.zone01.products.products;
 import com.zone01.products.utils.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -20,10 +17,13 @@ import java.util.Map;
 public class ProductsController {
     private final ProductsService productsService;
 
-    @GetMapping
-    public ResponseEntity<Response<List<Products>>> getAllProducts() {
-        List<Products> products = productsService.getAllProducts();
-        Response<List<Products>> response = Response.<List<Products>>builder()
+    @GetMapping("/")
+    public ResponseEntity<Response<Page<Products>>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int size
+            ) {
+        Page<Products> products = productsService.getAllProducts(page, size);
+        Response<Page<Products>> response = Response.<Page<Products>>builder()
                 .status(HttpStatus.OK.value())
                 .data(products)
                 .message("success")
@@ -54,9 +54,13 @@ public class ProductsController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<Response<List<Products>>> getProductsByUserId(@PathVariable String id) {
-        List<Products> product = productsService.getProductByUserId(id);
-        Response<List<Products>> response = Response.<List<Products>>builder()
+    public ResponseEntity<Response<Page<Products>>> getProductsByUserId(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int size
+    ) {
+        Page<Products> product = productsService.getProductByUserId(id, page, size);
+        Response<Page<Products>> response = Response.<Page<Products>>builder()
                 .status(HttpStatus.OK.value())
                 .data(product)
                 .message("success")
@@ -64,7 +68,7 @@ public class ProductsController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<Response<Products>> createProduct(@Validated @RequestBody Products product, HttpServletRequest request) {
         Products createdProduct = productsService.createProduct(product, request);
         Response<Products> response = Response.<Products>builder()
