@@ -25,13 +25,14 @@ public class ProductServices {
 
     private final ReplyingKafkaTemplate<String, String, Response<?>> replyingProductKafkaTemplate;
     private static final long REPLY_TIMEOUT_SECONDS = 30;
-    private final static String REQUEST_TOPIC = "media-request-to-product";
+
+    private static final String MEDIA_REQUEST = "media-request-to-product";
 
     public Response<Object> getProductByID(String productId) {
         try {
             // Create a ProducerRecord with reply topic header
             ProducerRecord<String, String> record =
-                    new ProducerRecord<>(REQUEST_TOPIC, productId);
+                    new ProducerRecord<>(MEDIA_REQUEST, productId);
 
             record.headers().add("X-Correlation-ID", UUID.randomUUID().toString().getBytes());
             record.headers().add("X-Correlation-Source", "media".getBytes());

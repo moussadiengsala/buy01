@@ -15,5 +15,18 @@ spring:
       host: localhost
       auto-index-creation: true
 
+
+media:
+  upload:
+    base:
+      dir: '${user.dir}/api/media/src/main/resources/uploads'
+    max:
+      file:
+        size: 2097152  # 2MB in bytes
+        count: 5       # Max files per upload
+  allowed:
+    content:
+      types: image/jpeg,image/png,image/webp
+
 server:
   port: 8085

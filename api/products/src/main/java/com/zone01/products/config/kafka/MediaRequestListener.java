@@ -24,14 +24,22 @@ import java.util.Optional;
 public class MediaRequestListener {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String MEDIA_REQUEST = "media-request-to-product";
     private static final String PRODUCT_RESPONSE = "product-response-to-media";
+    private static final String GROUP_ID = "media-to-product";
+
     private final ProductsService productsService;
 
-    @KafkaListener(topics = "media-request-to-product", groupId = "product-group")
-    public void handleAuthRequest(ConsumerRecord<String, String> record) {
+    @KafkaListener(topics = MEDIA_REQUEST, groupId = GROUP_ID)
+    public void handleAuthRequest(ConsumerRecord<String, Object> record) {
         System.out.println("Media request Listener" + record.value().toString());
 
-        String productId = record.value();
+        String productId = (String) record.value();
+        if (productId.startsWith("\"") && productId.endsWith("\"")) {
+            productId = productId.substring(1, productId.length() - 1);
+        }
+        productId = productId.trim();
         byte[] correlationId = record.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value();
 
         try {

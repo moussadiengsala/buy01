@@ -28,7 +28,5 @@ public class Media {
     @Field("image_path")
     private String imagePath;
 
-    @Field("product_id")
-    private String productID;
-
+    private String productId;
 }

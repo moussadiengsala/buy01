@@ -21,6 +21,9 @@ public class KafkaConsumer {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    private static final String PRODUCT_RESPONSE = "product-response-to-media";
+    private static final String GROUP_ID = "media-to-product";
+
     public Map<String, Object> consumerConfig() {
         Map<String, Object> properties = new HashMap<>();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -70,8 +73,8 @@ public class KafkaConsumer {
     public ConcurrentMessageListenerContainer<String, Response<?>> repliesProductContainer(
             ConcurrentKafkaListenerContainerFactory<String, Response<?>> factory) {
         ConcurrentMessageListenerContainer<String, Response<?>> container =
-                factory.createContainer("product-response-to-media");
-        container.getContainerProperties().setGroupId("product-group");
+                factory.createContainer(PRODUCT_RESPONSE);
+        container.getContainerProperties().setGroupId(GROUP_ID);
         container.getContainerProperties().setMissingTopicsFatal(false);
         return container;
     }

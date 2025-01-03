@@ -16,13 +16,13 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 public class AppConfig {
 //    private final UsersClient usersClient;
     private final ObjectMapper jacksonObjectMapper;
-    private final ReplyingKafkaTemplate<String, String, Response<?>> kafkaTemplate;
+    private final ReplyingKafkaTemplate<String, String, Response<?>> replyingAuthKafkaTemplate;
 
 
     @Bean
     public FilterRegistrationBean<AccessValidation> accessValidationFilter() {
         FilterRegistrationBean<AccessValidation> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new AccessValidation(jacksonObjectMapper, kafkaTemplate));
+        registrationBean.setFilter(new AccessValidation(jacksonObjectMapper, replyingAuthKafkaTemplate));
         registrationBean.addUrlPatterns("/api/v1/*"); // Specify your desired URL patterns
         return registrationBean;
     }

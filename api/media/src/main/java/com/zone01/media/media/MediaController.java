@@ -4,7 +4,10 @@ import com.zone01.media.utils.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -43,6 +46,21 @@ public class MediaController {
                 });
     }
 
+    @GetMapping("/{productId}/{imagePath}")
+    public ResponseEntity<Object> getMetadataMedia(@PathVariable String productId, @PathVariable String imagePath) {
+        Response<Object> response = mediaService.getMetadataMedia(productId, imagePath);
+        if (response.getStatus() != HttpStatus.OK.value()) {
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Resource resource = (Resource) response.getData();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.setContentDispositionFormData("inline", resource.getFilename());
+
+        return ResponseEntity.status(response.getStatus()).headers(headers).body(resource);
+    }
+
     @GetMapping("/product/{id}")
     public ResponseEntity<Response<List<Media>>> getMediaByProductId(@PathVariable String id) {
         List<Media> product = mediaService.getMediaByProductId(id);
@@ -68,7 +86,7 @@ public class MediaController {
     public ResponseEntity<Response<Object>> updateMedia(
             @PathVariable String media_id,
             HttpServletRequest request,
-            @RequestParam("file") MultipartFile newFile
+            @RequestParam("files") List<MultipartFile> newFile
             ) {
         Response<Object> updatedMedia = mediaService.updateMedia(request, media_id, newFile);
         return ResponseEntity.status(updatedMedia.getStatus()).body(updatedMedia);
@@ -82,7 +100,7 @@ public class MediaController {
 
     @DeleteMapping("/product/{product_id}")
     public ResponseEntity<Response<Object>> deleteMediaByProductId(@PathVariable String product_id, HttpServletRequest request) {
-        Response<Object> deletedMedia = mediaService.deleteMediaByProductId(product_id, request);
+        Response<Object> deletedMedia = mediaService.deleteMediaByProductId(product_id);
         return ResponseEntity.status(deletedMedia.getStatus()).body(deletedMedia);
     }
 }

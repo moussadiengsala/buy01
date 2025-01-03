@@ -1,0 +1,127 @@
+<div class="w-full p-3">
+    <h2 class="text-xl capitalize tablet:text-xl desktop:text-2xl tablet:max-w-lg desktop:max-w-4xl">
+        <span>Sign Up</span>
+    </h2>
+
+    <div class="px-4 py-7 mx-auto w-full max-w-md min-w-sm rounded-md">
+        <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 justify-center items-center w-full">
+
+            <div class="w-full flex gap-4 flex-col">
+                <label class="text-zinc-600">Role</label>
+                <div class="grid grid-cols-2 gap-2 w-full">
+
+                    <div class="h-10 flex">
+                        <input type="radio" id="client" value="CLIENT" formControlName="role" class="hidden" checked>
+                        <label for="client" class="w-full h-full rounded-md p-2 flex border-2 justify-between items-center cursor-pointer hover:bg-sky-500/5 transition-all duration-200"
+                            [ngClass]="{'bg-sky-100 border-sky-500 text-sky-600': !isSeller(),
+                                        'border-zinc-300': isSeller()}">
+                            <span>Client</span>
+                            <span [ngClass]="{'pi pi-check': !isSeller()}"></span>
+                        </label>
+                    </div>
+
+                    <div class="h-10 flex" >
+                        <input type="radio" id="seller" value="SELLER" formControlName="role"  class="hidden">
+                        <label for="seller" class="w-full h-full p-2 rounded-md flex border-2 justify-between items-center cursor-pointer hover:bg-sky-500/5 transition-all duration-200"
+                               [ngClass]="{'bg-sky-100 border-sky-500 text-sky-600': isSeller(),
+                                            'border-zinc-300': !isSeller()}">
+                            <span>Seller</span>
+                            <span [ngClass]="{'pi pi-check': isSeller()}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full flex gap-2 flex-col">
+                <label for="name" class="text-zinc-600">Name</label>
+                <input id="name" type="text" formControlName="name" class="h-10 w-full p-2 border-slate-500/30 border-2 rounded-md"/>
+                <div *ngIf="nameControl?.invalid && (nameControl?.dirty || !nameControl?.untouched)">
+                    <small *ngIf="nameControl?.errors?.['required']" class="text-red-500">
+                        Name is required
+                    </small>
+                    <small *ngIf="nameControl?.errors?.['minlength']" class="text-red-500">
+                        Name must be at least 2 characters
+                    </small>
+                    <small *ngIf="nameControl?.errors?.['maxlength']" class="text-red-500">
+                        Name cannot exceed 20 characters
+                    </small>
+                </div>
+            </div>
+
+            <div class="w-full flex gap-2 flex-col">
+                <label for="email" class="text-zinc-600">Email</label>
+                <input id="email" type="email" formControlName="email" class="h-10 w-full p-2 border-slate-500/30 border-2 rounded-md bg-transparent"/>
+                <div *ngIf="emailControl?.invalid && (emailControl?.dirty || !emailControl?.untouched)">
+                    <small
+                        class="block p-error"
+                    >
+                        <div *ngIf="emailControl?.errors?.['required']">Email is required.</div>
+                        <div *ngIf="emailControl?.errors?.['email']">Email should be valid</div>
+                    </small>
+                </div>
+            </div>
+
+            <div class="w-full flex gap-2 flex-col">
+                <label for="password" class="text-zinc-600">Password</label>
+                <p-password [feedback]="false" id="password" formControlName="password" inputStyleClass="h-10 p-2 w-full border-slate-500/30 border-2" styleClass="w-full" />
+                <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || !passwordControl?.untouched)" class="text-red-500">
+                    <div *ngIf="passwordControl?.errors?.['required']">
+                        Password is required
+                    </div>
+                    <div *ngIf="passwordControl?.errors?.['pattern']">
+                        Password must:
+                        <ul class="list-disc pl-5">
+                            <li>Be at least 8 characters long</li>
+                            <li>Contain at least one uppercase letter</li>
+                            <li>Contain at least one lowercase letter</li>
+                            <li>Contain at least one number</li>
+                            <li>Contain at least one special character</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div *ngIf="isSeller()" class="w-full flex gap-2 flex-col transition-all duration-200">
+                <label for="avatar" class="text-zinc-600">Avatar</label>
+                <input type="file" id="avatar" formArrayName="avatar" (change)="onFileSelected($event)" class="hidden" #fileInput
+                       accept="image/*"/>
+                <div class="flex flex-col gap-2">
+                    <button type="button" (click)="fileInput.click()" class="border-2 border-slate-500/30 w-full p-2 text-left rounded-md">
+                        {{ avatarFileName || 'Choose an Avatar' }}
+                    </button>
+
+                    <!-- Avatar Preview -->
+                    <div *ngIf="avatarPreview" class="w-full flex justify-center">
+                        <img [src]="avatarPreview" alt="Avatar Preview"
+                             class="max-w-full max-h-48 object-contain rounded-md border-2 border-slate-300"/>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="bg-blue-700 w-full mt-2 rounded-md text-white p-2" >
+<!--                [disabled]="loading || signUpForm.invalid"-->
+                <span *ngIf="!loading">Sign Up</span>
+                <span *ngIf="loading">Signing Up...</span>
+            </button>
+        </form>
+
+        <div class="flex space-x-2 my-4 text-sm">
+            <span class="text-zinc-500">
+                Already have a account ?
+            </span>
+            <a
+                routerLink="/auth/sign-in"
+                routerLinkActive="active"
+                ariaCurrentWhenActive="page"
+                class="underline cursor-pointer capitalize">
+                Login
+            </a>
+        </div>
+
+        <app-alert />
+
+    </div>
+</div>
+
+

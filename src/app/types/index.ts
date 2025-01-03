@@ -1,10 +1,5 @@
 
 export enum Role{CLIENT = 'CLIENT', SELLER = 'SELLER'}
-export type ResponseAPI  = {
-    status: number | null,
-    message: string,
-    data: any
-}
 
 export enum AlertVariant {
     Error = "error",
@@ -24,6 +19,12 @@ export type Tokens = {
     refreshToken: string
 }
 
+export type ApiResponse<T>  = {
+    status: number | null,
+    message: string,
+    data: T
+}
+
 export interface Media {
     id: string;
     imagePath: string;
@@ -36,7 +37,21 @@ export interface Product {
     description: string;
     price: number;
     quantity: number;
-    media: Media[];
+}
+
+export interface ProductMedia {
+    product: Product;
+    media: Media[]
+}
+
+export interface PaginatedResponse<T> {
+    content: T[]; // The actual list of items
+    page: {
+        totalPages: number; // Total number of pages
+        totalElements: number; // Total number of elements
+        size: number; // Number of items in the current page
+        number: number; // Current page index
+    }
 }
 
 export interface User {
@@ -62,3 +77,5 @@ export interface UserLoginRequest {
     email: string | null | undefined
     password: string | null | undefined
 }
+
+export enum ACTION{CREATE = "CREATE", UPDATE = "UPDATE", DELETE = "DELETE"}

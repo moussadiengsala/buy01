@@ -1,6 +1,7 @@
 // AuthenticationKafkaListener.java
 package com.zone01.users.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zone01.users.user.User;
 import com.zone01.users.user.UserService;
 import com.zone01.users.utils.Response;
@@ -31,6 +32,7 @@ public class AuthenticationKafkaListener {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ObjectMapper jacksonObjectMapper;
 
     private static final String AUTH_RESPONSE_PRODUCT = "auth-response-product";
     private static final String AUTH_RESPONSE_MEDIA = "auth-response-media";
@@ -42,25 +44,29 @@ public class AuthenticationKafkaListener {
     private static final String AUTH_GROUP_MEDIA = "auth-group-media";
 
     @KafkaListener(topics = AUTH_REQUEST_PRODUCT, groupId = AUTH_GROUP_PRODUCT)
-    public void handleAuthRequestProduct(ConsumerRecord<String, String> record) {
+    public void handleAuthRequestProduct(ConsumerRecord<String, Object> record) {
         this.handleAuthRequest(record, AUTH_RESPONSE_PRODUCT);
     }
 
     @KafkaListener(topics = AUTH_REQUEST_MEDIA, groupId = AUTH_GROUP_MEDIA)
-    public void handleAuthRequestMedia(ConsumerRecord<String, String> record) {
+    public void handleAuthRequestMedia(ConsumerRecord<String, Object> record) {
         this.handleAuthRequest(record, AUTH_RESPONSE_MEDIA);
     }
 
-    private void handleAuthRequest(ConsumerRecord<String, String> record, String topicResponse) {
+    private void handleAuthRequest(ConsumerRecord<String, Object> record, String topicResponse) {
         log.info("Received authentication request");
-        String authHeader = record.value();
+        String authHeader = jacksonObjectMapper.convertValue(record.value(), String.class);
+        if (authHeader.startsWith("\"") && authHeader.endsWith("\"")) {
+            authHeader = authHeader.substring(1, authHeader.length() - 1);
+        }
+        authHeader = authHeader.trim();
 
         // Get correlation ID from the incoming record
         byte[] correlationId = record.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value();
 
         try {
             // Validate auth header format
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            if (record.value() == null || !authHeader.startsWith("Bearer ")) {
                 sendResponse(Response.<Object>builder()
                         .status(HttpStatus.UNAUTHORIZED.value())
                         .message("Missing or invalid Authorization header")

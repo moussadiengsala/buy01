@@ -8,5 +8,5 @@ import lombok.Data;
 public class MediaDTO {
     private String id;
     private String imagePath;
-    private String productID;
+    private String productId;
 }

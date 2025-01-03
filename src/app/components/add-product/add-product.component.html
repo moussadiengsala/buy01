@@ -1,0 +1,85 @@
+<!-- Add Products Button -->
+<button class="bg-sky-500 px-4 py-2 text-sm rounded-sm" (click)="toggle()">Add Products</button>
+
+<!-- Add Product Popup -->
+<div *ngIf="isAddProductVisible" class="fixed top-0 z-[99] left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+  <div class="bg-black p-5 rounded shadow-lg w-96 text-white">
+    <h3 class="text-xl font-bold mb-4">Add New Product</h3>
+
+    <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 justify-center items-center w-full">
+
+        <!-- Name Field -->
+        <div class="w-full flex gap-2 flex-col">
+            <label for="name" class="text-zinc-600">Name</label>
+            <input id="name" type="text" formControlName="name" class="h-10 w-full p-2 border-slate-500/30 border-2 rounded-md"/>
+            <div *ngIf="nameControl?.invalid && (nameControl?.dirty || !nameControl?.untouched)">
+                <small *ngIf="nameControl?.errors?.['required']" class="text-red-500">
+                    Name is required
+                </small>
+                <small *ngIf="nameControl?.errors?.['minlength']" class="text-red-500">
+                    Name must be at least 2 characters
+                </small>
+                <small *ngIf="nameControl?.errors?.['maxlength']" class="text-red-500">
+                    Name cannot exceed 20 characters
+                </small>
+            </div>
+        </div>
+
+      <!-- Description Field -->
+      <div class="w-full flex gap-2 flex-col">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" class="h-20 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"></textarea>
+          <div *ngIf="descriptionControl?.invalid && (descriptionControl?.dirty || !descriptionControl?.untouched)">
+              <small *ngIf="descriptionControl?.errors?.['required']" class="text-red-500">
+                  Name is required
+              </small>
+              <small *ngIf="descriptionControl?.errors?.['minlength']" class="text-red-500">
+                  Name must be at least 2 characters
+              </small>
+              <small *ngIf="descriptionControl?.errors?.['maxlength']" class="text-red-500">
+                  Name cannot exceed 20 characters
+              </small>
+          </div>
+      </div>
+
+      <!-- Price Field -->
+      <div class="w-full flex gap-2 flex-col">
+        <label for="price">Price</label>
+        <input id="price" type="number" formControlName="price" class="h-10 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"/>
+          <div *ngIf="priceControl?.invalid && (priceControl?.dirty || !priceControl?.untouched)">
+              <small *ngIf="priceControl?.errors?.['required']" class="text-red-500">
+                  Name is required
+              </small>
+              <small *ngIf="priceControl?.errors?.['min']" class="text-red-500">
+                  Name must be at least 2 characters
+              </small>
+          </div>
+      </div>
+
+      <!-- Quantity Field -->
+      <div class="w-full flex gap-2 flex-col">
+        <label for="quantity">Quantity</label>
+        <input id="quantity" type="number" formControlName="quantity" class="h-10 w-full p-2 border border-sky-500/20 bg-zinc-900 rounded-md"/>
+          <div *ngIf="quantityControl?.invalid && (quantityControl?.dirty || !quantityControl?.untouched)">
+              <small *ngIf="quantityControl?.errors?.['required']" class="text-red-500">
+                  Name is required
+              </small>
+              <small *ngIf="quantityControl?.errors?.['min']" class="text-red-500">
+                  Name must be at least 2 characters
+              </small>
+          </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end w-full">
+        <button type="button" class="bg-gray-400 px-4 py-2 rounded mr-2" (click)="toggle()">Cancel</button>
+        <button type="submit" class="bg-blue-500 px-4 py-2 rounded text-white" [disabled]="addProductForm.invalid">Save</button>
+      </div>
+    </form>
+
+  </div>
+
+    <app-alert />
+</div>
+
+

@@ -14,12 +14,22 @@ import java.time.Duration;
 public class ReplyingKafkaConfig {
 
     @Bean
-    public ReplyingKafkaTemplate<String, String, Response<?>> replyingKafkaTemplate(
+    public ReplyingKafkaTemplate<String, String, Response<?>> replyingAuthKafkaTemplate(
             ProducerFactory<String, String> producerFactory,
-            ConcurrentMessageListenerContainer<String, Response<?>> repliesContainer) {
+            ConcurrentMessageListenerContainer<String, Response<?>> repliesAuthContainer) {
         ReplyingKafkaTemplate<String, String, Response<?>> replyingTemplate =
-                new ReplyingKafkaTemplate<>(producerFactory, repliesContainer);
-            replyingTemplate.setDefaultReplyTimeout(Duration.ofSeconds(5));
+                new ReplyingKafkaTemplate<>(producerFactory, repliesAuthContainer);
+        replyingTemplate.setDefaultReplyTimeout(Duration.ofSeconds(5));
+        return replyingTemplate;
+    }
+
+    @Bean
+    public ReplyingKafkaTemplate<String, String, Response<?>> replyingMediaKafkaTemplate(
+            ProducerFactory<String, String> producerFactory,
+            ConcurrentMessageListenerContainer<String, Response<?>> repliesMediaContainer) {
+        ReplyingKafkaTemplate<String, String, Response<?>> replyingTemplate =
+                new ReplyingKafkaTemplate<>(producerFactory, repliesMediaContainer);
+        replyingTemplate.setDefaultReplyTimeout(Duration.ofSeconds(5));
         return replyingTemplate;
     }
 }

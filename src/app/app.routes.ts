@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
-import { SignInComponent } from './features/auth/sign-in/sign-in.component';
-import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
-import { ProductListComponent } from './features/product/product-list/product-list.component';
-import { ProductDetailComponent } from './features/product/product-detail/product-detail.component';
-import { NotFoundComponent } from './features/error/not-found/not-found.component';
-import { ErrorComponent } from './features/error/error/error.component';
-import { AuthGuard, SellerGuard } from './core/services/auth/auth-guard.guard';
-import { HomeComponent } from './features/home/home/home.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { MediaManagementComponent } from './features/media-management/media-management.component';
+import { SignInComponent } from './pages/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './pages/auth/sign-up/sign-up.component';
+import { ProductListComponent } from './pages/product/product-list/product-list.component';
+import { ProductDetailComponent } from './pages/product/product-detail/product-detail.component';
+import { NotFoundComponent } from './pages/error/not-found/not-found.component';
+import { ErrorComponent } from './pages/error/error/error.component';
+import { AuthGuard, SellerGuard } from './services/auth/auth-guard.guard';
+import { HomeComponent } from './pages/home/home/home.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { MediaManagementComponent } from './pages/media-management/media-management.component';
 
 export const routes: Routes = [
     {

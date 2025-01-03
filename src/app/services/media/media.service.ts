@@ -1,0 +1,63 @@
+import { Injectable } from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {TokenService} from "../token/token.service";
+import {Observable} from "rxjs";
+import {ApiResponse, Media, PaginatedResponse, Product} from "../../types";
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MediaService {
+  private readonly baseUrl = 'https://localhost:8082/api/v1/media';
+
+  constructor(private http: HttpClient, private tokenService: TokenService) {}
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.tokenService.token;
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token?.accessToken}`,
+      'Content-Type': 'application/json'
+    });
+  }
+
+  // Get product by ID
+  getMediaById(id: string): Observable<ApiResponse<Media>> {
+    return this.http.get<ApiResponse<Media>>(
+        `${this.baseUrl}/${id}`,
+        { headers: { 'Content-Type': 'application/json' }}
+    );
+  }
+
+  // Get products by user ID with pagination
+  getMediaByProductId(productId: string, page: number = 0, size: number = 10): Observable<ApiResponse<Media[]>> {
+    return this.http.get<ApiResponse<Media[]>>(
+        `${this.baseUrl}/product/${productId}?page=${page}&size=${size}`,
+        { headers: { 'Content-Type': 'application/json' }}
+    );
+  }
+
+  // Create a new product
+  createMedia(productId: string, formdata: FormData): Observable<ApiResponse<Media>> {
+    return this.http.post<ApiResponse<Media>>(`${this.baseUrl}/${productId}`, formdata, { headers: {
+        "Authorization": `Bearer ${this.tokenService.token?.accessToken}`}
+    });
+  }
+
+  // Update an existing product
+  updateMedia(id: string, updates: FormData): Observable<ApiResponse<Media>> {
+    return this.http.put<ApiResponse<Media>>(`${this.baseUrl}/${id}`, updates,
+        { headers: {"Authorization": `Bearer ${this.tokenService.token?.accessToken}`}
+        });
+  }
+
+  // Delete a product
+  deleteMedia(id: string): Observable<ApiResponse<Media>> {
+    return this.http.delete<ApiResponse<Media>>(`${this.baseUrl}/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  // uploadMedia(files: FileList) {
+  //   const formData = new FormData();
+  //   Array.from(files).forEach(file => formData.append('files', file));
+  //   return this.http.post(`${this.apiUrl}/upload`, formData);
+  // }
+}

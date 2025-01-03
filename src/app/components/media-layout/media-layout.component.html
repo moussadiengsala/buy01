@@ -1,0 +1,20 @@
+<button class="bg-sky-500 px-4 py-2 text-sm rounded-sm" (click)="toggle()">
+    <span *ngIf="action == ACTION.UPDATE">update</span>
+    <span *ngIf="action == ACTION.CREATE">upload</span>
+    <span *ngIf="action == ACTION.DELETE">delete</span>
+</button>
+
+<div *ngIf="isVisible" class="fixed top-0 z-[99] left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+    <div *ngIf="action == ACTION.CREATE">
+        <app-upload-images [productMedia]="productMedia" [action]="action"/>
+    </div>
+    <div *ngIf="action == ACTION.UPDATE">
+        <app-upload-images [mediaToUpdate]="media" [action]="action"/>
+    </div>
+
+    <div *ngIf="action == ACTION.DELETE">
+        Are you sure  m,,,
+        <button pButton type="button" label="Delete" (click)="deleteMedia()" class="p-button-danger"></button>
+    </div>
+</div>
+

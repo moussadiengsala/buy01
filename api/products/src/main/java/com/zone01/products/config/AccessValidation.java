@@ -32,7 +32,7 @@ public class AccessValidation extends OncePerRequestFilter {
     private static final String USER = "currentUser";
     private final ObjectMapper jacksonObjectMapper;
 
-    private final ReplyingKafkaTemplate<String, String, Response<?>> kafkaTemplate;
+    private final ReplyingKafkaTemplate<String, String, Response<?>> replyingAuthKafkaTemplate;
     private static final long REPLY_TIMEOUT_SECONDS = 30;
     private static final String REQUEST_TOPIC = "auth-request-product";
 //    private static final String REPLY_TOPIC = "auth-response";
@@ -65,11 +65,11 @@ public class AccessValidation extends OncePerRequestFilter {
 
             // Send and receive the response
             RequestReplyFuture<String, String, Response<?>> replyFuture =
-                    kafkaTemplate.sendAndReceive(record);
+                    replyingAuthKafkaTemplate.sendAndReceive(record);
 
             // Wait for response
             Response<?> userResponse = replyFuture.get(REPLY_TIMEOUT_SECONDS, TimeUnit.SECONDS).value();
-
+            System.out.println(userResponse);
             if (userResponse == null || userResponse.getData() == null || userResponse.getStatus() != 200) {
                 log.warn("User validation failed: {}", userResponse != null ? userResponse.getMessage() : "No response from user service");
 //                response.sendError(HttpServletResponse.SC_FORBIDDEN, "User validation failed or user does not have required permissions.");

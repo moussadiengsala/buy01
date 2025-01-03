@@ -1,6 +1,7 @@
 package com.zone01.products.products;
 
 import com.zone01.products.config.AccessValidation;
+import com.zone01.products.config.kafka.MediaServices;
 import com.zone01.products.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class ProductsService {
     private final ProductsRepository productsRepository;
 //    private final MediaClient mediaClient;
+    private final MediaServices mediaServices;
 
     @Autowired
-    public ProductsService(ProductsRepository productsRepository) {
+    public ProductsService(ProductsRepository productsRepository, MediaServices mediaServices) {
         this.productsRepository = productsRepository;
+        this.mediaServices = mediaServices;
     }
 
     public Page<Products> getAllProducts(int page, int size) {
@@ -107,13 +110,21 @@ public class ProductsService {
     }
 
     public Response<Products> deleteProduct(String id, HttpServletRequest request) {
+        // Authorize and get the product
         Response<Products> authorizationResponse = authorizeAndGetProduct(request, id);
         if (authorizationResponse.getStatus() != HttpStatus.OK.value()) {
             return authorizationResponse;
         }
 
-        String authorizationHeader = request.getHeader("Authorization");
-//        Response<Object> mediaResponse = mediaClient.deleteMediaByProductId(id, authorizationHeader);
+        Products product = authorizationResponse.getData();
+        Response<Object> deletedMediaResponse = mediaServices.deleteMediaRelatedToProduct(product.getId());
+        if (deletedMediaResponse != null) {
+            return Response.<Products>builder()
+                    .status(deletedMediaResponse.getStatus())
+                    .data(null)
+                    .message(deletedMediaResponse.getMessage())
+                    .build();
+        }
         productsRepository.deleteById(id);
 
         // Return success response

@@ -1,0 +1,77 @@
+
+
+<div class="w-full p-3">
+    <div>
+        <div *ngIf="!selectedProduct" class="text-center text-zinc-600 w-full my-7">
+            <p>Please select an product to manage his media</p>
+        </div>
+        <div *ngIf="selectedProduct && showGallery" class="my-7 flex justify-center items-center">
+
+            <div class="flex w-fit flex-col items-end space-y-4">
+                <!-- upload image-->
+                <div class="bg-red-500">
+                    <app-upload-images [productMedia]="selectedProduct" [action]="ACTION.CREATE" />
+                </div>
+
+                <!-- gallery image-->
+                <div class="card">
+                    <p-galleria
+                        [value]="selectedProduct.media"
+                        [showItemNavigators]="true"
+                        [responsiveOptions]="responsiveOptions"
+                        [circular]="true"
+                        [numVisible]="5"
+                        [containerStyle]="{ 'max-width': '640px' }">
+                            <ng-template pTemplate="item" let-item>
+<!--                                <img src="https://localhost:8082/api/v1/media/{{item.productID}}/{{item.imagePath}}" style="width: 100%; display: block;" />-->
+                                <div class="relative">
+                                    <img
+                                            src="https://localhost:8082/api/v1/media/{{item.productID}}/{{item.imagePath}}"
+                                            style="width: 100%; display: block;" />
+
+                                    <div class="absolute bottom-3 left-3 flex gap-2">
+                                        <app-media-layout [media]="item" [action]="ACTION.UPDATE" />
+                                        <app-media-layout [media]="item" [action]="ACTION.DELETE" />
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="thumbnail" let-item>
+                                <div class="grid grid-nogutter justify-content-center max-h-40">
+                                    <img src="https://localhost:8082/api/v1/media/{{item.productID}}/{{item.imagePath}}" style="display: block;" />
+                                </div>
+                            </ng-template>
+                    </p-galleria>
+                </div>
+            </div>
+        </div>
+
+        <ul class="flex flex-wrap gap-4" *ngIf="products && products.content?.length">
+            <li *ngFor="let product of products.content; trackBy: trackByProductId" (click)="handleSelectProduct(product)" class=" w-full tablet:w-fit">
+                <div class="flex h-40 items-center space-x-4 rounded-md overflow-hidden cursor-pointer border pr-4 w-full"
+                        [ngClass]="{'bg-sky-500/20 border-sky-500/50': selectedProduct?.product?.id === product.product.id, 'bg-sky-500/10 border-sky-500/10': selectedProduct?.product?.id != product.product.id}"
+                    >
+                    <div class="flex justify-center w-40">
+                        <img [src]="'https://placehold.co/600x600'" alt="{{ product.product.name }}" class="max-w-full h-auto object-cover" />
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold">{{ product.product.name }}</h3>
+                        <div class="text-sm text-zinc-500">
+                            <app-text-preview
+                                text="{{ product.product.description }}"
+                            />
+                        </div>
+
+                        <p class="text-xl font-bold text-sky-500">{{ product.product.price }}$</p>
+                        <p class="text-sm bg-zinc-500 w-fit uppercase px-3 " *ngIf="product.product.quantity > 0">
+                            {{ product.product.quantity }} In stock
+                        </p>
+                        <p class="text-sm text-red-500" *ngIf="product.product.quantity === 0">
+                            Out of stock
+                        </p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
