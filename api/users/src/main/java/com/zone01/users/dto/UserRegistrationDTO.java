@@ -1,5 +1,6 @@
-package com.zone01.users.utils;
+package com.zone01.users.dto;
 
+import com.zone01.users.model.Role;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.zone01.users.config;
 
-import com.zone01.users.utils.ExceptionPattern;
-import com.zone01.users.utils.Response;
+import com.zone01.users.model.ExceptionPattern;
+import com.zone01.users.model.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -106,35 +106,6 @@ public class AppExceptionsHandler {
                         Pattern.CASE_INSENSITIVE),
                 HttpStatus.TOO_MANY_REQUESTS
         ));
-//        // Database related - 500
-//        add(new ExceptionPattern(
-//                Pattern.compile(".*(SQL|Database|Data|JDBC|Hibernate|JPA|Repository|Persistence|Query).*Exception",
-//                        Pattern.CASE_INSENSITIVE),
-//                HttpStatus.INTERNAL_SERVER_ERROR,
-//                "Database Error"
-//        ));
-//
-//        // IO related - 500
-//        add(new ExceptionPattern(
-//                Pattern.compile(".*(IO|File|Stream|Network|Socket|FileNotFound|IOException|ResourceAccess).*Exception",
-//                        Pattern.CASE_INSENSITIVE),
-//                HttpStatus.INTERNAL_SERVER_ERROR,
-//                "I/O Error"
-//        ));
-//
-//        // General server errors - 500
-//        add(new ExceptionPattern(
-//                Pattern.compile(".*(NullPointer|IndexOutOfBounds|Runtime|System|Internal|Error|Unexpected|Unhandled).*Exception",
-//                        Pattern.CASE_INSENSITIVE),
-//                HttpStatus.INTERNAL_SERVER_ERROR,
-//                "Internal Server Error"
-//        ));
-
-        // Fallback for unhandled exceptions - 500
-//        add(new ExceptionPattern(
-//                Pattern.compile(".*Exception", Pattern.CASE_INSENSITIVE),
-//                HttpStatus.BAD_REQUEST
-//        ));
     }};
 
 
@@ -175,15 +146,6 @@ public class AppExceptionsHandler {
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
-//    private HttpStatus getStatus(Exception ex) {
-//        ResponseStatus responseStatus = AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class);
-//        System.out.println(ex);
-//        if (responseStatus != null) {
-//            return responseStatus.value();
-//        }
-//        return EXCEPTION_STATUS_MAP.getOrDefault(ex.getClass(), HttpStatus.BAD_REQUEST);
-//    }
 
     protected HttpStatus resolveStatus(Exception ex) {
         String exceptionName = ex.getClass().getSimpleName();

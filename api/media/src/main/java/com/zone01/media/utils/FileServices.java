@@ -71,45 +71,6 @@ public class FileServices {
         return null;
     }
 
-//    public List<String> saveFile(List<MultipartFile> files) throws IOException {
-//        // Generate secure filename with additional sanitization
-//        String originalFilename = Optional.ofNullable(file.getOriginalFilename())
-//                .map(this::sanitizeFilename)
-//                .orElse("");
-//
-//        String fileExtension = Optional.ofNullable(originalFilename)
-//                .filter(f -> f.contains("."))
-//                .map(f -> f.substring(originalFilename.lastIndexOf(".")))
-//                .orElse("");
-//
-//        String uniqueFilename = UUID.randomUUID() + "_" + productId + fileExtension;
-//
-//        // Secure file path handling
-//        String uploadDir = baseUploadDirectory + "/" + productId + "/";
-//        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-//
-//        // Ensure upload directory exists
-//        Files.createDirectories(uploadPath);
-//
-//        // Validate and save file
-//        Path targetLocation = uploadPath.resolve(uniqueFilename).normalize();
-//
-//        // Additional path traversal protection
-//        if (!targetLocation.startsWith(uploadPath)) {
-//            throw new IOException("Invalid file path");
-//        }
-//
-//        // Save file with logging
-//        try {
-//            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-////            log.info("File saved successfully: {}", targetLocation);
-//            return uniqueFilename;
-//        } catch (IOException e) {
-////            log.error("File save failed: {}", e.getMessage(), e);
-//            throw e;
-//        }
-//    }
-
     public List<String> saveFiles(List<MultipartFile> files, String productId) throws IOException {
         String uploadDir = baseUploadDirectory + "/" + productId + "/";
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
@@ -160,12 +121,6 @@ public class FileServices {
                 .map(f -> f.substring(f.lastIndexOf(".")).toLowerCase())
                 .orElse("");
     }
-
-    // New utility method to sanitize filename
-//    private String sanitizeFilename(String originalFilename) {
-//        // Remove any potentially dangerous characters
-//        return originalFilename.replaceAll("[^a-zA-Z0-9._-]", "");
-//    }
 
     public Response<Object> deleteOldFile(String productId, String imagePath) throws IOException {
         Path filePath = Paths.get(baseUploadDirectory).resolve(productId).resolve(imagePath).normalize();

@@ -1,4 +1,4 @@
-package com.zone01.users.utils;
+package com.zone01.users.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

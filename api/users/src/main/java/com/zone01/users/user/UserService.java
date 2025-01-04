@@ -1,7 +1,15 @@
 package com.zone01.users.user;
 
 import com.zone01.users.config.JwtService;
-import com.zone01.users.utils.*;
+import com.zone01.users.dto.UpdateUserDTO;
+import com.zone01.users.dto.UserDTO;
+import com.zone01.users.dto.UserLoginDTO;
+import com.zone01.users.dto.UserRegistrationDTO;
+import com.zone01.users.model.AuthenticationResponse;
+import com.zone01.users.model.Response;
+import com.zone01.users.model.Role;
+import com.zone01.users.dto.UpdateUser;
+import com.zone01.users.service.FileServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.validation.Validator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +32,6 @@ public class UserService {
     private final JwtService jwtService;
     private final FileServices fileServices;
     private final AuthenticationManager authenticationManager;
-    private Validator validator;
 
     @Autowired // can be omitted if the class has only one constructor
     public UserService(
@@ -106,7 +111,7 @@ public class UserService {
     }
 
     public Response<Object> getUserAvatar(String filename) {
-        return fileServices.getImages(filename);
+        return fileServices.getAvatar(filename);
     }
 
     public Response<AuthenticationResponse> authenticate(UserLoginDTO loginRequest) {
@@ -140,15 +145,12 @@ public class UserService {
                 .build();
     }
 
-    public Response<UserDTO> updateUser(String id, Map<String, Object> updates) {
-        User user = userRepository.findById(id)
+    public Response<Object> updateUser(String userId, UpdateUserDTO updateUserDTO) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        UpdateUser updateUser = UpdateUser.fromUpdates(updates);
-        Map<String, Object> appliedUpdates = updateUser.applyUpdatesTo(passwordEncoder, user, updates);
-        if (appliedUpdates.isEmpty()) {
-            throw new BadRequestException("No valid updates provided");
-        }
+        Response<Object> updateResponse = updateUserDTO.applyUpdates(passwordEncoder, user, fileServices);
+        if (updateResponse != null) { return updateResponse;}
 
         User updatedUser = userRepository.save(user);
         UserDTO updatedUserDTO = new UserDTO(
@@ -160,7 +162,7 @@ public class UserService {
         );
 
         // Build and return response
-        return Response.<UserDTO>builder()
+        return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
                 .data(updatedUserDTO)
                 .message("User updated successfully")

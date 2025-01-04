@@ -1,7 +1,6 @@
 package com.zone01.users.user;
 
-import com.zone01.users.utils.Role;
-import jakarta.validation.constraints.*;
+import com.zone01.users.model.Role;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -29,7 +28,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+        return null;
     }
 
     @Override

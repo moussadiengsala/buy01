@@ -1,6 +1,4 @@
-package com.zone01.users.utils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+package com.zone01.users.model;
 import org.springframework.http.HttpStatus;
 import java.util.regex.Pattern;
 

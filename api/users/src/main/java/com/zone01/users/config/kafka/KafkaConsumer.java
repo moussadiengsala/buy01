@@ -1,6 +1,5 @@
-package com.zone01.users.config;
+package com.zone01.users.config.kafka;
 
-import com.zone01.users.utils.Response;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

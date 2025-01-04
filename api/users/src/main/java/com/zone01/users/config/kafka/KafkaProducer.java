@@ -1,6 +1,5 @@
-package com.zone01.users.config;
+package com.zone01.users.config.kafka;
 
-import com.zone01.users.utils.Response;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,9 +1,8 @@
-package com.zone01.users.utils;
+package com.zone01.users.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.http.ResponseEntity;
 
 @Data
 @Builder

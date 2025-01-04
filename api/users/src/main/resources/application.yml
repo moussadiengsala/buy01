@@ -40,9 +40,9 @@ media:
   upload:
     base:
       dir: '${user.dir}/api/users/src/main/resources/uploads'
-  max:
-    file:
-      size: 2097152
+    max:
+      file:
+        size: 2097152  # 2MB in bytes
   allowed:
     content:
-      types: image/jpeg,image/png
+      types: image/jpeg,image/png,image/webp

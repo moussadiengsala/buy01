@@ -1,4 +1,4 @@
-package com.zone01.users.utils;
+package com.zone01.users.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,11 @@
 package com.zone01.users.user;
 
-import com.zone01.users.utils.*;
+import com.zone01.users.dto.UpdateUserDTO;
+import com.zone01.users.dto.UserDTO;
+import com.zone01.users.dto.UserLoginDTO;
+import com.zone01.users.dto.UserRegistrationDTO;
+import com.zone01.users.model.AuthenticationResponse;
+import com.zone01.users.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -9,16 +14,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -88,33 +87,13 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostAuthorize("returnObject != null && returnObject.body != null && returnObject.body.data != null && returnObject.body.data.role != null && returnObject.body.data.role == T(com.zone01.users.utils.Role).SELLER")
-    @GetMapping("/validate-access")
-    public ResponseEntity<Response<UserDTO>> validateAccess() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-
-        Response<UserDTO> response = Response.<UserDTO>builder()
-                .status(HttpStatus.OK.value())
-                .data(new UserDTO(
-                        currentUser.getId(),
-                        currentUser.getName(),
-                        currentUser.getEmail(),
-                        currentUser.getRole(),
-                        currentUser.getAvatar()
-                ))
-                .message("User has been validated successfully")
-                .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @PreAuthorize("#id == authentication.principal.id")
     @PutMapping("/{id}")
-    public ResponseEntity<Response<UserDTO>> updateUser(
+    public ResponseEntity<Response<Object>> updateUser(
             @PathVariable String id,
-            @Validated @RequestBody Map<String, Object> updates,
-            HttpServletRequest request) {
-        Response<UserDTO> updatedUser = userService.updateUser(id, updates);
+            @Valid @ModelAttribute UpdateUserDTO updateUserDTO
+            ) {
+        Response<Object> updatedUser = userService.updateUser(id, updateUserDTO);
         return ResponseEntity.status(updatedUser.getStatus()).body(updatedUser);
     }
 

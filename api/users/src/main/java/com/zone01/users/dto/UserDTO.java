@@ -1,5 +1,6 @@
-package com.zone01.users.utils;
+package com.zone01.users.dto;
 
+import com.zone01.users.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
