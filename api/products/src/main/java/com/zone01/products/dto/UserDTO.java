@@ -1,5 +1,6 @@
-package com.zone01.products.utils;
+package com.zone01.products.dto;
 
+import com.zone01.products.model.Role;
 import lombok.Builder;
 import lombok.Data;
 

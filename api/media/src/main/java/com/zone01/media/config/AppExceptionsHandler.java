@@ -1,7 +1,7 @@
 package com.zone01.media.config;
 
-import com.zone01.media.utils.ExceptionPattern;
-import com.zone01.media.utils.Response;
+import com.zone01.media.model.ExceptionPattern;
+import com.zone01.media.model.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;

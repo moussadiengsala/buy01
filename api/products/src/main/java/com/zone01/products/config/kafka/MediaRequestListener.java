@@ -3,7 +3,7 @@ package com.zone01.products.config.kafka;
 
 import com.zone01.products.products.Products;
 import com.zone01.products.products.ProductsService;
-import com.zone01.products.utils.Response;
+import com.zone01.products.model.Response;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

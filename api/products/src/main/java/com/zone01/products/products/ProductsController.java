@@ -1,6 +1,7 @@
 package com.zone01.products.products;
 
-import com.zone01.products.utils.Response;
+import com.zone01.products.dto.UpdateProductsDTO;
+import com.zone01.products.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -80,17 +81,17 @@ public class ProductsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response<Products>> updateProduct(
+    public ResponseEntity<Response<Object>> updateProduct(
             @PathVariable String id,
-            @RequestBody Map<String, Object> updates,
+            @RequestBody UpdateProductsDTO updateProductsDTO,
             HttpServletRequest request) {
-        Response<Products> updatedProduct = productsService.updateProduct(request, id, updates);
+        Response<Object> updatedProduct = productsService.updateProduct(request, id, updateProductsDTO);
         return ResponseEntity.status(updatedProduct.getStatus()).body(updatedProduct);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<Products>> deleteProduct(@PathVariable String id, HttpServletRequest request) {
-        Response<Products> deletedProduct = productsService.deleteProduct(id, request);
+    public ResponseEntity<Response<Object>> deleteProduct(@PathVariable String id, HttpServletRequest request) {
+        Response<Object> deletedProduct = productsService.deleteProduct(id, request);
         return ResponseEntity.status(deletedProduct.getStatus()).body(deletedProduct);
     }
 }

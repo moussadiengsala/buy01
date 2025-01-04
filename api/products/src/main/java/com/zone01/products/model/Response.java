@@ -1,6 +1,5 @@
-package com.zone01.products.utils;
+package com.zone01.products.model;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.zone01.media.utils;
+package com.zone01.products.model;
 
 import org.springframework.http.HttpStatus;
 

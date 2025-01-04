@@ -1,9 +1,8 @@
-package com.zone01.media.media;
+package com.zone01.media.dto;
 
+import com.zone01.media.model.Role;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.Collection;
 
 @Data
 @Builder

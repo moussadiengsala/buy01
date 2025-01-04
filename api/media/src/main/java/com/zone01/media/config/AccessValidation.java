@@ -2,8 +2,9 @@ package com.zone01.media.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.zone01.media.media.UserDTO;
-import com.zone01.media.utils.Response;
+import com.zone01.media.dto.UserDTO;
+import com.zone01.media.model.Response;
+import com.zone01.media.model.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,18 +51,10 @@ public class AccessValidation extends OncePerRequestFilter {
             return;
         }
 
-
-        String authHeader = request.getHeader("Authorization");
-        // Check if the request has a valid Authorization header
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            setErrorResponse(response, HttpStatus.UNAUTHORIZED.value(), null, "Missing or invalid Authorization header.");
-            return;
-        }
-
         try {
             // Create a ProducerRecord with reply topic header
             ProducerRecord<String, String> record =
-                    new ProducerRecord<>(REQUEST_TOPIC, authHeader);
+                    new ProducerRecord<>(REQUEST_TOPIC, request.getHeader("Authorization"));
             record.headers().add("X-Correlation-MEDIA", UUID.randomUUID().toString().getBytes());
             record.headers().add("X-Correlation-Source", "media".getBytes());
 
@@ -71,15 +64,19 @@ public class AccessValidation extends OncePerRequestFilter {
 
             // Wait for response
             Response<?> userResponse = replyFuture.get(REPLY_TIMEOUT_SECONDS, TimeUnit.SECONDS).value();
-
-            if (userResponse == null || userResponse.getData() == null || userResponse.getStatus() != 200) {
-                log.warn("User validation failed: {}", userResponse != null ? userResponse.getMessage() : "No response from user service");
-//                response.sendError(HttpServletResponse.SC_FORBIDDEN, "User validation failed or user does not have required permissions.");
+            if (userResponse == null) {
+                setErrorResponse(response, HttpStatus.BAD_REQUEST.value(), null, "Having trouble to validate the token.");
+                return;
+            } else if (userResponse.getData() == null || userResponse.getStatus() != 200) {
                 setErrorResponse(response, userResponse.getStatus(), null, userResponse.getMessage());
                 return;
             }
 
             UserDTO user = jacksonObjectMapper.convertValue(userResponse.getData(), UserDTO.class);
+            if (user.getRole() != Role.SELLER) {
+                setErrorResponse(response, HttpStatus.UNAUTHORIZED.value(), null, "Only user with role SELLER can perform this operation.");
+                return;
+            }
             request.setAttribute(USER, user);
 
         } catch (Exception e) {

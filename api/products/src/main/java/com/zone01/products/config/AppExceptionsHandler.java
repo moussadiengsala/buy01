@@ -1,7 +1,7 @@
 package com.zone01.products.config;
 
-import com.zone01.products.utils.ExceptionPattern;
-import com.zone01.products.utils.Response;
+import com.zone01.products.model.ExceptionPattern;
+import com.zone01.products.model.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;

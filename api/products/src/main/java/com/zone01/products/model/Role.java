@@ -1,4 +1,4 @@
-package com.zone01.products.utils;
+package com.zone01.products.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

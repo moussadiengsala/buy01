@@ -2,7 +2,10 @@ package com.zone01.products.products;
 
 import com.zone01.products.config.AccessValidation;
 import com.zone01.products.config.kafka.MediaServices;
-import com.zone01.products.utils.*;
+import com.zone01.products.dto.UpdateProductsDTO;
+import com.zone01.products.dto.UserDTO;
+import com.zone01.products.model.Response;
+import com.zone01.products.model.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,14 +57,12 @@ public class ProductsService {
         return productsRepository.save(newProduct);
     }
 
-    private Response<Products> authorizeAndGetProduct(HttpServletRequest request, String id) {
+    private Response<Object> authorizeAndGetProduct(HttpServletRequest request, String id) {
         UserDTO currentUser = AccessValidation.getCurrentUser(request);
 
-        // Find the product by its ID
         Optional<Products> productOptional = productsRepository.findById(id);
-        // Check if the product exists
         if (productOptional.isEmpty()) {
-            return Response.<Products>builder()
+            return Response.<Object>builder()
                     .status(HttpStatus.NOT_FOUND.value())
                     .data(null)
                     .message("Product not found")
@@ -69,57 +70,53 @@ public class ProductsService {
         }
 
         Products product = productOptional.get();
-        if (!currentUser.getId().equals(product.getUserID()) || currentUser.getRole() != Role.SELLER) {
-            return Response.<Products>builder()
-                    .status(HttpStatus.UNAUTHORIZED.value())
+        if (!currentUser.getId().equals(product.getUserID())) {
+            return Response.<Object>builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
                     .data(null)
                     .message("You're not authorized to perform this action.")
                     .build();
         }
 
-        return Response.<Products>builder()
+        return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
                 .data(productOptional.get())
                 .build();
     }
 
-    public Response<Products> updateProduct(HttpServletRequest request, String id, Map<String, Object> updates) {
-        // Authorize and get the product
-        Response<Products> authorizationResponse = authorizeAndGetProduct(request, id);
+    public Response<Object> updateProduct(HttpServletRequest request, String id, UpdateProductsDTO updateProductsDTO) {
+        Response<Object> authorizationResponse = authorizeAndGetProduct(request, id);
         if (authorizationResponse.getStatus() != HttpStatus.OK.value()) {
             return authorizationResponse;
         }
 
-        Products product = authorizationResponse.getData();
+        Products product = (Products) authorizationResponse.getData();
 
-        UpdateProducts updateProducts = UpdateProducts.fromUpdates(updates);
-        Map<String, Object> appliedUpdates = updateProducts.applyUpdatesTo(product, updates);
-        if (appliedUpdates.isEmpty()) {
-            throw new BadRequestException("No valid updates provided");
-        }
+        Response<Object> updateResponse = updateProductsDTO.applyUpdates(product);
+        if (updateResponse != null) {return updateResponse;}
 
         // Save updated product
         Products updatedProduct = productsRepository.save(product);
 
         // Build and return response
-        return Response.<Products>builder()
+        return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
                 .data(updatedProduct)
                 .message("Product updated successfully")
                 .build();
     }
 
-    public Response<Products> deleteProduct(String id, HttpServletRequest request) {
+    public Response<Object> deleteProduct(String id, HttpServletRequest request) {
         // Authorize and get the product
-        Response<Products> authorizationResponse = authorizeAndGetProduct(request, id);
+        Response<Object> authorizationResponse = authorizeAndGetProduct(request, id);
         if (authorizationResponse.getStatus() != HttpStatus.OK.value()) {
             return authorizationResponse;
         }
 
-        Products product = authorizationResponse.getData();
+        Products product = (Products) authorizationResponse.getData();
         Response<Object> deletedMediaResponse = mediaServices.deleteMediaRelatedToProduct(product.getId());
         if (deletedMediaResponse != null) {
-            return Response.<Products>builder()
+            return Response.<Object>builder()
                     .status(deletedMediaResponse.getStatus())
                     .data(null)
                     .message(deletedMediaResponse.getMessage())
@@ -128,7 +125,7 @@ public class ProductsService {
         productsRepository.deleteById(id);
 
         // Return success response
-        return Response.<Products>builder()
+        return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
                 .data(authorizationResponse.getData())
                 .message("Product deleted successfully")

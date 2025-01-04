@@ -1,11 +1,9 @@
 package com.zone01.products.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.products.utils.MediaDTO;
-import com.zone01.products.utils.Response;
+import com.zone01.products.model.Response;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.http.HttpStatus;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Service;

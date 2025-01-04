@@ -1,4 +1,4 @@
-package com.zone01.media.utils;
+package com.zone01.media.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

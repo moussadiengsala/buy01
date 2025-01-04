@@ -1,6 +1,6 @@
 package com.zone01.media.config.kafka;
 
-import com.zone01.media.utils.Response;
+import com.zone01.media.model.Response;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,9 +35,9 @@ public class KafkaConsumer {
 
         // JsonDeserializer-specific configurations
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.zone01.*");
-        properties.put(JsonDeserializer.TYPE_MAPPINGS, "response:com.zone01.media.utils.Response");
+        properties.put(JsonDeserializer.TYPE_MAPPINGS, "response:com.zone01.media.model.Response");
         properties.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.zone01.media.utils.Response");
+        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.zone01.media.model.Response");
 
         return properties;
     }

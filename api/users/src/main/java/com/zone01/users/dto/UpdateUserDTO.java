@@ -1,6 +1,5 @@
 package com.zone01.users.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zone01.users.model.Response;
 import com.zone01.users.model.Role;
 import com.zone01.users.service.FileServices;
@@ -60,20 +59,6 @@ public class UpdateUserDTO {
             if (validationResponse != null) {return validationResponse;}
         }
         return null;
-    }
-
-    /**
-     * Validates if the update request is empty.
-     *
-     * @return true if no updates are present, false otherwise
-     */
-    @JsonIgnore
-    public boolean isEmpty() {
-        return (name == null || name.isEmpty()) &&
-                (prev_password == null || prev_password.isEmpty()) &&
-                (new_password == null || new_password.isEmpty()) &&
-                role == null &&
-                (avatar == null || avatar.isEmpty());
     }
 
     private <T> Response<Object> validateField(String fieldName, T value, Predicate<T> validator, String errorMessage) {

@@ -1,7 +1,7 @@
 package com.zone01.products.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.products.utils.Response;
+import com.zone01.products.model.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

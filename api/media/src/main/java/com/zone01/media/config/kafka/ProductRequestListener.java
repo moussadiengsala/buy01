@@ -1,9 +1,8 @@
 // AuthenticationKafkaListener.java
 package com.zone01.media.config.kafka;
 
-import com.zone01.media.media.Media;
 import com.zone01.media.media.MediaService;
-import com.zone01.media.utils.Response;
+import com.zone01.media.model.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,8 +13,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor

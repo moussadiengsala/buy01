@@ -1,23 +1,17 @@
 package com.zone01.media.media;
 
-import com.zone01.media.utils.Response;
+import com.zone01.media.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -98,9 +92,9 @@ public class MediaController {
         return ResponseEntity.status(deletedMedia.getStatus()).body(deletedMedia);
     }
 
-    @DeleteMapping("/product/{product_id}")
-    public ResponseEntity<Response<Object>> deleteMediaByProductId(@PathVariable String product_id, HttpServletRequest request) {
-        Response<Object> deletedMedia = mediaService.deleteMediaByProductId(product_id);
-        return ResponseEntity.status(deletedMedia.getStatus()).body(deletedMedia);
-    }
+//    @DeleteMapping("/product/{product_id}")
+//    public ResponseEntity<Response<Object>> deleteMediaByProductId(@PathVariable String product_id, HttpServletRequest request) {
+//        Response<Object> deletedMedia = mediaService.deleteMediaByProductId(product_id);
+//        return ResponseEntity.status(deletedMedia.getStatus()).body(deletedMedia);
+//    }
 }

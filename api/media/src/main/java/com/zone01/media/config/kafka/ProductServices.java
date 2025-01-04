@@ -1,8 +1,11 @@
 package com.zone01.media.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.media.media.*;
-import com.zone01.media.utils.Response;
+import com.zone01.media.config.AccessValidation;
+import com.zone01.media.dto.ProductsDTO;
+import com.zone01.media.dto.UserDTO;
+import com.zone01.media.model.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.http.HttpStatus;
@@ -20,7 +23,6 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class ProductServices {
-    private final ProductClient productClient;
     private final ObjectMapper jacksonObjectMapper;
 
     private final ReplyingKafkaTemplate<String, String, Response<?>> replyingProductKafkaTemplate;
@@ -28,7 +30,7 @@ public class ProductServices {
 
     private static final String MEDIA_REQUEST = "media-request-to-product";
 
-    public Response<Object> getProductByID(String productId) {
+    public Response<Object> getProductByID(String productId, HttpServletRequest request) {
         try {
             // Create a ProducerRecord with reply topic header
             ProducerRecord<String, String> record =
@@ -49,6 +51,15 @@ public class ProductServices {
             }
 
             ProductsDTO product = jacksonObjectMapper.convertValue(productResponse.getData(), ProductsDTO.class);
+            UserDTO currentUser = AccessValidation.getCurrentUser(request);
+            if (!currentUser.getId().equals(product.getUserID())) {
+                return Response.<Object>builder()
+                        .status(HttpStatus.FORBIDDEN.value())
+                        .message("You can only perform this operation to your product.")
+                        .data(null)
+                        .build();
+            }
+
             return buildResponse(HttpStatus.OK.value(), product, productResponse.getMessage());
         } catch (Exception e) {
             String errorMessage = e.getMessage();

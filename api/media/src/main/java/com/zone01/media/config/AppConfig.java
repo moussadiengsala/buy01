@@ -1,8 +1,7 @@
 package com.zone01.media.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.media.media.UsersClient;
-import com.zone01.media.utils.Response;
+import com.zone01.media.model.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

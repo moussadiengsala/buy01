@@ -8,7 +8,6 @@ import com.zone01.users.dto.UserRegistrationDTO;
 import com.zone01.users.model.AuthenticationResponse;
 import com.zone01.users.model.Response;
 import com.zone01.users.model.Role;
-import com.zone01.users.dto.UpdateUser;
 import com.zone01.users.service.FileServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;

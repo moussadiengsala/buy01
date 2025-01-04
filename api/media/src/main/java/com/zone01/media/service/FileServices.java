@@ -1,6 +1,7 @@
-package com.zone01.media.utils;
+package com.zone01.media.service;
 
 import com.zone01.media.media.MediaRepository;
+import com.zone01.media.model.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
