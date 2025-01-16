@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, TrackByFunction} from '@angular/core';
-import {ACTION, Media, PaginatedResponse, Product, ProductMedia, Role, UserPayload} from '../../types';
+import {ACTION, Media, PaginatedResponse, Product, ProductMedia, Role, ToastMessage, UserPayload} from '../../types';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { GalleriaModule } from 'primeng/galleria';
 import { FileSelectEvent, FileUploadEvent, FileUploadModule } from 'primeng/fileupload';
@@ -16,6 +16,8 @@ import {MediaService} from "../../services/media/media.service";
 import {AuthService} from "../../services/auth/auth-service.service";
 import {UploadImagesComponent} from "../../components/upload-images/upload-images.component";
 import {MediaLayoutComponent} from "../../components/media-layout/media-layout.component";
+import {CarouselModule} from "primeng/carousel";
+import {TagModule} from "primeng/tag";
 
 
 @Component({
@@ -31,47 +33,32 @@ import {MediaLayoutComponent} from "../../components/media-layout/media-layout.c
         TextPreviewComponent,
         NgOptimizedImage,
         UploadImagesComponent,
-        MediaLayoutComponent
+        MediaLayoutComponent,
+        CarouselModule,
+        TagModule
     ],
   templateUrl: './media-management.component.html',
   styleUrl: './media-management.component.css',
   providers: [MessageService]
 })
 export class MediaManagementComponent {
+    protected readonly ACTION = ACTION
     products: PaginatedResponse<ProductMedia> | null = null;
     selectedProduct: ProductMedia | null = null;
     currentPage: number = 0;
     pageSize: number = 10;
 
-    isUploadImageVisible: boolean = false;
     files: File[] = [];
-    totalSize : number = 0;
-    totalSizePercent : number = 0;
     showGallery: boolean = false;
     loading: boolean = false;
     user$: Observable<UserPayload>;
 
-    responsiveOptions: any[] = [
-        {
-            breakpoint: '1024px',
-            numVisible: 5
-        },
-        {
-            breakpoint: '768px',
-            numVisible: 3
-        },
-        {
-            breakpoint: '560px',
-            numVisible: 1
-        }
-    ];
+    responsiveOptions: any[] | undefined;
 
-    constructor(private config: PrimeNGConfig,
-                private route: ActivatedRoute,
+    constructor(
                 private messageService: MessageService,
                 private authService: AuthService,
                 private productService: ProductService,
-                private alertService: AlertService,
                 private mediaService: MediaService
                 ) {
         this.user$ = this.authService.userState$;
@@ -79,9 +66,32 @@ export class MediaManagementComponent {
 
     ngOnInit(): void {
         this.loadProductsWithMedia();
-        this.selectedProduct = this.products?.content?.[
-            Math.floor(Math.random() * (this.products?.content.length || 0))
-            ] || null;
+        this.responsiveOptions = [
+            {
+                breakpoint: '1400px',
+                numVisible: 1,
+                numScroll: 1
+            },
+            {
+                breakpoint: '1199px',
+                numVisible: 1,
+                numScroll: 1
+            },
+            {
+                breakpoint: '767px',
+                numVisible: 1,
+                numScroll: 1
+            },
+            {
+                breakpoint: '575px',
+                numVisible: 1,
+                numScroll: 1
+            }
+        ]
+    }
+
+    getMedia(productId: string, imagePath: string): string | null {
+        return this.mediaService.getMedia(productId, imagePath)
     }
 
     loadProductsWithMedia(): void {
@@ -94,16 +104,18 @@ export class MediaManagementComponent {
             .subscribe({
                 next: (response) => {
                     this.products = response.data;
+
+                    if (this.selectedProduct) {
+                        this.selectedProduct = this.products?.content?.find(
+                            product => product.product.id === this.selectedProduct?.product.id
+                        ) || null;
+                    }
                 },
                 error: (err) => {
                     console.error('Error loading products:', err);
-                    this.alertService.error('Error', 'Failed to load products.');
+                    this.messageService.add({severity: "error", summary: "Error getting products", detail: err?.error?.message || 'Failed to load products.'});
                 }
             });
-    }
-
-    handleUpladImagesToggle() {
-      if (this.selectedProduct) this.isUploadImageVisible = !this.isUploadImageVisible;
     }
 
     trackByProductId(index: number, productMedia: ProductMedia): string {
@@ -118,18 +130,10 @@ export class MediaManagementComponent {
       }, 0);
     }
 
-    deleteImage(media: Media) {
-        // Confirmation before deletion
-        // if (confirm('Are you sure you want to delete this image?')) {
-        //     this.mediaService.deleteMedia(media.id).subscribe({
-        //         next: () => {
-        //             this.selectedProduct!.media = this.selectedProduct!.media.filter(m => m.id !== media.id);
-        //             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Image deleted successfully!' });
-        //         },
-        //         error: () => this.alertService.error('Error', 'Failed to delete the image.')
-        //     });
-        // }
+    handleMediaAction(event: ToastMessage) {
+        this.messageService.add(event)
+        this.loadProductsWithMedia()
     }
 
-    protected readonly ACTION = ACTION;
+
 }

@@ -11,7 +11,7 @@ export enum AlertVariant {
 export interface Alert {
     variant: AlertVariant;
     title: string;
-    message: string;
+    message: string | string[];
 }
 
 export type Tokens = {
@@ -37,10 +37,17 @@ export interface Product {
     description: string;
     price: number;
     quantity: number;
+    userID: string;
 }
 
 export interface ProductMedia {
     product: Product;
+    media: Media[]
+}
+
+export interface FullProduct {
+    user: User,
+    product: Product,
     media: Media[]
 }
 
@@ -55,13 +62,11 @@ export interface PaginatedResponse<T> {
 }
 
 export interface User {
-    id?: string
+    id: string
     name: string
     email: string
-    password: string // Consider not exposing the password in client-side code
     role: 'CLIENT' | 'SELLER'
     avatar: string | null
-    products?: Product[]
 }
 
 export interface UserPayload {
@@ -79,3 +84,10 @@ export interface UserLoginRequest {
 }
 
 export enum ACTION{CREATE = "CREATE", UPDATE = "UPDATE", DELETE = "DELETE"}
+
+export interface ToastMessage {
+    severity: string,
+    summary: string,
+    detail: string,
+    status: "OK" | "FAILED" | "-"
+}

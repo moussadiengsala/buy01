@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ApiResponse, PaginatedResponse, Product, ProductMedia} from "../../types";
+import {ApiResponse, FullProduct, PaginatedResponse, Product, ProductMedia} from "../../types";
 import {forkJoin, Observable, switchMap} from "rxjs";
 import {TokenService} from "../token/token.service";
 import {MediaService} from "../media/media.service";
 import {map} from "rxjs/operators";
+import {UsersService} from "../user/users.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,12 @@ import {map} from "rxjs/operators";
 export class ProductService {
   private readonly baseUrl = 'https://localhost:8082/api/v1/products';
 
-  constructor(private http: HttpClient, private tokenService: TokenService, private mediaService: MediaService) {}
+  constructor(
+      private http: HttpClient,
+      private tokenService: TokenService,
+      private mediaService: MediaService,
+      private userService: UsersService
+  ) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.tokenService.token;
@@ -46,6 +52,65 @@ export class ProductService {
     );
   }
 
+    getSingleFullProducts(productId: string): Observable<ApiResponse<FullProduct>> {
+        return this.getProductById(productId).pipe(
+            switchMap(productsResponse => {
+                const product: Product = productsResponse.data;
+
+                return forkJoin({
+                    user: this.userService.getUserById(product.userID).pipe(
+                        map(userResponse => userResponse.data)
+                    ),
+                    media: this.mediaService.getMediaByProductId(product.id).pipe(
+                        map(mediaResponse => mediaResponse.data)
+                    )
+                }).pipe(
+                    map(({ user, media }) => ({
+                        product,
+                        user,
+                        media
+                    })),
+                    map(fullProduct => ({
+                        status: 200,
+                        message: 'Full product fetched successfully',
+                        data: fullProduct,
+                    }))
+                );
+            })
+        );
+    }
+
+  getAllProductsMedia(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedResponse<ProductMedia>>> {
+        return this.getAllProducts(page, size).pipe(
+            switchMap(productsResponse => {
+                const products: Product[] = productsResponse.data.content;
+                console.log(products)
+                const mediaRequests = products.map(product =>
+                    forkJoin({
+                        media: this.mediaService.getMediaByProductId(product.id).pipe(
+                            map(mediaResponse => mediaResponse.data)
+                        )
+                    }).pipe(
+                        map(({ media }) => ({
+                            product,
+                            media
+                        }))
+                    )
+                );
+
+                return forkJoin(mediaRequests).pipe(
+                    map((fullProductsArray: ProductMedia[]) => ({
+                        status: productsResponse.status,
+                        message: productsResponse.message,
+                        data: {
+                            content: fullProductsArray,
+                            page: productsResponse.data.page
+                        }
+                    }))
+                );
+            })
+        );
+    }
 
   getProductsWithMediaByUserId(userId: string, page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedResponse<ProductMedia>>> {
     return this.getProductsByUserId(userId, page, size).pipe(

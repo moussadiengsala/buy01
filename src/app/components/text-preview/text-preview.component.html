@@ -1,7 +1,8 @@
 <div>
-    <p>{{ displayText }}</p>
-    <!-- <button (click)="toggleTextDisplay()">
-      {{ showFullText ? 'Show Less' : 'Show More' }}
-    </button> -->
+    <p [ngClass]="textClass">{{ displayText }}</p>
+    <button *ngIf="text.length > limit"
+            (click)="toggleTextDisplay()"
+            [ngClass]="buttonClass">
+        {{ showFullText ? 'less' : 'more' }}
+    </button>
 </div>
-  

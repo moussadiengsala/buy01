@@ -78,7 +78,6 @@ public class AccessValidation extends OncePerRequestFilter {
                 return;
             }
             request.setAttribute(USER, user);
-
         } catch (Exception e) {
             String errorMessage = e.getMessage();
             String jsonPart = extractJsonFromErrorMessage(errorMessage);

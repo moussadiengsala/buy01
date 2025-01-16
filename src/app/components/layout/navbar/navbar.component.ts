@@ -23,9 +23,8 @@ export class NavbarComponent {
   constructor( private cartService: CartService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    // Subscribe to the cart changes
     this.cartService.cart$.subscribe((cartItems) => {
-      this.cartCount = cartItems.length; // Update cart count
+      this.cartCount = cartItems.length;
     });
     
     this.authService.userState$.subscribe((user) => {
@@ -33,13 +32,13 @@ export class NavbarComponent {
     });
   }
 
-  toggleMenu() {
-    console.log('toggleMenu');
+  toggleMenu(event: Event) {
+    event.stopPropagation()
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  logOut() {
+  logOut(event: Event) {
+    this.toggleMenu(event)
     this.authService.logout()
-    this.toggleMenu()
   }
 }

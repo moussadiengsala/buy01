@@ -1,77 +1,99 @@
-
-
-<div class="w-full p-3">
+<div class="w-full p-5">
     <div>
-        <div *ngIf="!selectedProduct" class="text-center text-zinc-600 w-full my-7">
-            <p>Please select an product to manage his media</p>
+        <p-toast />
+        <!-- Empty state message -->
+        <div *ngIf="!selectedProduct" class="text-center text-gray-500 w-full py-8">
+            <p class="text-lg">Please select a product to manage its media</p>
         </div>
-        <div *ngIf="selectedProduct && showGallery" class="my-7 flex justify-center items-center">
 
-            <div class="flex w-fit flex-col items-end space-y-4">
-                <!-- upload image-->
-                <div class="bg-red-500">
-                    <app-upload-images [productMedia]="selectedProduct" [action]="ACTION.CREATE" />
-                </div>
+        <!-- Gallery and upload section -->
+        <div *ngIf="selectedProduct && showGallery" class="my-10 flex flex-col items-center gap-6">
+            <!-- Upload image -->
+            <div class="w-full max-w-lg">
+                <app-upload-images
+                        [productMedia]="selectedProduct"
+                        [action]="ACTION.CREATE"
+                        (event)="handleMediaAction($event)"
+                        class="w-full p-4 bg-white rounded-lg shadow"
+                />
+            </div>
 
-                <!-- gallery image-->
-                <div class="card">
-                    <p-galleria
+            <div class="w-full max-w-2xl mx-auto">
+                <p-carousel
                         [value]="selectedProduct.media"
-                        [showItemNavigators]="true"
+                        [numVisible]="1"
+                        [numScroll]="1"
+                        [circular]="false"
                         [responsiveOptions]="responsiveOptions"
-                        [circular]="true"
-                        [numVisible]="5"
-                        [containerStyle]="{ 'max-width': '640px' }">
-                            <ng-template pTemplate="item" let-item>
-<!--                                <img src="https://localhost:8082/api/v1/media/{{item.productID}}/{{item.imagePath}}" style="width: 100%; display: block;" />-->
-                                <div class="relative">
-                                    <img
-                                            src="https://localhost:8082/api/v1/media/{{item.productID}}/{{item.imagePath}}"
-                                            style="width: 100%; display: block;" />
+                        class="shadow-lg rounded-lg overflow-hidden space-x-4"
+                >
+                    <ng-template let-media pTemplate="item">
 
-                                    <div class="absolute bottom-3 left-3 flex gap-2">
-                                        <app-media-layout [media]="item" [action]="ACTION.UPDATE" />
-                                        <app-media-layout [media]="item" [action]="ACTION.DELETE" />
-                                    </div>
+                            <!-- Media Image -->
+                            <div class="relative w-full flex items-center justify-center rounded-md overflow-hidden">
+                                <img [src]="getMedia(media.productId, media.imagePath)"
+                                     [alt]="media.name"
+                                     class="w-full object-contain"
+                                />
+                                <div class="flex justify-end gap-6 px-4 py-2 rounded-sm absolute top-1 right-1 bg-white">
+                                    <app-media-layout (isComplete)="handleMediaAction($event)" [media]="media" [action]="ACTION.UPDATE" />
+                                    <app-media-layout (isComplete)="handleMediaAction($event)" [media]="media" [action]="ACTION.DELETE" />
                                 </div>
-                            </ng-template>
-                            <ng-template pTemplate="thumbnail" let-item>
-                                <div class="grid grid-nogutter justify-content-center max-h-40">
-                                    <img src="https://localhost:8082/api/v1/media/{{item.productID}}/{{item.imagePath}}" style="display: block;" />
-                                </div>
-                            </ng-template>
-                    </p-galleria>
-                </div>
+                            </div>
+
+                    </ng-template>
+                </p-carousel>
             </div>
         </div>
 
-        <ul class="flex flex-wrap gap-4" *ngIf="products && products.content?.length">
-            <li *ngFor="let product of products.content; trackBy: trackByProductId" (click)="handleSelectProduct(product)" class=" w-full tablet:w-fit">
-                <div class="flex h-40 items-center space-x-4 rounded-md overflow-hidden cursor-pointer border pr-4 w-full"
-                        [ngClass]="{'bg-sky-500/20 border-sky-500/50': selectedProduct?.product?.id === product.product.id, 'bg-sky-500/10 border-sky-500/10': selectedProduct?.product?.id != product.product.id}"
-                    >
-                    <div class="flex justify-center w-40">
-                        <img [src]="'https://placehold.co/600x600'" alt="{{ product.product.name }}" class="max-w-full h-auto object-cover" />
-                    </div>
+        <!-- Product list -->
+        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8" *ngIf="products && products?.content?.length">
+            <li *ngFor="let product of products.content; trackBy: trackByProductId">
+                <div
+                        (click)="handleSelectProduct(product)"
+                        class="flex items-center p-5 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
+                        [ngClass]="{
+                        'bg-blue-50 border-blue-400': selectedProduct?.product?.id === product.product.id,
+                        'bg-white border-gray-200': selectedProduct?.product?.id !== product.product.id
+                    }"
+                >
+                    <!-- Product Image -->
                     <div>
-                        <h3 class="text-2xl font-bold">{{ product.product.name }}</h3>
-                        <div class="text-sm text-zinc-500">
-                            <app-text-preview
-                                text="{{ product.product.description }}"
-                            />
+                        <img *ngIf="product.media.length"
+                             [src]="getMedia(product.product.id, product.media[0].imagePath)"
+                             [alt]="product.product.name"
+                             class="w-20 h-20 object-cover rounded-md" />
+                        <img *ngIf="!product.media.length"
+                             [src]="'https://placehold.co/600x600'"
+                             [alt]="product.product.name"
+                             class="w-20 h-20 object-cover rounded-md" />
+                    </div>
+                    <!-- Product Info -->
+                    <div class="ml-4 flex-1">
+                        <h3 class="text-lg font-semibold text-gray-800">{{ product.product.name }}</h3>
+                        <app-text-preview
+                                [text]="product.product.description"
+                                class="text-sm text-gray-600 mt-1"
+                        ></app-text-preview>
+                        <p class="text-lg font-bold text-blue-600 mt-2">${{ product.product.price }}</p>
+                        <!-- Stock status -->
+                        <div class="mt-2">
+                            <span
+                                    *ngIf="product.product.quantity > 0"
+                                    class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"
+                            >
+                                {{ product.product.quantity }} In stock
+                            </span>
+                            <span
+                                    *ngIf="product.product.quantity === 0"
+                                    class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded"
+                            >
+                                Out of stock
+                            </span>
                         </div>
-
-                        <p class="text-xl font-bold text-sky-500">{{ product.product.price }}$</p>
-                        <p class="text-sm bg-zinc-500 w-fit uppercase px-3 " *ngIf="product.product.quantity > 0">
-                            {{ product.product.quantity }} In stock
-                        </p>
-                        <p class="text-sm text-red-500" *ngIf="product.product.quantity === 0">
-                            Out of stock
-                        </p>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
 </div>
-

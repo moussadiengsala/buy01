@@ -80,10 +80,10 @@ public class MediaController {
     public ResponseEntity<Response<Object>> updateMedia(
             @PathVariable String media_id,
             HttpServletRequest request,
-            @RequestParam("files") List<MultipartFile> newFile
+            @RequestParam("files") MultipartFile newFile
             ) {
         Response<Object> updatedMedia = mediaService.updateMedia(request, media_id, newFile);
-        return ResponseEntity.status(updatedMedia.getStatus()).body(updatedMedia);
+        return ResponseEntity.status(updatedMedia.getStatus()).body(null);
     }
 
     @DeleteMapping("/{media_id}")

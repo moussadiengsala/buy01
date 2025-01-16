@@ -36,10 +36,9 @@ export const routes: Routes = [
     {
       path: 'products', 
       component: ProductListComponent,
-      canActivate: [AuthGuard, SellerGuard]
     },
     {
-      path: 'products/:productId', 
+      path: 'products/:productId',
       component: ProductDetailComponent,
       canActivate: [AuthGuard]
     },
@@ -48,7 +47,7 @@ export const routes: Routes = [
       component: ErrorComponent
     },
     {
-      path: '**', 
+      path: '**',
       component: NotFoundComponent
     }
 ];

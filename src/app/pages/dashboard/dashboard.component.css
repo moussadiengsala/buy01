@@ -2,10 +2,9 @@
     display: block;
     width: 100%;
 }
-  
 
+/*th, td {*/
+/*    background-color: white !important;*/
+/*    color: black !important;*/
+/*}*/
 
-th, td {
-    background-color: #18181b !important;
-    color: white !important;
-}

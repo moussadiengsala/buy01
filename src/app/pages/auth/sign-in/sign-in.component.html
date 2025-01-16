@@ -2,6 +2,7 @@
     <h2 class="text-xl font-bold capitalize tablet:text-2xl desktop:text-4xl tablet:max-w-lg desktop:max-w-4xl">
         <span>Sign In</span>
     </h2>
+    <p-toast />
 
     <div class="px-4 py-7 mx-auto w-full max-w-md min-w-sm rounded-md">
         <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 justify-center items-center w-full">
@@ -53,7 +54,7 @@
                 routerLink="/auth/sign-up" 
                 routerLinkActive="active" 
                 ariaCurrentWhenActive="page"
-                class="font-bold underline cursor-pointer capitalize">
+                class="underline cursor-pointer capitalize">
                 Signup
             </a>
         </div>

@@ -1,28 +1,59 @@
-import { CanActivateFn, Router } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    CanActivate,
+    CanActivateFn, GuardResult,
+    MaybeAsync,
+    Router,
+    RouterStateSnapshot
+} from '@angular/router';
 import { AuthService } from './auth-service.service';
-import { inject } from '@angular/core';
-import { TokenService } from '../token/token.service';
+import {inject, Injectable} from '@angular/core';
+import {filter, map, take} from 'rxjs/operators';
+import {switchMap} from "rxjs";
+
 
 export const AuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
-  if (!authService.isAuthenticated()) {
-    router.navigate(['/auth/sign-in']);
-    return false;
-  }
 
-  return true;
+    return authService.initializationComplete$.pipe(
+        filter(complete => complete), // Wait until initialization is complete
+        switchMap(() => authService.userState$),
+        take(1),
+        map(user => {
+            if (!user.isAuthenticated) {
+                router.navigate(['/auth/sign-in']);
+                return false;
+            }
+            return true;
+        })
+    );
 };
 
 export const SellerGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
-  if (!authService.isSeller()) {
-    router.navigate(['/error?message=You%20do%20not%20have%20seller%20permissions.&state=403']);
-    return false;
-  }  
 
-  return true;
+  return authService.initializationComplete$.pipe(
+          filter(complete => complete), // Wait until initialization is complete
+          switchMap(() => authService.userState$),
+          take(1),
+          map(user => {
+            if (user.role !== 'SELLER') {
+              router.navigate(['/error'], {
+                queryParams: { message: 'You do not have seller permissions.', state: 403 }
+              });
+              return false;
+            }
+            return true;
+          })
+  );
 };
+
+export function appInitializerFactory(authService: AuthService) {
+    return () => authService.initializationComplete$.pipe(
+        filter((isComplete) => isComplete),
+        take(1)
+    ).toPromise();
+}
+

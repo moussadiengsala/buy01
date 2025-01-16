@@ -1,24 +1,31 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input, numberAttribute} from '@angular/core';
+import {NgClass, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-text-preview',
   standalone: true,
-  imports: [],
+  imports: [
+    NgClass,
+    NgIf
+  ],
   templateUrl: './text-preview.component.html',
-  styleUrl: './text-preview.component.css'
+  styleUrls: ['./text-preview.component.css']
 })
 export class TextPreviewComponent {
-  @Input() text: string = '';
-  @Input() limit: number = 100; 
+  @Input({required: true}) text!: string;                // Input text to display
+  @Input({transform: numberAttribute}) limit: number = 100;              // Limit for truncated text
+  @Input() textClass: string = '';           // Class for text styling
+  @Input() buttonClass: string = '';         // Class for button styling
 
-  showFullText: boolean = false;
+  showFullText: boolean = false;             // Toggle for text display
 
-  toggleTextDisplay() {
+  toggleTextDisplay(): void {
     this.showFullText = !this.showFullText;
   }
 
   get displayText(): string {
-    // If showFullText is true, return the full text, otherwise return the truncated version
-    return this.showFullText ? this.text : this.text.slice(0, this.limit) + '...';
+    return this.showFullText || this.text.length <= this.limit
+        ? this.text
+        : `${this.text.slice(0, this.limit)}...`;
   }
 }

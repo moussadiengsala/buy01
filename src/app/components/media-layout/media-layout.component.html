@@ -1,20 +1,66 @@
-<button class="bg-sky-500 px-4 py-2 text-sm rounded-sm" (click)="toggle()">
-    <span *ngIf="action == ACTION.UPDATE">update</span>
-    <span *ngIf="action == ACTION.CREATE">upload</span>
-    <span *ngIf="action == ACTION.DELETE">delete</span>
-</button>
-
-<div *ngIf="isVisible" class="fixed top-0 z-[99] left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+<button class="text-sm" (click)="toggle()">
     <div *ngIf="action == ACTION.CREATE">
-        <app-upload-images [productMedia]="productMedia" [action]="action"/>
+        <i class="pi pi-upload text-lg text-slate-500 hover:text-slate-800"></i>
     </div>
     <div *ngIf="action == ACTION.UPDATE">
-        <app-upload-images [mediaToUpdate]="media" [action]="action"/>
+        <i class="pi pi-pencil text-lg text-slate-500 hover:text-slate-800"></i>
     </div>
+    <span *ngIf="action == ACTION.DELETE">
+        <i class="pi pi-trash text-lg text-red-500 hover:text-red-700"></i>
+    </span>
+</button>
 
-    <div *ngIf="action == ACTION.DELETE">
-        Are you sure  m,,,
-        <button pButton type="button" label="Delete" (click)="deleteMedia()" class="p-button-danger"></button>
-    </div>
-</div>
+<app-modal *ngIf="isVisible" (close)="toggle()">
+    <ng-container modal-body>
+        <div
+             class="fixed inset-0 z-[100] overflow-y-auto"
+             role="dialog"
+             aria-modal="true">
+            <div class="flex items-center justify-center h-full pt-4 px-4 pb-20 text-center sm:p-0">
+                <p-toast />
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                     aria-hidden="true"
+                     (click)="toggle()"></div>
 
+                <!-- Modal panel -->
+                <div class=" bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-black">{{getDialogHeader()}}</h3>
+                    </div>
+                    <div *ngIf="action == ACTION.CREATE">
+                        <app-upload-images [productMedia]="productMedia" [action]="action" (event)="handleEvent($event)" />
+                        <div class="flex justify-end gap-4">
+                            <button type="button" class="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300" (click)="toggle()">Cancel</button>
+                        </div>
+                    </div>
+                    <div *ngIf="action == ACTION.UPDATE">
+                        <app-upload-images [mediaToUpdate]="media" [action]="action" (event)="handleEvent($event)" />
+                        <div class="flex justify-end gap-4">
+                            <button type="button" class="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300" (click)="toggle()">Cancel</button>
+                        </div>
+                    </div>
+                    <div *ngIf="action == ACTION.DELETE" class="flex flex-col gap-4">
+                        <div class="p-4 bg-red-50 rounded-lg border border-red-300 shadow-sm">
+                            <h3 class="text-lg font-semibold text-red-700 flex items-center gap-2">
+                                <i class="pi pi-exclamation-triangle"></i> Confirm Deletion
+                            </h3>
+
+                            <!-- Confirmation Message -->
+                            <p class="mt-2 text-sm text-gray-700">
+                                Are you sure you want to delete this media? This action cannot be undone.
+                            </p>
+                        </div>
+
+                        <div class="flex justify-end gap-4">
+                            <button type="button" class="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300" (click)="toggle()">Cancel</button>
+                            <button type="button" (click)="deleteMedia()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-normal">Delete</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+</app-modal>

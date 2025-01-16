@@ -33,9 +33,16 @@
     <h4 class="text-sm font-medium" [ngClass]="titleStyles">
       {{ alert.title }}
     </h4>
-    <p class="mt-1 text-sm" [ngClass]="messageStyles">
-      {{ alert.message }}
-    </p>
+      <p class="mt-1 text-sm" [ngClass]="messageStyles" *ngIf="!isMessageArray(alert.message)">
+          {{ alert.message }}
+      </p>
+
+      <ul *ngIf="isMessageArray(alert.message)" class="mt-1 text-sm" [ngClass]="messageStyles">
+          <li *ngFor="let msg of alert.message ">
+              {{ msg }}
+          </li>
+      </ul>
+
   </div>
 
   <button

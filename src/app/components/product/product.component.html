@@ -1,27 +1,42 @@
-<div class="rounded-lg w-full">
-    <div class="flex justify-center mb-4">
-<!--      <img [src]="product.media[0].imagePath" alt="{{ product.name }}" class="max-w-full h-auto object-cover" />-->
-    </div>
-    <div>
-        <div>
-            <div class="flex justify-between items-center">
-                <h3 class="text-2xl font-bold mb-2">{{ product.name }}</h3>
-                <p-button (click)="toggleCart()" 
-                    [ngClass]="{ 'pi-minus bg-red-500 hover:bg-red-400': isInCart, 'pi-plus bg-zinc-500 hover:bg-zinc-400': !isInCart }" 
-                    class="pi p-1 cursor-pointer text-white rounded-full" />
+<div class="">
+    <div class="shadow-lg pb-6 rounded-xl border border-gray-200 overflow-hidden">
+        <!-- Product Image -->
+        <div class="relative bg-red-500">
+            <img *ngIf="product.media?.length"
+                 [src]="getMedia(product.product.id, product.media[0].imagePath)"
+                 [alt]="product.product.name"
+                 class="w-full h-72 object-cover">
+
+            <div *ngIf="!product.media?.length"
+                 class="w-full h-72 bg-gray-100 flex items-center justify-center">
+                <i class="pi pi-image text-3xl text-gray-400"></i>
             </div>
-            <p class="text-sm text-zinc-500 mb-4">{{ product.description }}</p>
+
+            <!-- Stock Badge -->
+            <div class="absolute top-3 left-3">
+        <span *ngIf="product.product.quantity === 0"
+              class="bg-gray-800 text-white px-3 py-1 rounded-lg text-xs uppercase">
+          Out-of-Stock
+        </span>
+                <span *ngIf="product.product.quantity > 0"
+                      class="bg-gray-800 text-white px-3 py-1 rounded-lg text-xs uppercase">
+          Full-Stock
+        </span>
+            </div>
         </div>
-  
-        <div>
-            <p class="text-xl font-bold text-sky-500 mb-4">{{ product.price }}$</p>
-            <p class="text-sm mb-4 bg-zinc-500 w-fit uppercase px-3 " *ngIf="product.quantity > 0">
-                {{ product.quantity }} In stock
-            </p>
-            <p class="text-sm text-red-500 mb-4" *ngIf="product.quantity === 0">
-                Out of stock
-            </p>
+
+        <!-- Product Info -->
+        <div class="mt-4 px-3 space-y-2">
+            <div class="flex justify-between">
+                <h3 class="text-lg font-normal text-gray-900">{{ product.product.name }}</h3>
+                <p-button (onClick)="toggleCart()" [disabled]="product.product.quantity === 0">
+                    <i *ngIf="!isInCart" class="pi pi-plus-circle"></i>
+                    <i *ngIf="isInCart" class="pi pi-minus-circle"></i>
+                </p-button>
+            </div>
+            <app-text-preview limit="100" text="{{product.product.description}}" textClass="text-gray-500 inline-block" buttonClass="text-blue-500 text-sm ml-1"></app-text-preview>
+            <span class="text-sm font-semibold text-blue-500">${{ product.product.price.toFixed(2) }}</span>
         </div>
+
     </div>
 </div>
-  

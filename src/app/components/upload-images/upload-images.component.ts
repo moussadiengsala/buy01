@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MessageService} from "primeng/api";
 import {CommonModule} from "@angular/common";
 import {ToastModule} from "primeng/toast";
@@ -6,7 +6,7 @@ import {FileSelectEvent, FileUploadEvent, FileUploadModule} from 'primeng/fileup
 import {MediaService} from "../../services/media/media.service";
 import {catchError, finalize} from 'rxjs/operators';
 import {of} from 'rxjs';
-import {ACTION, Media, ProductMedia} from "../../types";
+import {ACTION, Media, ProductMedia, ToastMessage} from "../../types";
 
 // Constants for validation
 const MAX_FILES = 5;
@@ -27,7 +27,7 @@ interface ValidationResult {
 @Component({
     selector: 'app-upload-images',
     standalone: true,
-    imports: [FileUploadModule, ToastModule, CommonModule],
+    imports: [FileUploadModule, CommonModule],
     templateUrl: './upload-images.component.html',
     styleUrls: ['./upload-images.component.css'],
     providers: [MessageService]
@@ -36,13 +36,14 @@ export class UploadImagesComponent implements OnInit {
     @Input({required: true}) action: ACTION = ACTION.CREATE;
     @Input() productMedia!: ProductMedia;
     @Input() mediaToUpdate: Media | null = null;
+    @Output() event = new EventEmitter<ToastMessage>()
+    lastMessageError: ToastMessage | null = null;
 
     uploadedFiles: File[] = [];
     isUploading = false;
     remainingSlots = MAX_FILES;
 
     constructor(
-        private messageService: MessageService,
         private mediaService: MediaService
     ) {}
 
@@ -86,37 +87,46 @@ export class UploadImagesComponent implements OnInit {
         const validation = this.validateFiles(event.files);
 
         if (!validation.isValid) {
-            this.messageService.add({
-                severity: 'warn',
+            let message: ToastMessage = {
+                severity: 'error',
                 summary: 'Validation Error',
-                detail: validation.message
-            });
+                detail: validation.message || "",
+                status: "FAILED"
+            }
+            this.event.emit(message)
+            this.lastMessageError = message;
             return;
         }
 
         this.uploadedFiles.push(...event.files);
         this.updateRemainingSlots();
 
-        this.messageService.add({
+        this.event.emit({
             severity: 'info',
             summary: 'Files Selected',
-            detail: `${event.files.length} file(s) ready for upload. Click Submit to proceed.`
-        });
+            detail: `${event.files.length} file(s) ready for upload. Click upload to proceed.`,
+            status: "-"
+        })
     }
 
     onRemove(event: { file: File }) {
-        console.log(this.remainingSlots)
         this.uploadedFiles = this.uploadedFiles.filter(file => file !== event.file);
         this.updateRemainingSlots();
     }
 
     onSubmit(event: FileUploadEvent) {
+        if (this.lastMessageError){
+            this.event.emit(this.lastMessageError)
+            return;
+        }
+
         if (!this.uploadedFiles.length) {
-            this.messageService.add({
+            this.event.emit({
                 severity: 'warn',
                 summary: 'No Files',
-                detail: 'Please select at least one file before submitting.'
-            });
+                detail: 'Please select at least one file before submitting.',
+                status: "FAILED"
+            })
             return;
         }
 
@@ -129,59 +139,69 @@ export class UploadImagesComponent implements OnInit {
     }
 
     create(formData: FormData) {
+
         this.mediaService.createMedia(this.productMedia.product.id, formData).pipe(
             catchError((error) => {
-                console.error('Upload failed:', error);
-                this.messageService.add({
+                this.event.emit({
                     severity: 'error',
                     summary: 'Upload Failed',
-                    detail: error
-                });
+                    detail: error?.error?.message || 'Upload Failed',
+                    status: "FAILED"
+                })
                 return of(error);
             }),
             finalize(() => {
                 this.isUploading = false;
             })
         ).subscribe((response) => {
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Success',
-                detail: 'Files successfully uploaded!'
-            });
             this.uploadedFiles = [];
             this.updateRemainingSlots();
+            this.event.emit({
+                severity: 'success',
+                summary: 'Success',
+                detail: response?.message || 'Files successfully uploaded!',
+                status: "OK"
+            })
 
         });
     }
 
     update(formData: FormData) {
+        console.log(formData)
         if (!this.mediaToUpdate) {
-            console.error("need the media first!")
+            this.event.emit({
+                severity: 'warn',
+                summary: 'Invalid',
+                detail: 'Provide the media to update first!',
+                status: "FAILED"
+            })
             return;
         }
 
         this.mediaService.updateMedia(this.mediaToUpdate.id, formData).pipe(
             catchError((error) => {
-                console.error('Upload failed:', error);
-                this.messageService.add({
+                console.log("helo", error)
+                this.event.emit({
                     severity: 'error',
-                    summary: 'Upload Failed',
-                    detail: error
-                });
-                return of(error);
+                    summary: 'Update Failed',
+                    detail: error?.error?.message || "Failed to update the media.",
+                    status: "FAILED"
+                })
+                return of();
             }),
             finalize(() => {
                 this.isUploading = false;
             })
         ).subscribe((response) => {
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Success',
-                detail: 'Files successfully uploaded!'
-            });
             this.uploadedFiles = [];
             this.updateRemainingSlots();
-
+            this.event.emit({
+                severity: 'success',
+                summary: 'Success',
+                detail: response?.message || 'Media successfully updated!',
+                status: "OK"
+            })
+            return;
         });
     }
 

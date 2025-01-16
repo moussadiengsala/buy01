@@ -14,10 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FileServices {
@@ -41,20 +39,24 @@ public class FileServices {
         this.mediaRepository = mediaRepository;
     }
 
-    public Response<Object> validateFiles(List<MultipartFile> files, boolean isSingleFiles) {
-        if (files == null || files.isEmpty()) {
+    public Response<Object> validateFiles(Object files, String productId, boolean isSingleFiles) {
+        List<MultipartFile> fileList = convertToFileList(files);
+        if (fileList.isEmpty()) {
             return buildErrorResponse("No files provided");
         }
 
-        if (files.size() > maxFileCount && !isSingleFiles) {
-            return buildErrorResponse("Maximum file count exceeded: " + maxFileCount);
-        }
-
-        if (isSingleFiles && files.size() != 1) {
+        if (isSingleFiles && fileList.size() != 1) {
             return buildErrorResponse("You should provide a single file");
         }
 
-        for (MultipartFile file : files) {
+        if (!isSingleFiles) {
+            int uploadFileCount = mediaRepository.findMediaByProductId(productId).size();
+            if (fileList.size() + uploadFileCount > maxFileCount) {
+                return buildErrorResponse("Maximum file count exceeded: " + maxFileCount);
+            }
+        }
+
+        for (MultipartFile file : fileList) {
             if (file.isEmpty()) {
                 return buildErrorResponse("Empty file detected");
             }
@@ -72,13 +74,18 @@ public class FileServices {
         return null;
     }
 
-    public List<String> saveFiles(List<MultipartFile> files, String productId) throws IOException {
+    public List<String> saveFiles(Object files, String productId) throws IOException {
+        List<MultipartFile> fileList = convertToFileList(files);
+        if (fileList == null || fileList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         String uploadDir = baseUploadDirectory + "/" + productId + "/";
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(uploadPath);
 
         List<String> savedFiles = new ArrayList<>();
-        for (MultipartFile file : files) {
+        for (MultipartFile file : fileList) {
             String uniqueFilename = generateUniqueFilename(file, productId);
             Path targetLocation = uploadPath.resolve(uniqueFilename).normalize();
 
@@ -91,6 +98,20 @@ public class FileServices {
         }
 
         return savedFiles;
+    }
+
+    private List<MultipartFile> convertToFileList(Object files) {
+        if (files instanceof MultipartFile) {
+            return Collections.singletonList((MultipartFile) files);
+        } else if (files instanceof List<?> fileList) {
+            if (!fileList.isEmpty() && fileList.get(0) instanceof MultipartFile) {
+                return fileList.stream()
+                        .filter(file -> file instanceof MultipartFile)
+                        .map(file -> (MultipartFile) file)
+                        .collect(Collectors.toList());
+            }
+        }
+        return new ArrayList<>();
     }
 
     private String generateUniqueFilename(MultipartFile file, String productId) {

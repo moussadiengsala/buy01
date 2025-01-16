@@ -13,13 +13,15 @@ import {Role, UserLoginRequest} from "../../../types";
 import {AuthService} from "../../../services/auth/auth-service.service";
 import {AlertComponent} from "../../../components/alert/alert.component";
 import {AlertService} from "../../../services/alert/alert.service";
+import {ToastModule} from "primeng/toast";
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive, CardModule, MessagesModule, ButtonModule, InputGroupModule, InputGroupAddonModule, PasswordModule, AlertComponent],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive, CardModule, MessagesModule, ButtonModule, InputGroupModule, InputGroupAddonModule, PasswordModule, AlertComponent, ToastModule],
   templateUrl: './sign-in.component.html',
-  styleUrl: './sign-in.component.css'
+  styleUrl: './sign-in.component.css',
+  providers: [MessageService]
 })
 export class SignInComponent {
     private formBuilder = inject(FormBuilder)
@@ -32,12 +34,13 @@ export class SignInComponent {
     constructor(
       private authService: AuthService,
       private router: Router,
-      private alertService: AlertService
+      private alertService: AlertService,
+      private messageService: MessageService
     ) {}
 
     onSubmit(): void {
       if (!this.signInForm.valid) {
-          this.alertService.error( 'Error', 'Email or password is incorrect!');
+          this.messageService.add({severity: "error", summary: 'Error', detail: 'Make sure to fill all required fields correctly!'})
           return
       }
       this.loading = true;
@@ -49,20 +52,13 @@ export class SignInComponent {
       this.authService.login(loginRequest).subscribe({
           next: (response) => {
               this.loading = false;
-              this.alertService.success('Success', 'Login successful!')
+              this.messageService.add({severity: "success", summary: 'Success', detail: 'Login successful!'})
               this.signInForm.reset();
               this.router.navigate(['/']);
               },
           error: (error) => {
               this.loading = false;
-              const errorDetails = Object.entries(error.error.data || {})
-                  .map(([key, value]) => `${key}: ${value}`)
-                  .join(', ');
-              this.loading = false;
-              this.alertService.error(
-                  error?.error?.message || 'Error',
-                  `${errorDetails || 'Failed to register'}`
-              )
+              this.alertService.error(error?.error?.message || 'Error', error?.error?.data || 'Failed to login')
           }
       });
 

@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {AuthService} from "../../services/auth/auth-service.service";
 import {ProductService} from "../../services/product/product.service";
-import {Product, Role} from "../../types";
+import {Product, Role, ToastMessage} from "../../types";
 import {AlertService} from "../../services/alert/alert.service";
 import {AlertComponent} from "../alert/alert.component";
+import {MessageService} from "primeng/api";
+import {ToastModule} from "primeng/toast";
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.css'
 })
@@ -18,12 +19,13 @@ export class AddProductComponent {
   addProductForm: FormGroup;
   isAddProductVisible: boolean = false;
   loading: boolean = false;
+  @Output() productAdded = new EventEmitter<ToastMessage>();
 
   constructor(
       private fb: FormBuilder,
-      private authService: AuthService,
       private productService: ProductService,
-      private alertService: AlertService
+      private alertService: AlertService,
+      private messageService: MessageService
   ) {
       this.addProductForm = this.fb.group({
         name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20), Validators.pattern(/^[A-Za-zÀ-ÿ\s'-]+$/)]],
@@ -34,11 +36,10 @@ export class AddProductComponent {
   }
 
   onSubmit(): void {
-    // Mark all fields as touched to trigger validation display
     this.addProductForm.markAllAsTouched();
 
     if (this.addProductForm.invalid) {
-      this.alertService.error('Error', 'Make sure to fill all required fields correctly!')
+      this.messageService.add({severity: "warn", summary: "Invalid fields", detail: 'Make sure to fill all required fields correctly!'})
       return;
     }
 
@@ -47,25 +48,23 @@ export class AddProductComponent {
       name: this.addProductForm.value.name,
       description: this.addProductForm.value.description,
       price: this.addProductForm.value.price,
-      quantity: this.addProductForm.value.quantity
+      quantity: this.addProductForm.value.quantity,
+      userID: ""
     };
     this.loading = true;
 
     this.productService.createProduct(newProduct).subscribe({
       next: (response) => {
         this.loading = false;
-        this.alertService.success('Success', 'Product created successful!')
         this.addProductForm.reset();
-        console.log(response)
+        this.productAdded.emit({severity: "success", summary: "Success", detail: response.message || 'Product created successful!', status: "OK"})
+        this.toggle()
       },
       error: (error) => {
-        const errorDetails = Object.entries(error.error.data || {})
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ');
         this.loading = false;
         this.alertService.error(
             error?.error?.message || 'Error',
-            `${errorDetails || 'Failed to create product'}`
+            error?.error?.data || 'Failed to create product'
         )
       }
     });

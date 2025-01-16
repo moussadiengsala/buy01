@@ -1,6 +1,10 @@
 spring:
   application:
     name: media
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
 
   kafka:
     bootstrap-servers: localhost:9092

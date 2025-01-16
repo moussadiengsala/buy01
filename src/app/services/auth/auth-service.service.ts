@@ -1,37 +1,53 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { Nullable } from 'primeng/ts-helpers';
+import {HttpClient, HttpStatusCode} from '@angular/common/http';
 import { TokenService } from '../token/token.service';
 import { Router } from '@angular/router';
-import {ApiResponse, Tokens, UserLoginRequest, UserPayload} from "../../types";
-import {Token} from "@angular/compiler";
+import {ApiResponse, Tokens, User, UserLoginRequest, UserPayload} from "../../types";
+import {take} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
+    private defaultUserPayload: UserPayload = { id: '', name: '', email: '', avatar: null, role: null, isAuthenticated: false};
     private API_URL = "https://localhost:8082/api/v1/users"
-    private user = new BehaviorSubject<UserPayload>({ id: '', name: '', email: '', avatar: null, role: null, isAuthenticated: false});
+    private user = new BehaviorSubject<UserPayload>(this.defaultUserPayload);
     public userState$: Observable<UserPayload> = this.user.asObservable();
-
+    public initializationComplete$ = new BehaviorSubject<boolean>(false);
 
     constructor(
         private http: HttpClient,
         private tokenService: TokenService,
         private router: Router
     ) {
-        this.initializeUserState();
+        this.initialize().then(() => {
+            this.initializationComplete$.next(true);
+        });
     }
 
-    private initializeUserState(): void {
-      if (this.isAuthenticated()) {
-        const user = this.tokenService.parse(); // Assuming this method parses the JWT and extracts user info
-        this.user.next({ ...user, isAuthenticated: true });
-      }
+    private async initialize(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.tokenService.isTokenValid().subscribe(
+                user => {
+                    if (user) {
+                        this.user.next(user);
+                    } else {
+                        this.user.next(this.defaultUserPayload);
+                    }
+                    resolve();
+                },
+                error => {
+                    console.error('Token validation failed:', error);
+                    this.user.next(this.defaultUserPayload);
+                    reject(error);
+                }
+            );
+        });
     }
+
 
     register(user: FormData): Observable<ApiResponse<Tokens> | null> {
         return this.http
@@ -43,10 +59,11 @@ export class AuthService {
             .pipe(
                 map(response => {
                     const body = response.body;
-                    if (body?.data) {
+                    if (body?.data && body.status === HttpStatusCode.Created) {
                         this.tokenService.token = body.data; // Store tokens
-                        const userPayload = this.tokenService.parse(); // Extract user data from token
-                        this.user.next({ ...userPayload, isAuthenticated: true }); // Update user state
+                        const user: User | null = this.tokenService.parse();
+                        if (!user) throw Error("Unable to parse the token.")
+                        this.user.next({ ...user, isAuthenticated: true });
                     }
                     return body;
                 })
@@ -62,30 +79,25 @@ export class AuthService {
       .pipe(
         map(response => {
             const body = response.body;
-            if (body?.data) {
+            if (body?.data && HttpStatusCode.Ok === body.status) {
                 this.tokenService.token = body.data; // Store tokens
-                const userPayload = this.tokenService.parse(); // Extract user data from token
-                this.user.next({ ...userPayload, isAuthenticated: true }); // Update user state
+                const user: User | null = this.tokenService.parse(); // Extract user data from token
+                if (!user) throw Error("Unable to parse the token.")
+                this.user.next({ ...user, isAuthenticated: true }); // Update user state
             }
             return body;
         })
       );
   }
 
-  // A method to log the user out and remove token
   logout(): void {
+    this.user.next(this.defaultUserPayload);
     this.tokenService.remove();
-    // this.user.next({ email: '', name: '', avatar: '', role: null, isAuthenticated: false });
     this.router.navigate(['/auth/sign-in']);
   }
 
-  isAuthenticated(): boolean {
-    return this.tokenService.isTokenValid();
-  }
-
-  isSeller(): boolean {
-    console.log('isSeller', this.tokenService.parse());
-    return this.tokenService.parse()?.role === 'SELLER';
-  }
+    isSeller(): boolean {
+        return this.user.value.role === 'SELLER';
+    }
 
 }

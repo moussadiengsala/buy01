@@ -20,6 +20,11 @@ export class MediaService {
     });
   }
 
+  getMedia(productId: string, mediaId: string): string | null {
+    if (!productId || !mediaId) return null;
+    return `${this.baseUrl}/${productId}/${mediaId}`
+  }
+
   // Get product by ID
   getMediaById(id: string): Observable<ApiResponse<Media>> {
     return this.http.get<ApiResponse<Media>>(
@@ -29,9 +34,9 @@ export class MediaService {
   }
 
   // Get products by user ID with pagination
-  getMediaByProductId(productId: string, page: number = 0, size: number = 10): Observable<ApiResponse<Media[]>> {
+  getMediaByProductId(productId: string): Observable<ApiResponse<Media[]>> {
     return this.http.get<ApiResponse<Media[]>>(
-        `${this.baseUrl}/product/${productId}?page=${page}&size=${size}`,
+        `${this.baseUrl}/product/${productId}`,
         { headers: { 'Content-Type': 'application/json' }}
     );
   }
@@ -46,7 +51,7 @@ export class MediaService {
   // Update an existing product
   updateMedia(id: string, updates: FormData): Observable<ApiResponse<Media>> {
     return this.http.put<ApiResponse<Media>>(`${this.baseUrl}/${id}`, updates,
-        { headers: {"Authorization": `Bearer ${this.tokenService.token?.accessToken}`}
+          { headers: {"Authorization": `Bearer ${this.tokenService.token?.accessToken}`}
         });
   }
 

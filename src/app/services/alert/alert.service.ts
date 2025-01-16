@@ -14,19 +14,19 @@ export class AlertService {
   }
 
   // Methods to trigger specific alerts
-  success(title: string, message: string): void {
+  success(title: string, message: string | object): void {
     this.emitAlert(AlertVariant.Success, title, message);
   }
 
-  error(title: string, message: string): void {
+  error(title: string, message: string | object): void {
     this.emitAlert(AlertVariant.Error, title, message);
   }
 
-  warning(title: string, message: string): void {
+  warning(title: string, message: string | object): void {
     this.emitAlert(AlertVariant.Warning, title, message);
   }
 
-  info(title: string, message: string): void {
+  info(title: string, message: string | object): void {
     this.emitAlert(AlertVariant.Info, title, message);
   }
 
@@ -36,7 +36,16 @@ export class AlertService {
   }
 
   // Emit a new alert
-  private emitAlert(variant: AlertVariant, title: string, message: string): void {
-    this.alertSubject.next({ variant, title, message });
+  private emitAlert(variant: AlertVariant, title: string, message: string | object): void {
+    this.alertSubject.next({ variant, title, message: this.formatMessage(message) });
+  }
+
+  private formatMessage(message: string | object): string | string[] {
+    if (typeof message === 'string') {
+      return message;
+    } else if (typeof message === 'object' && message !== null) {
+      return Object.entries(message).map(([key, value]) => `${key}: ${value}`)
+    }
+    return 'An unknown error occurred';
   }
 }

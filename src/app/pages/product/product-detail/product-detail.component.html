@@ -1,1 +1,98 @@
-<p>product-detail works!</p>
+<div class="w-full p-5">
+    <div>
+
+        <div *ngIf="!product">
+            No product
+        </div>
+
+        <!--        -->
+        <div *ngIf="product">
+            <div class="flex gap-8 p-8">
+                <!-- Carousel Section -->
+                <div class="w-1/2">
+                    <p-carousel
+                            [value]="product.media"
+                            [numVisible]="1"
+                            [numScroll]="1"
+                            [circular]="false"
+                            [responsiveOptions]="responsiveOptions"
+                            class="shadow-lg rounded-lg overflow-hidden space-x-4"
+                    >
+                        <ng-template let-media pTemplate="item">
+                                <div class="relative w-full flex items-center justify-center bg-gray-100 rounded-md overflow-hidden">
+                                    <img
+                                            [src]="getMedia(media.productId, media.imagePath)"
+                                            [alt]="media.name"
+                                            class="h-full object-contain"
+                                    />
+                                </div>
+                        </ng-template>
+                    </p-carousel>
+                </div>
+
+                <!-- Product Details Section -->
+                <div class="w-1/2 space-y-4">
+                    <h2 class="text-3xl font-semibold border-b-2 p-4 ">{{ product.product.name }}</h2>
+                    <div class="p-4 border-b-2 flex justify-between">
+                        <span class="text-2xl">${{ product.product.price }}</span>
+                        <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'" [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'" />
+                    </div>
+
+                    <div class="p-4 space-y-4">
+                        <h3 class="">Choose The Size</h3>
+                        <div class="flex space-x-4">
+                            <!-- Custom Radio for Size S -->
+                            <div>
+                                <input type="radio" id="size-s" name="size" class="hidden peer" />
+                                <label for="size-s" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                    S
+                                </label>
+                            </div>
+
+                            <!-- Custom Radio for Size M -->
+                            <div>
+                                <input type="radio" id="size-m" name="size" class="hidden peer" />
+                                <label for="size-m" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                    M
+                                </label>
+                            </div>
+
+                            <!-- Custom Radio for Size L -->
+                            <div>
+                                <input type="radio" id="size-l" name="size" class="hidden peer" />
+                                <label for="size-l" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                    L
+                                </label>
+                            </div>
+
+                            <!-- Custom Radio for Size XL -->
+                            <div>
+                                <input type="radio" id="size-xl" name="size" class="hidden peer" />
+                                <label for="size-xl" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                    XL
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="py-10">
+                        <p-accordion>
+                            <p-accordionTab header="Product Description" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
+                                <p class="m-0">{{ product.product.description }}</p>
+                            </p-accordionTab>
+                            <p-accordionTab header="User Information" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
+                                <p class="m-0">100% Cotton</p>
+                            </p-accordionTab>
+                            <p-accordionTab header="Delivery and Returns" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
+                                <p class="m-0">Free delivery and returns within 30 days.</p>
+                            </p-accordionTab>
+                        </p-accordion>
+                    </div>
+
+                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white py-4 rounded text-lg font-bold">Purchase Now</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

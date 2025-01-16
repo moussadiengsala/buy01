@@ -1,105 +1,174 @@
-<div *ngIf="user$ | async as user" class="flex flex-col w-full p-3">
-    <h2 class="text-xl font-bold capitalize tablet:text-2xl desktop:text-4xl tablet:max-w-lg desktop:max-w-4xl">
+<!-- dashboard.component.html -->
+<div *ngIf="user$ | async as user" class="flex flex-col w-full p-5">
+    <h2 class="text-lg font-bold capitalize tablet:text-xl desktop:text-2xl tablet:max-w-lg desktop:max-w-4xl mb-8">
         <span>Customer Overview</span>
     </h2>
+    <p-toast />
 
-    <div class="my-7 flex flex-col space-y-7">
-
-        <div class="grid grid-rows-2 tablet:grid-rows-1 tablet:grid-cols-2 gap-2">
-            <div class="bg-sky-500/20 border-2 border-sky-500/50 rounded-md p-4 flex flex-col">
-                <p-avatar *ngIf="!user.avatar"
-                          icon="pi pi-user"
-                          styleClass="mr-2"
-                          [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
-                          shape="circle" />
-                <p-avatar *ngIf="user.avatar"
-                          image="https://localhost:8082/api/v1/users/avatar/{{user.avatar}}"
-                          styleClass="mr-2"
-                          [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
-                          shape="circle" />
-                <div class="flex flex-col space-y-2 font-bold text-base mt-4 justify-end">
-                    <span>{{ user.name }}</span>
-                    <span>{{ user.email }}</span>
+    <div class="flex flex-col space-y-8">
+        <!-- User Info and Product Count Cards -->
+        <div class="grid grid-rows-2 tablet:grid-rows-1 tablet:grid-cols-2 gap-4">
+            <!-- User Info Card -->
+            <div class="bg-white shadow-lg rounded-lg p-6 flex flex-col border border-gray-100">
+                <p-avatar
+                        [image]="user.avatar ? 'https://localhost:8082/api/v1/users/avatar/' + user.avatar : undefined"
+                        [icon]="!user.avatar ? 'pi pi-user' : undefined"
+                        styleClass="mr-2"
+                        [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
+                        size="large"
+                        shape="circle">
+                </p-avatar>
+                <div class="flex flex-col space-y-2 font-medium text-gray-700 mt-4">
+                    <span class="text-lg">{{ user.name }}</span>
+                    <span class="text-sm text-gray-500">{{ user.email }}</span>
                 </div>
             </div>
 
-            <div class="bg-sky-500/20 border-2 border-sky-500/50 rounded-md p-4 flex flex-col">
-                <i class="pi pi-inbox"></i>
-                <div class="flex flex-col space-y-2 font-bold text-base mt-4">
-                    <span class="text-4xl text-sky-500">{{  0 }}</span>
-                    <span>Products</span>
+            <!-- Product Count Card -->
+            <div class="bg-white shadow-lg rounded-lg p-6 flex flex-col border border-gray-100">
+                <i class="pi pi-inbox text-3xl text-sky-500"></i>
+                <div class="flex flex-col space-y-2 mt-4">
+                    <span class="text-4xl font-bold text-sky-500">{{ (productMedias$ | async)?.page?.totalElements || 0 }}</span>
+                    <span class="text-gray-600">Total Products</span>
                 </div>
             </div>
         </div>
 
-        <div *ngIf="!productMedias || !productMedias.content || productMedias.page.totalElements == 0">
-            <app-add-product />
+        <!-- Empty State -->
+        <div *ngIf="(productMedias$ | async) === null" class="bg-white rounded-lg p-8 text-center shadow-lg">
+            <i class="pi pi-shopping-cart text-4xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-medium text-gray-700 mb-4">No Products Added Yet</h3>
+            <app-add-product (productAdded)="onActionProduct($event)" />
         </div>
 
+        <!-- Products Section -->
+        <ng-container *ngIf="productMedias$ | async as productMedias">
+            <!-- Products Table -->
+            <div *ngIf="productMedias?.content?.length" class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-700">
+                        My Products
+                    </h3>
+                    <app-add-product (productAdded)="onActionProduct($event)" />
+                </div>
 
-        <div *ngIf="!(!productMedias || !productMedias.content || productMedias.page.totalElements == 0)" class="flex flex-col space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-base font-bold capitalize desktop:text-xl">
-                    <span>My Products</span>
-                </h3>
-                <app-add-product />
-            </div>
+                <!-- Loading Indicator -->
+                <div *ngIf="loading$ | async" class="flex justify-center py-8">
+                    <p-button icon="pi pi-spin pi-spinner" [loading]="true" text></p-button>
+                </div>
 
-            <div>
+                <!-- Table Section -->
+                <div *ngIf="!(loading$ | async)">
+                    <!-- Pagination Controls -->
+                    <div class="mb-4 flex space-x-2">
+                        <p-button
+                                type="button"
+                                icon="pi pi-chevron-left"
+                                (click)="onPreviousPage(productMedias.page.number)"
+                                [disabled]="isFirstPage(productMedias.page.number)"
+                                text>
+                        </p-button>
+                        <p-button
+                                type="button"
+                                icon="pi pi-refresh"
+                                (click)="reset()"
+                                text>
+                        </p-button>
+                        <p-button
+                                type="button"
+                                icon="pi pi-chevron-right"
+                                (click)="onNextPage(productMedias.page.number, productMedias.page.totalPages)"
+                                [disabled]="isLastPage(productMedias.page.number, productMedias.page.totalPages)"
+                                text>
+                        </p-button>
+                    </div>
 
-                <div class="">
-                    <p-table [value]="productMedias.content" [tableStyle]="{'min-width': '60rem', 'background-color':'#27272a'}" ngSkipHydration
-                    class="bg-zinc-900">
+                    <!-- Products Table -->
+                    <p-table
+                            [value]="productMedias.content"
+                            [paginator]="true"
+                            [rows]="productMedias.page.size"
+                            [totalRecords]="productMedias.page.totalElements"
+                            [first]="productMedias.page.number * productMedias.page.size"
+                            [showCurrentPageReport]="true"
+                            [tableStyle]="{ 'min-width': '50rem', 'background-color': 'white' }"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            (onPage)="onPageChange($event)"
+                            [rowsPerPageOptions]="[10, 25, 50]"
+                            [loading]="loading$ | async"
+                            styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines">
 
-                        <ng-template pTemplate="header" class="">
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Description</th>
-                                <th>Quantity</th>
-                                <th>Edit</th>
+                        <ng-template pTemplate="header">
+                            <tr class="bg-gray-50">
+                                <th class="text-gray-700 font-medium">Name</th>
+                                <th class="text-gray-700 font-medium">Image</th>
+                                <th class="text-gray-700 font-medium">Price</th>
+                                <th class="text-gray-700 font-medium">Description</th>
+                                <th class="text-gray-700 font-medium">Quantity</th>
+                                <th class="text-gray-700 font-medium">Edit</th>
+                                <th class="text-gray-700 font-medium">Upload</th>
+                                <th class="text-gray-700 font-medium">Delete</th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-productMedia>
 
-                            <tr>
-                                <td>
-                                    <img [src]="'https://localhost:8082/api/v1/media/' + productMedia?.media[0]?.productId + '/' + productMedia?.media[0]?.imagePath" [alt]="productMedia.product.name" width="100" class="shadow-4" />
+                        <ng-template pTemplate="body" let-content>
+                            <tr class="hover:bg-gray-50">
+                                <td class="font-medium text-gray-700">{{content.product.name}}</td>
+                                <td class="w-32">
+                                    <img
+                                            [src]="'https://localhost:8082/api/v1/media/' + content?.media[0]?.productId + '/' + content?.media[0]?.imagePath"
+                                            [alt]="content.product.name"
+                                            class="rounded-lg shadow-sm object-cover w-24 h-24" />
                                 </td>
-                                <td>{{productMedia.product.name}}</td>
-                                <td>{{productMedia.product.price | currency:'USD'}}</td>
-                                <td>{{productMedia.product.description}}</td>
-                                <td>{{ productMedia.product.quantity }}</td>
+                                <td class="text-sky-600 font-medium">{{content.product.price | currency:'USD'}}</td>
+                                <td class="text-gray-600">{{content.product.description}}</td>
+                                <td class="text-gray-700">{{content.product.quantity}}</td>
+                                <td><app-edit-product [product]="content.product" (productEdited)="onActionProduct($event)" />
                                 <td>
-                                    <div class="card flex justify-content-center">
-                                        <div class="flex justify-content-center relative">
-                                            <p-button (onClick)="toggleMenu($event, productMedia.product.id)" class="border-none" icon="pi pi-ellipsis-v"></p-button>
-                                            <!-- Hardcoded menu, toggled based on isDisplayMenu -->
-                                            <div *ngIf="isDisplayMenu[productMedia.product.id]" class="absolute bg-zinc-900 shadow-lg rounded w-32 z-[99] -top-full right-full">
-                                            <ul class="list-none p-2">
-                                                <li class="">
-                                                    <app-edit-product [product]="productMedia.product" />
-                                                </li>
-                                                <li class="py-2 px-4 hover:bg-zinc-800 cursor-pointer">
-                                                    <app-delete-product [productMedia]="productMedia" />
-                                                </li>
-                                                <li class="py-2 px-4 hover:bg-zinc-800 cursor-pointer">
-                                                    <app-media-layout [productMedia]="productMedia" [action]="ACTION.CREATE" />
-                                                </li>
-                                            </ul>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <app-media-layout
+                                        [productMedia]="content"
+                                        [action]="ACTION.CREATE" (isComplete)="onActionProduct($event)" />
+                                </td>
+                                <td>
+                                    <app-delete-product [productMedia]="content" (productDeleted)="onActionProduct($event)" />
                                 </td>
                             </tr>
+                        </ng-template>
 
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="6" class="text-center py-8">
+                                    <div class="text-gray-500">No products found</div>
+                                </td>
+                            </tr>
                         </ng-template>
                     </p-table>
                 </div>
-
             </div>
-        </div>
+        </ng-container>
     </div>
 </div>
 
+<!--<div class="flex justify-center relative">-->
+<!--    <p-button-->
+<!--            (onClick)="toggleMenu($event, content.product.id)"-->
+<!--            class="p-button-rounded p-button-text"-->
+<!--            icon="pi pi-ellipsis-v">-->
+<!--    </p-button>-->
+<!--    <div *ngIf="isDisplayMenu[content.product.id]"-->
+<!--         class="absolute bg-white shadow-xl rounded-lg w-40 z-[90] right-0 mt-2">-->
+<!--        <ul class="py-2">-->
+<!--            <li class="px-4 py-2 hover:bg-gray-50 cursor-pointer">-->
+
+<!--            </li>-->
+<!--            <li class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-red-600">-->
+<!--                <app-delete-product [productMedia]="content" />-->
+<!--            </li>-->
+<!--            <li class="px-4 py-2 hover:bg-gray-50 cursor-pointer">-->
+<!--                <app-media-layout-->
+<!--                        [productMedia]="content"-->
+<!--                        [action]="ACTION.CREATE" />-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</div>-->

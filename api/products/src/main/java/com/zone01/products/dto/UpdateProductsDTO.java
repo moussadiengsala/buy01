@@ -19,9 +19,9 @@ public class UpdateProductsDTO {
     private Integer quantity;
 
     public Response<Object> applyUpdates(Products product) {
+        boolean isValueUpdated = false;
 
         if (this.name != null && !this.name.isEmpty()) {
-
             Response<Object> validationResponse = validateField("name", this.name,
                     value -> value != null &&
                             value.length() >= 2 &&
@@ -30,6 +30,7 @@ public class UpdateProductsDTO {
                     "Invalid name format");
             if (validationResponse != null) {return validationResponse;}
             product.setName(this.name);
+            isValueUpdated = true;
         }
 
         if (this.description != null && !this.description.isEmpty()) {
@@ -42,6 +43,7 @@ public class UpdateProductsDTO {
 
             if (validationResponse != null) {return validationResponse;}
             product.setDescription(this.description);
+            isValueUpdated = true;
         }
 
         // Price update
@@ -54,7 +56,7 @@ public class UpdateProductsDTO {
 
             if (validationResponse != null) {return validationResponse;}
             product.setPrice(this.price);
-
+            isValueUpdated = true;
         }
 
         // Quantity update
@@ -67,7 +69,15 @@ public class UpdateProductsDTO {
 
             if (validationResponse != null) {return validationResponse;}
             product.setQuantity(this.quantity);
+            isValueUpdated = true;
+        }
 
+        if (!isValueUpdated) {
+            return  Response.<Object>builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("No value is submitted.")
+                    .data(null)
+                    .build();
         }
 
         return null;

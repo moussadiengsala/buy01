@@ -17,28 +17,29 @@ import {Role} from "../../../types";
 import {AlertComponent} from "../../../components/alert/alert.component";
 import {AuthService} from "../../../services/auth/auth-service.service";
 import {AlertService} from "../../../services/alert/alert.service";
+import {ToastModule} from "primeng/toast";
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [CommonModule,
-      ReactiveFormsModule,
-      RouterLink,
-      RouterLinkActive,
-      FileUploadModule,
-      RadioButtonModule,
-      CardModule,
-      MessagesModule,
-      DividerModule,
-      ButtonModule,
-      InputGroupModule,
-      InputGroupAddonModule,
-      PasswordModule,
-      AlertComponent
-  ],
+    imports: [CommonModule,
+        ReactiveFormsModule,
+        RouterLink,
+        RouterLinkActive,
+        FileUploadModule,
+        RadioButtonModule,
+        CardModule,
+        MessagesModule,
+        DividerModule,
+        ButtonModule,
+        InputGroupModule,
+        InputGroupAddonModule,
+        PasswordModule,
+        AlertComponent, ToastModule
+    ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css',
-  providers: []
+  providers: [MessageService]
 })
 
 export class SignUpComponent {
@@ -55,14 +56,18 @@ export class SignUpComponent {
     avatarPreview: string | ArrayBuffer | null = null;
     avatarFileName: string | null = null;
 
-    constructor(private authService: AuthService, private router: Router, private alertService: AlertService) {}
+    constructor(
+        private authService: AuthService,
+        private router: Router,
+        private messageService: MessageService,
+        private alertService: AlertService) {}
 
     onSubmit(): void {
         // Mark all fields as touched to trigger validation display
         this.signUpForm.markAllAsTouched();
 
         if (this.signUpForm.invalid) {
-            this.alertService.error('Error', 'Make sure to fill all required fields correctly!')
+            this.messageService.add({severity: "error", summary: 'Error', detail: 'Make sure to fill all required fields correctly!'})
             return;
         }
 
@@ -80,19 +85,13 @@ export class SignUpComponent {
         this.authService.register(formData).subscribe({
             next: (response) => {
                 this.loading = false;
-                this.alertService.success('Success', 'Registration successful!')
+                this.messageService.add({severity: "success", summary: 'Success', detail: 'Registration successful!'})
                 this.signUpForm.reset({ role: Role.CLIENT });
                 this.router.navigate(['/']);
             },
             error: (error) => {
-                const errorDetails = Object.entries(error.error.data || {})
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join(', ');
                 this.loading = false;
-                this.alertService.error(
-                    error?.error?.message || 'Error',
-                    `${errorDetails || 'Failed to register'}`
-                )
+                this.alertService.error(error?.error?.message || 'Error', error.error.data || 'Failed to register')
             }
         });
     }
@@ -104,14 +103,14 @@ export class SignUpComponent {
         if (file) {
             // Validate file size (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
-                this.alertService.error('File Too Large', 'File size should not exceed 2MB.');
+                this.messageService.add({severity: "warn", summary: 'File Too Large', detail: 'File size should not exceed 2MB.'})
                 input.value = ''; // Clear the input
                 return;
             }
 
             // Validate file type
             if (!file.type.startsWith('image/')) {
-                this.alertService.error('Invalid File Type', 'Only image files are allowed.');
+                this.messageService.add({severity: "warn", summary: 'Invalid File Type', detail: 'Only image files are allowed.'})
                 input.value = ''; // Clear the input
                 return;
             }

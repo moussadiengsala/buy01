@@ -75,7 +75,7 @@ public class MediaService {
             Response<Object> authorizationResponse = authorization(request, productId);
             if (authorizationResponse != null) {return authorizationResponse;}
 
-            Response<Object> mediaValidationResponse = fileServices.validateFiles(files, false);
+            Response<Object> mediaValidationResponse = fileServices.validateFiles(files, productId, false);
             if (mediaValidationResponse != null) {
                 return mediaValidationResponse;
             }
@@ -109,14 +109,14 @@ public class MediaService {
     public Response<Object> updateMedia(
             HttpServletRequest request,
             String mediaId,
-            List<MultipartFile> newFile
+            MultipartFile newFile
     ) {
         try {
             Response<Object> authorizationResponse = authorizationWhenDeleteAndUpdate(request, mediaId);
             if (authorizationResponse.getStatus() != HttpStatus.OK.value()) {return authorizationResponse;}
 
             Media media = (Media) authorizationResponse.getData();
-            Response<Object> fileValidationResponse = fileServices.validateFiles(newFile, true);
+            Response<Object> fileValidationResponse = fileServices.validateFiles(newFile, "", true);
             if (fileValidationResponse != null) {
                 return fileValidationResponse;
             }
