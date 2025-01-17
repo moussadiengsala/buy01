@@ -6,8 +6,8 @@ import {DialogModule} from "primeng/dialog";
 
 @Component({
     selector: 'app-modal',
-    standalone: true,
     imports: [PortalModule, DialogModule],
+    standalone: true,
     template: `
         <ng-template cdkPortal class="">
             <div class="modal">
@@ -30,7 +30,7 @@ import {DialogModule} from "primeng/dialog";
         /*    max-height: 90vh;*/
         /*    overflow: auto;*/
         /*}*/
-    `],
+    `]
 })
 export class ModalComponent implements OnInit {
     @ViewChild(CdkPortal) portal: CdkPortal | undefined;

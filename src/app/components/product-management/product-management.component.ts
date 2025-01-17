@@ -8,11 +8,11 @@ import {ProductService} from "../../services/product/product.service";
 import {Product} from "../../types";
 
 @Component({
-  selector: 'app-product-management',
-  standalone: true,
-  imports: [CommonModule, MenuModule, ButtonModule],
-  templateUrl: './product-management.component.html',
-  styleUrl: './product-management.component.css'
+    selector: 'app-product-management',
+    imports: [CommonModule, MenuModule, ButtonModule],
+    standalone: true,
+    templateUrl: './product-management.component.html',
+    styleUrl: './product-management.component.css'
 })
 export class ProductManagementComponent {
   @Input({required: true}) product!: Product;

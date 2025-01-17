@@ -10,15 +10,14 @@ import {of} from "rxjs";
 import {MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
 import {DialogModule} from "primeng/dialog";
-import {CdkPortal, Portal} from "@angular/cdk/portal";
 import {ModalComponent} from "../modal/modal.component";
 
 @Component({
-  selector: 'app-media-layout',
-  standalone: true,
-  imports: [CommonModule, ModalComponent, MenuModule, ButtonModule, UploadImagesComponent, ToastModule, DialogModule, CdkPortal],
-  templateUrl: './media-layout.component.html',
-  styleUrl: './media-layout.component.css'
+    selector: 'app-media-layout',
+    standalone: true,
+    imports: [CommonModule, ModalComponent, MenuModule, ButtonModule, UploadImagesComponent, ToastModule, DialogModule],
+    templateUrl: './media-layout.component.html',
+    styleUrl: './media-layout.component.css'
 })
 
 export class MediaLayoutComponent {

@@ -13,8 +13,8 @@ import {switchMap} from "rxjs";
 
 
 export const AuthGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+    const authService = inject(AuthService);
+    const router = inject(Router);
 
     return authService.initializationComplete$.pipe(
         filter(complete => complete), // Wait until initialization is complete

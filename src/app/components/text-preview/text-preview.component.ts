@@ -2,14 +2,11 @@ import {Component, Input, numberAttribute} from '@angular/core';
 import {NgClass, NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-text-preview',
-  standalone: true,
-  imports: [
-    NgClass,
-    NgIf
-  ],
-  templateUrl: './text-preview.component.html',
-  styleUrls: ['./text-preview.component.css']
+    selector: 'app-text-preview',
+    imports: [NgClass, NgIf],
+    standalone: true,
+    templateUrl: './text-preview.component.html',
+    styleUrls: ['./text-preview.component.css']
 })
 export class TextPreviewComponent {
   @Input({required: true}) text!: string;                // Input text to display

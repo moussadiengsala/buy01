@@ -3,13 +3,13 @@
         <p-toast />
         <!-- Empty state message -->
         <div *ngIf="!selectedProduct" class="text-center text-gray-500 w-full py-8">
-            <p class="text-lg">Please select a product to manage its media</p>
+            <p class="text-sm tablet:text-lg">Please select a product to manage its media</p>
         </div>
 
         <!-- Gallery and upload section -->
-        <div *ngIf="selectedProduct && showGallery" class="my-10 flex flex-col items-center gap-6">
+        <div *ngIf="selectedProduct && showGallery" class="my-2.5 tablet:my-5 desktop:my-10 flex flex-col items-center gap-6">
             <!-- Upload image -->
-            <div class="w-full max-w-lg">
+            <div class="w-full max-w-lg desktop:max-w-xl">
                 <app-upload-images
                         [productMedia]="selectedProduct"
                         [action]="ACTION.CREATE"
@@ -18,12 +18,13 @@
                 />
             </div>
 
-            <div class="w-full max-w-2xl mx-auto">
+            <div class="w-full max-w-lg desktop:max-w-xl mx-auto">
                 <p-carousel
                         [value]="selectedProduct.media"
                         [numVisible]="1"
                         [numScroll]="1"
                         [circular]="false"
+                        [showNavigators]="false"
                         [responsiveOptions]="responsiveOptions"
                         class="shadow-lg rounded-lg overflow-hidden space-x-4"
                 >
@@ -35,7 +36,7 @@
                                      [alt]="media.name"
                                      class="w-full object-contain"
                                 />
-                                <div class="flex justify-end gap-6 px-4 py-2 rounded-sm absolute top-1 right-1 bg-white">
+                                <div class="flex justify-end gap-2 px-2 tablet:gap-6 tablet:px-4 tablet:py-2 rounded-sm absolute top-1 right-1 bg-white">
                                     <app-media-layout (isComplete)="handleMediaAction($event)" [media]="media" [action]="ACTION.UPDATE" />
                                     <app-media-layout (isComplete)="handleMediaAction($event)" [media]="media" [action]="ACTION.DELETE" />
                                 </div>
@@ -51,7 +52,7 @@
             <li *ngFor="let product of products.content; trackBy: trackByProductId">
                 <div
                         (click)="handleSelectProduct(product)"
-                        class="flex items-center p-5 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
+                        class="flex items-center p-2 tablet:p-5 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
                         [ngClass]="{
                         'bg-blue-50 border-blue-400': selectedProduct?.product?.id === product.product.id,
                         'bg-white border-gray-200': selectedProduct?.product?.id !== product.product.id

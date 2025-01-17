@@ -54,8 +54,7 @@ export class TokenService {
               return { ...user, isAuthenticated };
             }),
             catchError( (e) => {
-              console.error(e)
-              return of(null);
+              return of(e);
             })
         );
   }

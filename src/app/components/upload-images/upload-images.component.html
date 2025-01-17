@@ -1,4 +1,4 @@
-<div class="card">
+<div class="">
     <p-fileUpload name="demo[]" url="https://www.primefaces.org/cdn/api/upload.php"
                   fileLimit="5"
                   (onUpload)="onSubmit($event)"
@@ -8,16 +8,16 @@
                   accept="image/*"
                   maxFileSize="2097152"
                   chooseLabel="Select"
+                  chooseStyleClass="hidden"
                   uploadLabel="Upload"
                   cancelLabel="Cancel"
                   uploadStyleClass="mx-2"
-                  styleClass="p-button-primary"
                   chooseIcon="pi pi-images text-sm"
                   uploadIcon="pi pi-cloud-upload"
                   cancelIcon="pi pi-times"
                   mode="advanced">
         <ng-template #empty>
-            <div>Drag and drop files to here to upload.</div>
+            <div class="text-gray-500 text-sm tablet:text-md">Drag and drop files to here to upload.</div>
         </ng-template>
         <ng-template #content>
             <ul *ngIf="uploadedFiles.length">

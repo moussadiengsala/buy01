@@ -1,45 +1,39 @@
-import {ChangeDetectorRef, Component, TrackByFunction} from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import {ACTION, Media, PaginatedResponse, Product, ProductMedia, Role, ToastMessage, UserPayload} from '../../types';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { GalleriaModule } from 'primeng/galleria';
-import { FileSelectEvent, FileUploadEvent, FileUploadModule } from 'primeng/fileupload';
+import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, PrimeNGConfig } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { BadgeModule } from 'primeng/badge';
-import { ActivatedRoute } from '@angular/router';
-import {ProductComponent} from "../../components/product/product.component";
 import {TextPreviewComponent} from "../../components/text-preview/text-preview.component";
 import {ProductService} from "../../services/product/product.service";
-import {AlertService} from "../../services/alert/alert.service";
 import {forkJoin, Observable, switchMap} from "rxjs";
 import {MediaService} from "../../services/media/media.service";
 import {AuthService} from "../../services/auth/auth-service.service";
 import {UploadImagesComponent} from "../../components/upload-images/upload-images.component";
 import {MediaLayoutComponent} from "../../components/media-layout/media-layout.component";
 import {CarouselModule} from "primeng/carousel";
-import {TagModule} from "primeng/tag";
+import {Router} from "@angular/router";
 
 
 @Component({
-  selector: 'app-media-management',
-  standalone: true,
+    selector: 'app-media-management',
+    standalone: true,
     imports: [
         CommonModule,
-        ProductComponent,
         GalleriaModule,
         FileUploadModule,
         ToastModule,
         BadgeModule,
         TextPreviewComponent,
-        NgOptimizedImage,
         UploadImagesComponent,
         MediaLayoutComponent,
-        CarouselModule,
-        TagModule
+        CarouselModule
     ],
-  templateUrl: './media-management.component.html',
-  styleUrl: './media-management.component.css',
-  providers: [MessageService]
+    templateUrl: './media-management.component.html',
+    styleUrl: './media-management.component.css',
+    providers: [MessageService]
 })
 export class MediaManagementComponent {
     protected readonly ACTION = ACTION
@@ -59,7 +53,8 @@ export class MediaManagementComponent {
                 private messageService: MessageService,
                 private authService: AuthService,
                 private productService: ProductService,
-                private mediaService: MediaService
+                private mediaService: MediaService,
+                private router: Router
                 ) {
         this.user$ = this.authService.userState$;
     }
@@ -113,7 +108,10 @@ export class MediaManagementComponent {
                 },
                 error: (err) => {
                     console.error('Error loading products:', err);
-                    this.messageService.add({severity: "error", summary: "Error getting products", detail: err?.error?.message || 'Failed to load products.'});
+                    this.router.navigate(['/error', {
+                        message: err?.error?.message || "Failed to load products",
+                        status: err?.error?.status || 500
+                    }])
                 }
             });
     }

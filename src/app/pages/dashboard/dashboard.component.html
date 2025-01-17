@@ -44,9 +44,9 @@
         <!-- Products Section -->
         <ng-container *ngIf="productMedias$ | async as productMedias">
             <!-- Products Table -->
-            <div *ngIf="productMedias?.content?.length" class="bg-white rounded-lg shadow-lg p-6">
+            <div *ngIf="productMedias?.content?.length" class="bg-white rounded-lg shadow-lg">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-700">
+                    <h3 class="text-sm tablet:text-lg desktop:text-xl font-bold text-gray-700">
                         My Products
                     </h3>
                     <app-add-product (productAdded)="onActionProduct($event)" />

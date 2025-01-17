@@ -40,7 +40,7 @@ export const routes: Routes = [
     {
       path: 'products/:productId',
       component: ProductDetailComponent,
-      canActivate: [AuthGuard]
+      canActivate: []
     },
     {
       path: 'error', 

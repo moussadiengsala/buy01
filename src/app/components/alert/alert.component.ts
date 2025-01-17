@@ -2,26 +2,15 @@ import { Component, input } from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {AlertService} from "../../services/alert/alert.service";
 import {Alert, AlertVariant} from "../../types";
-import {
-  HlmAlertDescriptionDirective,
-  HlmAlertDirective,
-  HlmAlertIconDirective,
-  HlmAlertTitleDirective
-} from "@spartan-ng/ui-alert-helm";
-import {HlmIconComponent} from "@spartan-ng/ui-icon-helm";
 import {provideIcons} from "@ng-icons/core";
 import {lucideCheck, lucideInfo, lucideCircleX, lucideMessageCircleWarning, lucideX} from "@ng-icons/lucide";
 
 @Component({
     selector: 'app-alert',
-  imports: [NgClass, NgIf, HlmAlertDirective,
-    HlmAlertDescriptionDirective,
-    HlmAlertIconDirective,
-    HlmAlertTitleDirective,
-    HlmIconComponent, NgForOf],
+    standalone: true,
+    imports: [NgClass, NgIf, NgForOf],
     providers: [provideIcons({ lucideCheck, lucideInfo, lucideCircleX, lucideMessageCircleWarning, lucideX })],
     templateUrl: './alert.component.html',
-    standalone: true,
     styleUrl: './alert.component.css'
 })
 export class AlertComponent {

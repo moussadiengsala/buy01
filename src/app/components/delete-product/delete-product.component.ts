@@ -10,10 +10,10 @@ import { of } from "rxjs";
 import { ToastModule } from "primeng/toast";
 
 @Component({
-  selector: 'app-delete-product',
-  standalone: true,
-  imports: [AlertComponent, NgIf],
-  templateUrl: './delete-product.component.html',
+    selector: 'app-delete-product',
+    imports: [NgIf],
+    standalone: true,
+    templateUrl: './delete-product.component.html'
 })
 export class DeleteProductComponent {
   @Input() productMedia!: ProductMedia;

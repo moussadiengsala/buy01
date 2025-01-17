@@ -4,7 +4,7 @@
         [class.opacity-50]="isLoading"
         [disabled]="isLoading">
     <i class="pi pi-trash text-sm"></i>
-    Delete
+    <span class="hidden tablet:block">Delete</span>
 </button>
 
 <!-- Enhanced Delete Confirmation Modal -->
@@ -12,7 +12,7 @@
      class="fixed inset-0 z-[100] overflow-y-auto"
      role="dialog"
      aria-modal="true">
-    <div class="flex items-end justify-center h-full pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="flex items-center justify-center h-full pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Background overlay -->
         <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
              aria-hidden="true"

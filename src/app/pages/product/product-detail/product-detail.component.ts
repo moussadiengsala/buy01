@@ -1,38 +1,34 @@
 import { Component } from '@angular/core';
-import {ActivatedRoute, Route} from "@angular/router";
-import {switchMap} from "rxjs";
-import {ACTION, FullProduct} from "../../../types";
+import {ActivatedRoute, Route, Router} from "@angular/router";
+import {ACTION, FullProduct, ProductMedia} from "../../../types";
 import {ProductService} from "../../../services/product/product.service";
 import {MessageService, PrimeTemplate} from "primeng/api";
 import {CarouselModule} from "primeng/carousel";
-import {MediaLayoutComponent} from "../../../components/media-layout/media-layout.component";
 import {AccordionModule} from "primeng/accordion";
 import {CommonModule} from "@angular/common";
 import {TagModule} from "primeng/tag";
 
 @Component({
-  selector: 'app-product-detail',
-  standalone: true,
-  imports: [
-    CarouselModule,
-    MediaLayoutComponent,
-    PrimeTemplate,
-    AccordionModule,
-    CommonModule,
-    TagModule
-  ],
-  templateUrl: './product-detail.component.html',
-  styleUrl: './product-detail.component.css',
-  providers: [MessageService]
+    selector: 'app-product-detail',
+    standalone: true,
+    imports: [
+        CarouselModule,
+        PrimeTemplate,
+        AccordionModule,
+        CommonModule,
+        TagModule
+    ],
+    templateUrl: './product-detail.component.html',
+    styleUrl: './product-detail.component.css',
 })
 export class ProductDetailComponent {
-  product: FullProduct | null = null;
+  product: ProductMedia | null = null;
   responsiveOptions: any[] | undefined;
 
   constructor(
       private route: ActivatedRoute,
       private productService: ProductService,
-      private messageService: MessageService
+      private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -63,13 +59,16 @@ export class ProductDetailComponent {
       let productId: string | null = params.get('productId');
       if (!productId) return;
 
-      this.productService.getSingleFullProducts(productId).subscribe({
+      this.productService.getSingleProductsMedia(productId).subscribe({
         next: (response) => {
           this.product = response.data;
-          console.log(this.product)
         },
-        error: (e) => {
-          console.log(e)
+        error: (err) => {
+            console.log(err)
+            this.router.navigate(['/error', {
+                message: err?.error?.message || "Failed to load the product",
+                status: err?.error?.status || 500
+            }])
         }
       })
     });

@@ -9,11 +9,11 @@ import {MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
 
 @Component({
-  selector: 'app-add-product',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
-  templateUrl: './add-product.component.html',
-  styleUrl: './add-product.component.css'
+    selector: 'app-add-product',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
+    templateUrl: './add-product.component.html',
+    styleUrl: './add-product.component.css'
 })
 export class AddProductComponent {
   addProductForm: FormGroup;

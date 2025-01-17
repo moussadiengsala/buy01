@@ -26,8 +26,8 @@ interface ValidationResult {
 
 @Component({
     selector: 'app-upload-images',
-    standalone: true,
     imports: [FileUploadModule, CommonModule],
+    standalone: true,
     templateUrl: './upload-images.component.html',
     styleUrls: ['./upload-images.component.css'],
     providers: [MessageService]

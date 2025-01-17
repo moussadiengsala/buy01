@@ -20,8 +20,8 @@ import {AlertService} from "../../../services/alert/alert.service";
 import {ToastModule} from "primeng/toast";
 
 @Component({
-  selector: 'app-sign-up',
-  standalone: true,
+    selector: 'app-sign-up',
+    standalone: true,
     imports: [CommonModule,
         ReactiveFormsModule,
         RouterLink,
@@ -37,9 +37,9 @@ import {ToastModule} from "primeng/toast";
         PasswordModule,
         AlertComponent, ToastModule
     ],
-  templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.css',
-  providers: [MessageService]
+    templateUrl: './sign-up.component.html',
+    styleUrl: './sign-up.component.css',
+    providers: [MessageService]
 })
 
 export class SignUpComponent {

@@ -9,11 +9,11 @@ import {TooltipModule} from "primeng/tooltip";
 import {TextPreviewComponent} from "../text-preview/text-preview.component";
 
 @Component({
-  selector: 'app-product',
-  standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, TooltipModule, TextPreviewComponent],
-  templateUrl: './product.component.html',
-  styleUrl: './product.component.css'
+    selector: 'app-product',
+    imports: [CommonModule, ButtonModule, CardModule, TooltipModule, TextPreviewComponent],
+    standalone: true,
+    templateUrl: './product.component.html',
+    styleUrl: './product.component.css'
 })
 export class ProductComponent {
   @Input({required: true}) product!: ProductMedia;

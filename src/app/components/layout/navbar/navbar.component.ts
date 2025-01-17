@@ -9,10 +9,10 @@ import {CartService} from "../../../services/utils/cart.service";
 import {AuthService} from "../../../services/auth/auth-service.service";
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule, ButtonModule, RouterLink, RouterLinkActive, AvatarModule, BadgeModule],
-  templateUrl: './navbar.component.html'
+    selector: 'app-navbar',
+    standalone: true,
+    imports: [CommonModule, ButtonModule, RouterLink, RouterLinkActive, AvatarModule, BadgeModule],
+    templateUrl: './navbar.component.html'
 })
 
 export class NavbarComponent {

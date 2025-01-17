@@ -52,27 +52,23 @@ export class ProductService {
     );
   }
 
-    getSingleFullProducts(productId: string): Observable<ApiResponse<FullProduct>> {
+    getSingleProductsMedia(productId: string): Observable<ApiResponse<ProductMedia>> {
         return this.getProductById(productId).pipe(
             switchMap(productsResponse => {
                 const product: Product = productsResponse.data;
 
                 return forkJoin({
-                    user: this.userService.getUserById(product.userID).pipe(
-                        map(userResponse => userResponse.data)
-                    ),
                     media: this.mediaService.getMediaByProductId(product.id).pipe(
                         map(mediaResponse => mediaResponse.data)
                     )
                 }).pipe(
-                    map(({ user, media }) => ({
+                    map(({ media }) => ({
                         product,
-                        user,
                         media
                     })),
                     map(fullProduct => ({
                         status: 200,
-                        message: 'Full product fetched successfully',
+                        message: 'product fetched successfully',
                         data: fullProduct,
                     }))
                 );

@@ -40,7 +40,6 @@ export class AuthService {
                     resolve();
                 },
                 error => {
-                    console.error('Token validation failed:', error);
                     this.user.next(this.defaultUserPayload);
                     reject(error);
                 }

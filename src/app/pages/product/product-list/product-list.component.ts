@@ -1,32 +1,23 @@
 import { Component } from '@angular/core';
-import {FullProduct, PaginatedResponse, ProductMedia, ToastMessage, UserPayload} from "../../../types";
-import {Observable, switchMap} from "rxjs";
-import {MessageService, PrimeNGConfig} from "primeng/api";
-import {ActivatedRoute, RouterLink, RouterLinkActive} from "@angular/router";
-import {AuthService} from "../../../services/auth/auth-service.service";
+import { PaginatedResponse, ProductMedia } from "../../../types";
+import { Router, RouterLink, RouterLinkActive} from "@angular/router";
 import {ProductService} from "../../../services/product/product.service";
-import {AlertService} from "../../../services/alert/alert.service";
 import {MediaService} from "../../../services/media/media.service";
-import {AsyncPipe, NgClass, NgForOf, NgIf} from "@angular/common";
+import { NgForOf, NgIf} from "@angular/common";
 import {ProductComponent} from "../../../components/product/product.component";
-import {AddProductComponent} from "../../../components/add-product/add-product.component";
 
 @Component({
-  selector: 'app-product-list',
-  standalone: true,
-  imports: [
-    NgClass,
-    NgIf,
-    NgForOf,
-    ProductComponent,
-    AddProductComponent,
-    AsyncPipe,
-    RouterLink,
-    RouterLinkActive
-  ],
-  templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.css',
-  providers: [MessageService]
+    selector: 'app-product-list',
+    standalone: true,
+    imports: [
+        NgIf,
+        NgForOf,
+        ProductComponent,
+        RouterLink,
+        RouterLinkActive
+    ],
+    templateUrl: './product-list.component.html',
+    styleUrl: './product-list.component.css'
 })
 export class ProductListComponent {
   products: PaginatedResponse<ProductMedia> | null = null;
@@ -35,8 +26,8 @@ export class ProductListComponent {
 
   constructor(
               private productService: ProductService,
-              private alertService: AlertService,
-              private mediaService: MediaService
+              private mediaService: MediaService,
+              private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +46,10 @@ export class ProductListComponent {
           },
           error: (err) => {
             console.error('Error loading products:', err);
-            this.alertService.error('Error', 'Failed to load products.');
+            this.router.navigate(['/error', {
+                message: err?.error?.message || "Failed to load products",
+                status: err?.error?.status || 500
+            }])
           }
         });
   }

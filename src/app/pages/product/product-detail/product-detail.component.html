@@ -7,21 +7,21 @@
 
         <!--        -->
         <div *ngIf="product">
-            <div class="flex gap-8 p-8">
+            <div class="flex flex-col tablet:grid tablet:grid-rows-1 tablet:grid-cols-2 tablet:gap-8 tablet:p-8">
                 <!-- Carousel Section -->
-                <div class="w-1/2">
+                <div class="max-w-lg desktop:max-w-xl mx-auto">
                     <p-carousel
                             [value]="product.media"
                             [numVisible]="1"
                             [numScroll]="1"
                             [circular]="false"
+                            [showNavigators]="false"
                             [responsiveOptions]="responsiveOptions"
                             class="shadow-lg rounded-lg overflow-hidden space-x-4"
                     >
                         <ng-template let-media pTemplate="item">
-                                <div class="relative w-full flex items-center justify-center bg-gray-100 rounded-md overflow-hidden">
-                                    <img
-                                            [src]="getMedia(media.productId, media.imagePath)"
+                                <div class="relative w-full flex items-center justify-center rounded-md overflow-hidden">
+                                    <img [src]="getMedia(media.productId, media.imagePath)"
                                             [alt]="media.name"
                                             class="h-full object-contain"
                                     />
@@ -31,8 +31,8 @@
                 </div>
 
                 <!-- Product Details Section -->
-                <div class="w-1/2 space-y-4">
-                    <h2 class="text-3xl font-semibold border-b-2 p-4 ">{{ product.product.name }}</h2>
+                <div class="space-y-4">
+                    <h2 class="text-xl tablet:text-2xl desktop:text-3xl font-semibold border-b-2 p-4 ">{{ product.product.name }}</h2>
                     <div class="p-4 border-b-2 flex justify-between">
                         <span class="text-2xl">${{ product.product.price }}</span>
                         <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'" [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'" />
@@ -80,16 +80,13 @@
                             <p-accordionTab header="Product Description" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
                                 <p class="m-0">{{ product.product.description }}</p>
                             </p-accordionTab>
-                            <p-accordionTab header="User Information" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
-                                <p class="m-0">100% Cotton</p>
-                            </p-accordionTab>
                             <p-accordionTab header="Delivery and Returns" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
                                 <p class="m-0">Free delivery and returns within 30 days.</p>
                             </p-accordionTab>
                         </p-accordion>
                     </div>
 
-                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white py-4 rounded text-lg font-bold">Purchase Now</button>
+                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white py-2 desktop:py-4 rounded text-md tablet:text-lg">Purchase Now</button>
                 </div>
             </div>
 

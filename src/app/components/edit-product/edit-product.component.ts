@@ -11,11 +11,11 @@ import {ToastModule} from "primeng/toast";
 
 
 @Component({
-  selector: 'app-edit-product',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
-  templateUrl: './edit-product.component.html',
-  styleUrl: './edit-product.component.css'
+    selector: 'app-edit-product',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
+    templateUrl: './edit-product.component.html',
+    styleUrl: './edit-product.component.css'
 })
 export class EditProductComponent {
   @Input({required: true}) product!: Product;

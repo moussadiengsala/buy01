@@ -1,4 +1,4 @@
-<div class="grid grid-cols-3 items-center p-3 h-16 fixed bg-white
+<div class="grid grid-cols-[1fr_2fr_2fr] sm:grid-cols-3 items-center p-3 h-16 fixed bg-white
     left-1/2 transform -translate-x-1/2 w-full max-w-7xl z-[99] border-b-2">
     <!-- Hamburger Icon -->
     
@@ -112,7 +112,7 @@
           shape="circle" />
       </div>
       
-      <button *ngIf="!user.isAuthenticated" class="bg-sky-500 px-5 py-2 font-bold rounded-sm">
+      <button *ngIf="!user.isAuthenticated" class="bg-blue-500 px-3 tablet:px-5 py-2 text-white rounded-sm">
           <a class=""
              routerLink="/auth/sign-in"
              routerLinkActive="active"
