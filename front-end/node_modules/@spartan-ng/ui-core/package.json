@@ -1,0 +1,35 @@
+{
+  "name": "@spartan-ng/ui-core",
+  "version": "0.0.1-alpha.380",
+  "sideEffects": false,
+  "exports": {
+    "./hlm-tailwind-preset": {
+      "default": "./hlm-tailwind-preset.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./index.d.ts",
+      "esm2022": "./esm2022/spartan-ng-ui-core.mjs",
+      "esm": "./esm2022/spartan-ng-ui-core.mjs",
+      "default": "./fesm2022/spartan-ng-ui-core.mjs"
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=18.0.0",
+    "clsx": "^2.1.1",
+    "rxjs": ">=6.6.0",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss": "^3.4.13",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "module": "fesm2022/spartan-ng-ui-core.mjs",
+  "typings": "index.d.ts"
+}
