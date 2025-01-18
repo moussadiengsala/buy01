@@ -1,0 +1,43 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+  application:
+    name: media
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+
+  kafka:
+    bootstrap-servers: kafka:9093
+
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: password
+      database: buy01
+      port: 27017
+      host: mongodb
+      auto-index-creation: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://registery:8761/eureka/
+
+media:
+  upload:
+    base:
+      dir: '${user.dir}/api/media/src/main/resources/uploads'
+    max:
+      file:
+        size: 2097152  # 2MB in bytes
+        count: 5       # Max files per upload
+  allowed:
+    content:
+      types: image/jpeg,image/png,image/webp
+
+server:
+  port: 8085

@@ -1,0 +1,83 @@
+<!-- Add Products Button -->
+<button
+        class="inline-flex items-center px-3 py-2 gap-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+        (click)="toggle()">
+    <i class="pi pi-plus-circle text-lg"></i>
+    <span class="hidden tablet:block">Add Product</span>
+</button>
+
+<!-- Add Product Popup -->
+<div *ngIf="isAddProductVisible"
+     class="fixed inset-0 z-[100] overflow-y-auto"
+     role="dialog"
+     aria-modal="true">
+    <div class="flex items-center justify-center h-full pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <p-toast />
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+             aria-hidden="true"
+             (click)="toggle()"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-black">Add New Product</h3>
+            </div>
+
+            <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()" class="px-6 py-6 flex flex-col gap-6">
+                <!-- Name Field -->
+                <div class="w-full flex flex-col gap-1">
+                    <label for="name" class="text-black font-medium">Name</label>
+                    <input id="name" type="text" formControlName="name" class="h-10 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <div *ngIf="nameControl?.invalid && (nameControl?.dirty || !nameControl?.untouched)">
+                        <small *ngIf="nameControl?.errors?.['required']" class="text-red-500">Name is required</small>
+                        <small *ngIf="nameControl?.errors?.['minlength']" class="text-red-500">Name must be at least 2 characters</small>
+                        <small *ngIf="nameControl?.errors?.['maxlength']" class="text-red-500">Name cannot exceed 20 characters</small>
+                    </div>
+                </div>
+
+                <!-- Description Field -->
+                <div class="w-full flex flex-col gap-1">
+                    <label for="description" class="text-black font-medium">Description</label>
+                    <textarea id="description" formControlName="description" class="h-20 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <div *ngIf="descriptionControl?.invalid && (descriptionControl?.dirty || !descriptionControl?.untouched)">
+                        <small *ngIf="descriptionControl?.errors?.['required']" class="text-red-500">Description is required</small>
+                        <small *ngIf="descriptionControl?.errors?.['minlength']" class="text-red-500">Description must be at least 10 characters</small>
+                        <small *ngIf="descriptionControl?.errors?.['maxlength']" class="text-red-500">Description cannot exceed 100 characters</small>
+                    </div>
+                </div>
+
+                <!-- Price Field -->
+                <div class="w-full flex flex-col gap-1">
+                    <label for="price" class="text-black font-medium">Price</label>
+                    <input id="price" type="number" formControlName="price" class="h-10 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <div *ngIf="priceControl?.invalid && (priceControl?.dirty || !priceControl?.untouched)">
+                        <small *ngIf="priceControl?.errors?.['required']" class="text-red-500">Price is required</small>
+                        <small *ngIf="priceControl?.errors?.['min']" class="text-red-500">Price must be greater than 0</small>
+                    </div>
+                </div>
+
+                <!-- Quantity Field -->
+                <div class="w-full flex flex-col gap-1">
+                    <label for="quantity" class="text-black font-medium">Quantity</label>
+                    <input id="quantity" type="number" formControlName="quantity" class="h-10 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <div *ngIf="quantityControl?.invalid && (quantityControl?.dirty || !quantityControl?.untouched)">
+                        <small *ngIf="quantityControl?.errors?.['required']" class="text-red-500">Quantity is required</small>
+                        <small *ngIf="quantityControl?.errors?.['min']" class="text-red-500">Quantity must be greater than 0</small>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-end gap-4">
+                    <button type="button" class="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300" (click)="toggle()">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" [disabled]="addProductForm.invalid">Save</button>
+
+                    <!--                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" [disabled]="addProductForm.invalid">Save</button>-->
+                </div>
+            </form>
+            <app-alert />
+        </div>
+
+
+    </div>
+</div>

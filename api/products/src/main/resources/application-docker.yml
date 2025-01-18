@@ -1,0 +1,28 @@
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+  application:
+    name: products
+
+  kafka:
+    bootstrap-servers: kafka:9093
+
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: password
+      database: buy01
+      port: 27017
+      host: mongodb
+      auto-index-creation: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://registery:8761/eureka/
+
+server:
+  port: 8084

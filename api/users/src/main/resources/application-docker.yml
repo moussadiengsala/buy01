@@ -1,0 +1,44 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+  application:
+    name: users
+  kafka:
+    bootstrap-servers: kafka:9093
+  data:
+    mongodb:
+      auto-index-creation: true
+      authentication-database: admin
+      username: rootuser
+      password: password
+      database: buy01
+      port: 27017
+      host: mongodb
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://registery:8761/eureka/
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
+
+server:
+  port: 8083
+
+media:
+  upload:
+    base:
+      dir: '/app/uploads'  # Changed for Docker environment
+    max:
+      file:
+        size: 2097152
+  allowed:
+    content:
+      types: image/jpeg,image/png,image/webp

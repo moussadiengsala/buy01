@@ -1,0 +1,17 @@
+import { isObservable } from 'rxjs';
+/**
+ * A loader may return a promise, an observable or a string. This function will coerce the result into a promise.
+ * @returns
+ */
+export function coerceLoaderResult(result) {
+    if (typeof result === 'string') {
+        return Promise.resolve(result);
+    }
+    if (isObservable(result)) {
+        // toPromise is deprecated, but we can't use lastValueFrom because it's not available in RxJS 6
+        // so for now we'll just use toPromise
+        return result.toPromise();
+    }
+    return result;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXN5bmMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9jb3JlL3NyYy9saWIvdXRpbHMvYXN5bmMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFjLFlBQVksRUFBRSxNQUFNLE1BQU0sQ0FBQztBQUVoRDs7O0dBR0c7QUFDSCxNQUFNLFVBQVUsa0JBQWtCLENBQ2hDLE1BQXFEO0lBRXJELElBQUksT0FBTyxNQUFNLEtBQUssUUFBUSxFQUFFLENBQUM7UUFDL0IsT0FBTyxPQUFPLENBQUMsT0FBTyxDQUFDLE1BQU0sQ0FBQyxDQUFDO0lBQ2pDLENBQUM7SUFFRCxJQUFJLFlBQVksQ0FBQyxNQUFNLENBQUMsRUFBRSxDQUFDO1FBQ3pCLCtGQUErRjtRQUMvRixzQ0FBc0M7UUFDdEMsT0FBTyxNQUFNLENBQUMsU0FBUyxFQUFxQixDQUFDO0lBQy9DLENBQUM7SUFFRCxPQUFPLE1BQU0sQ0FBQztBQUNoQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgT2JzZXJ2YWJsZSwgaXNPYnNlcnZhYmxlIH0gZnJvbSAncnhqcyc7XG5cbi8qKlxuICogQSBsb2FkZXIgbWF5IHJldHVybiBhIHByb21pc2UsIGFuIG9ic2VydmFibGUgb3IgYSBzdHJpbmcuIFRoaXMgZnVuY3Rpb24gd2lsbCBjb2VyY2UgdGhlIHJlc3VsdCBpbnRvIGEgcHJvbWlzZS5cbiAqIEByZXR1cm5zXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiBjb2VyY2VMb2FkZXJSZXN1bHQoXG4gIHJlc3VsdDogUHJvbWlzZTxzdHJpbmc+IHwgT2JzZXJ2YWJsZTxzdHJpbmc+IHwgc3RyaW5nLFxuKTogUHJvbWlzZTxzdHJpbmc+IHtcbiAgaWYgKHR5cGVvZiByZXN1bHQgPT09ICdzdHJpbmcnKSB7XG4gICAgcmV0dXJuIFByb21pc2UucmVzb2x2ZShyZXN1bHQpO1xuICB9XG5cbiAgaWYgKGlzT2JzZXJ2YWJsZShyZXN1bHQpKSB7XG4gICAgLy8gdG9Qcm9taXNlIGlzIGRlcHJlY2F0ZWQsIGJ1dCB3ZSBjYW4ndCB1c2UgbGFzdFZhbHVlRnJvbSBiZWNhdXNlIGl0J3Mgbm90IGF2YWlsYWJsZSBpbiBSeEpTIDZcbiAgICAvLyBzbyBmb3Igbm93IHdlJ2xsIGp1c3QgdXNlIHRvUHJvbWlzZVxuICAgIHJldHVybiByZXN1bHQudG9Qcm9taXNlKCkgYXMgUHJvbWlzZTxzdHJpbmc+O1xuICB9XG5cbiAgcmV0dXJuIHJlc3VsdDtcbn1cbiJdfQ==
