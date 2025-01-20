@@ -1,16 +1,20 @@
-<div class="">
-    <div class="shadow-lg pb-6 rounded-xl border border-gray-200 overflow-hidden">
+<div class="w-full h-full">
+    <div class="w-full h-full shadow-lg pb-6 rounded-xl border border-gray-200 overflow-hidden">
         <!-- Product Image -->
-        <div class="relative bg-red-500">
-            <img *ngIf="product.media?.length"
-                 [src]="getMedia(product.product.id, product.media[0].imagePath)"
-                 [alt]="product.product.name"
-                 class="w-full h-72 object-cover">
+        <div class="relative">
+            <a routerLink="/products/{{product.product.id}}"
+               routerLinkActive="active"
+               ariaCurrentWhenActive="page">
+                <img *ngIf="product.media?.length"
+                     [src]="getMedia(product.product.id, product.media[0].imagePath)"
+                     [alt]="product.product.name"
+                     class="w-full h-72 object-cover">
 
-            <div *ngIf="!product.media?.length"
-                 class="w-full h-72 bg-gray-100 flex items-center justify-center">
-                <i class="pi pi-image text-3xl text-gray-400"></i>
-            </div>
+                <div *ngIf="!product.media?.length"
+                     class="w-full h-72 bg-gray-100 flex items-center justify-center">
+                    <i class="pi pi-image text-3xl text-gray-400"></i>
+                </div>
+            </a>
 
             <!-- Stock Badge -->
             <div class="absolute top-3 left-3">
@@ -28,7 +32,7 @@
         <!-- Product Info -->
         <div class="mt-4 px-3 space-y-2">
             <div class="flex justify-between">
-                <h3 class="text-lg font-normal text-gray-900">{{ product.product.name }}</h3>
+                <h3 class="text-lg font-normal text-gray-900 capitalize">{{ product.product.name }}</h3>
                 <p-button (onClick)="toggleCart()" [disabled]="product.product.quantity === 0">
                     <i *ngIf="!isInCart" class="pi pi-plus-circle"></i>
                     <i *ngIf="isInCart" class="pi pi-minus-circle"></i>

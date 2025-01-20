@@ -31,6 +31,13 @@ export interface Media {
     productId: string;
 }
 
+export interface CreateProduct {
+    name: string;
+    description: string;
+    price: number;
+    quantity: number;
+}
+
 export interface Product {
     id: string;
     name: string;

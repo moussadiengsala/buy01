@@ -16,36 +16,22 @@
         <h3 class="text-md tablet:text-lg desktop:text-xl font-medium text-gray-500 mb-4">No Products Added Yet</h3>
     </div>
 
-    <!-- Products Grid -->
-    <div *ngIf="products && products.content.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div *ngFor="let item of products.content; trackBy: trackByProductId"
-             class="overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
-            <a routerLink="/products/{{item.product.id}}"
-               routerLinkActive="active"
-               ariaCurrentWhenActive="page">
-                <app-product [product]="item" />
-            </a>
+    <div *ngIf="products && products.content.length">
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div *ngFor="let item of products.content; trackBy: trackByProductId"
+                 class="overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                    <app-product [product]="item" />
+            </div>
         </div>
-    </div>
 
-    <!-- Pagination -->
-    <div *ngIf="products && products.content.length && products.page" class="mt-8 flex justify-center">
-        <div class="flex space-x-2">
-            <button
-                    [disabled]="currentPage === 0"
-                    (click)="currentPage = currentPage - 1; loadProductsWithMedia()"
-                    class="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:bg-gray-300 disabled:cursor-not-allowed">
-                <i class="pi pi-arrow-left"></i>
-            </button>
-            <span class="px-4 py-2">
-        Page {{products.page.number + 1}} of {{products.page.totalPages}}
-      </span>
-            <button
-                    [disabled]="currentPage >= products.page.totalPages - 1"
-                    (click)="currentPage = currentPage + 1; loadProductsWithMedia()"
-                    class="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:bg-gray-300 disabled:cursor-not-allowed">
-                <i class="pi pi-arrow-right"></i>
-            </button>
-        </div>
+        <!-- Pagination -->
+        <p-paginator
+                (onPageChange)="onPageChange($event)"
+                [first]="currentPage * pageSize"
+                [rows]="pageSize"
+                [totalRecords]="products.page.totalElements"
+                [rowsPerPageOptions]="[5, 10, 15, 20, 30]">
+        </p-paginator>
     </div>
 </div>

@@ -2,6 +2,7 @@ package com.zone01.products.products;
 
 import com.zone01.products.config.AccessValidation;
 import com.zone01.products.config.kafka.MediaServices;
+import com.zone01.products.dto.CreateProductDTO;
 import com.zone01.products.dto.UpdateProductsDTO;
 import com.zone01.products.dto.UserDTO;
 import com.zone01.products.model.Response;
@@ -41,7 +42,7 @@ public class ProductsService {
         return productsRepository.findProductsByUserID(id, PageRequest.of(page, size));
     }
 
-    public Products createProduct(Products product, HttpServletRequest request) {
+    public Products createProduct(CreateProductDTO product, HttpServletRequest request) {
 
         UserDTO currentUser = AccessValidation.getCurrentUser(request);
 

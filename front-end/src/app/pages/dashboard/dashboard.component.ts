@@ -17,13 +17,15 @@ import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import {EditProductComponent} from "../../components/edit-product/edit-product.component";
 import {AddProductComponent} from "../../components/add-product/add-product.component";
 import {AuthService} from "../../services/auth/auth-service.service";
-import {BehaviorSubject, combineLatest, Observable, of, startWith, switchMap, takeUntil} from "rxjs";
+import {BehaviorSubject, combineLatest, flatMap, Observable, of, startWith, switchMap, takeUntil} from "rxjs";
 import {ProductService} from "../../services/product/product.service";
 import {DeleteProductComponent} from "../../components/delete-product/delete-product.component";
 import {MediaLayoutComponent} from "../../components/media-layout/media-layout.component";
 import {catchError, finalize, map} from "rxjs/operators";
 import {ToastModule} from "primeng/toast";
 import {Router} from "@angular/router";
+import {TextPreviewComponent} from "../../components/text-preview/text-preview.component";
+import {Paginator, PaginatorState} from "primeng/paginator";
 
 @Component({
     selector: 'app-dashboard',
@@ -32,7 +34,7 @@ import {Router} from "@angular/router";
         TableModule, ButtonModule, TagModule, InputIconModule, InputTextModule, MultiSelectModule,
         IconFieldModule,
         DropdownModule,
-        MenuModule, AddProductComponent, EditProductComponent, DeleteProductComponent, MediaLayoutComponent, ToastModule],
+        MenuModule, AddProductComponent, EditProductComponent, DeleteProductComponent, MediaLayoutComponent, ToastModule, TextPreviewComponent, Paginator],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
     providers: [MessageService] // Ensure MessageService is provided here
@@ -44,6 +46,7 @@ export class DashboardComponent {
     currentPage: number = 0;
     pageSize: number = 10;
     loading: boolean = false
+    private isManualPageChange: boolean = false;
 
     constructor(
         private authService: AuthService,
@@ -58,11 +61,16 @@ export class DashboardComponent {
         this.loadProducts()
     }
 
+    getMedia(productId: string, mediaPath: string): string {
+        return `https://localhost:8082/api/v1/media/${productId}/${mediaPath}`
+    }
+
     loadProducts(): void {
         this.user$
             .pipe(
                 switchMap(user =>
                     this.productService.getProductsWithMediaByUserId(user.id, this.currentPage, this.pageSize)
+
                 )
             )
             .subscribe({
@@ -83,6 +91,7 @@ export class DashboardComponent {
     onNextPage(currentPage: number, totalPages: number): void {
         if (currentPage < totalPages - 1) {
             this.currentPage = currentPage + 1;
+            this.isManualPageChange = true
             this.loadProducts();
         }
     }
@@ -91,6 +100,7 @@ export class DashboardComponent {
     onPreviousPage(currentPage: number): void {
         if (currentPage > 0) {
             this.currentPage = currentPage - 1;
+            this.isManualPageChange = true
             this.loadProducts();
         }
     }
@@ -113,9 +123,15 @@ export class DashboardComponent {
     }
 
     // Handle table pagination events
-    onPageChange(event: TablePageEvent): void {
-        this.currentPage = event.first / event.rows;
-        this.pageSize = event.rows;
+    onPageChange(event: PaginatorState): void {
+        // Extract pagination details from event
+        if (event.page !== undefined) {
+            this.currentPage = event.page;
+        }
+        if (event.rows !== undefined) {
+            this.pageSize = event.rows;
+        }
+
         this.loadProducts();
     }
 

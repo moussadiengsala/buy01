@@ -1,5 +1,6 @@
 package com.zone01.products.products;
 
+import com.zone01.products.dto.CreateProductDTO;
 import com.zone01.products.dto.UpdateProductsDTO;
 import com.zone01.products.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,7 +71,7 @@ public class ProductsController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Response<Products>> createProduct(@Validated @RequestBody Products product, HttpServletRequest request) {
+    public ResponseEntity<Response<Products>> createProduct(@Validated @RequestBody CreateProductDTO product, HttpServletRequest request) {
         Products createdProduct = productsService.createProduct(product, request);
         Response<Products> response = Response.<Products>builder()
                 .status(HttpStatus.CREATED.value())

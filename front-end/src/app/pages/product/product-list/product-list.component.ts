@@ -5,6 +5,8 @@ import {ProductService} from "../../../services/product/product.service";
 import {MediaService} from "../../../services/media/media.service";
 import { NgForOf, NgIf} from "@angular/common";
 import {ProductComponent} from "../../../components/product/product.component";
+import {Paginator, PaginatorState} from "primeng/paginator";
+import {TablePageEvent} from "primeng/table";
 
 @Component({
     selector: 'app-product-list',
@@ -13,8 +15,7 @@ import {ProductComponent} from "../../../components/product/product.component";
         NgIf,
         NgForOf,
         ProductComponent,
-        RouterLink,
-        RouterLinkActive
+        Paginator
     ],
     templateUrl: './product-list.component.html',
     styleUrl: './product-list.component.css'
@@ -23,6 +24,7 @@ export class ProductListComponent {
   products: PaginatedResponse<ProductMedia> | null = null;
   currentPage: number = 0;
   pageSize: number = 10;
+  isManualPageChange: boolean = false
 
   constructor(
               private productService: ProductService,
@@ -31,14 +33,14 @@ export class ProductListComponent {
   ) {}
 
   ngOnInit(): void {
-    this.loadProductsWithMedia();
+    this.loadProducts();
   }
 
   getMedia(productId: string, imagePath: string): string | null {
     return this.mediaService.getMedia(productId, imagePath)
   }
 
-  loadProductsWithMedia(): void {
+  loadProducts(): void {
     this.productService.getAllProductsMedia(this.currentPage, this.pageSize)
         .subscribe({
           next: (response) => {
@@ -52,6 +54,18 @@ export class ProductListComponent {
           }
         });
   }
+
+    onPageChange(event: PaginatorState): void {
+        // Extract pagination details from event
+        if (event.page !== undefined) {
+            this.currentPage = event.page;
+        }
+        if (event.rows !== undefined) {
+            this.pageSize = event.rows;
+        }
+
+        this.loadProducts();
+    }
 
   trackByProductId(index: number, products: ProductMedia): string {
     return products.product.id;

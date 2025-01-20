@@ -25,3 +25,6 @@ bugs:
 -x icons on dispeare on docker
 - pagination in media management
 - verify if all pagination work
+- toast design and responsive AlertComponent too
+- long text in dashboard
+- image in dashboard

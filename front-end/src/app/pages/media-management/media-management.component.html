@@ -48,53 +48,64 @@
         </div>
 
         <!-- Product list -->
-        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8" *ngIf="products && products?.content?.length">
-            <li *ngFor="let product of products.content; trackBy: trackByProductId">
-                <div
-                        (click)="handleSelectProduct(product)"
-                        class="flex items-center p-2 tablet:p-5 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
-                        [ngClass]="{
-                        'bg-blue-50 border-blue-400': selectedProduct?.product?.id === product.product.id,
-                        'bg-white border-gray-200': selectedProduct?.product?.id !== product.product.id
-                    }"
-                >
-                    <!-- Product Image -->
-                    <div>
-                        <img *ngIf="product.media.length"
-                             [src]="getMedia(product.product.id, product.media[0].imagePath)"
-                             [alt]="product.product.name"
-                             class="w-20 h-20 object-cover rounded-md" />
-                        <img *ngIf="!product.media.length"
-                             [src]="'https://placehold.co/600x600'"
-                             [alt]="product.product.name"
-                             class="w-20 h-20 object-cover rounded-md" />
-                    </div>
-                    <!-- Product Info -->
-                    <div class="ml-4 flex-1">
-                        <h3 class="text-lg font-semibold text-gray-800">{{ product.product.name }}</h3>
-                        <app-text-preview
-                                [text]="product.product.description"
-                                class="text-sm text-gray-600 mt-1"
-                        ></app-text-preview>
-                        <p class="text-lg font-bold text-blue-600 mt-2">${{ product.product.price }}</p>
-                        <!-- Stock status -->
-                        <div class="mt-2">
-                            <span
-                                    *ngIf="product.product.quantity > 0"
-                                    class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"
-                            >
-                                {{ product.product.quantity }} In stock
-                            </span>
-                            <span
-                                    *ngIf="product.product.quantity === 0"
-                                    class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded"
-                            >
-                                Out of stock
-                            </span>
+        <div *ngIf="products && products?.content?.length">
+            <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                <li *ngFor="let product of products.content; trackBy: trackByProductId">
+                    <div
+                            (click)="handleSelectProduct(product)"
+                    class="flex  h-full items-stretch p-4 tablet:p-5 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
+                            [ngClass]="{
+                            'bg-blue-50 border-blue-400': selectedProduct?.product?.id === product.product.id,
+                            'bg-white border-gray-200': selectedProduct?.product?.id !== product.product.id
+                        }"
+                    >
+                        <!-- Product Image -->
+                        <div>
+                            <img *ngIf="product.media?.length"
+                                 [src]="getMedia(product.product.id, product.media[0].imagePath)"
+                                 [alt]="product.product.name"
+                                 class="w-20 h-20 object-cover rounded-md">
+
+                            <div *ngIf="!product.media?.length"
+                                 class="w-20 h-20 object-cover rounded-md bg-gray-100 flex items-center justify-center">
+                                <i class="pi pi-image text-3xl text-gray-400"></i>
+                            </div>
+                        </div>
+                        <!-- Product Info -->
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800 capitalize">{{ product.product.name }}</h3>
+                            <app-text-preview
+                                    [text]="product.product.description"
+                                    class="text-sm text-gray-600 mt-1"
+                            ></app-text-preview>
+                            <p class="text-lg font-bold text-blue-600 mt-2">${{ product.product.price }}</p>
+                            <!-- Stock status -->
+                            <div class="mt-2">
+                                <span
+                                        *ngIf="product.product.quantity > 0"
+                                        class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"
+                                >
+                                    {{ product.product.quantity }} In stock
+                                </span>
+                                <span
+                                        *ngIf="product.product.quantity === 0"
+                                        class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded"
+                                >
+                                    Out of stock
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+            <!-- Pagination -->
+            <p-paginator
+                    (onPageChange)="onPageChange($event)"
+                    [first]="currentPage * pageSize"
+                    [rows]="pageSize"
+                    [totalRecords]="products.page.totalElements"
+                    [rowsPerPageOptions]="[5, 10, 15, 20, 30]">
+            </p-paginator>
+        </div>
     </div>
 </div>

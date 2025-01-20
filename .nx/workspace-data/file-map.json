@@ -1,0 +1,1459 @@
+{
+  "version": "6.0",
+  "nxVersion": "20.2.2",
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "startup-angular": [
+        {
+          "file": ".gitignore",
+          "hash": "18168400278403753650"
+        },
+        {
+          "file": "README.md",
+          "hash": "3591402229520606486"
+        },
+        {
+          "file": "angular.json",
+          "hash": "1473712092848813574"
+        },
+        {
+          "file": "api/Readme.md",
+          "hash": "3776070705763771904"
+        },
+        {
+          "file": "api/docker-compose.yml",
+          "hash": "3888346419198895569"
+        },
+        {
+          "file": "api/gateways/.gitignore",
+          "hash": "13117984693027047402"
+        },
+        {
+          "file": "api/gateways/.mvn/wrapper/maven-wrapper.properties",
+          "hash": "7720921598456675219"
+        },
+        {
+          "file": "api/gateways/Dockerfile",
+          "hash": "5632098796822955781"
+        },
+        {
+          "file": "api/gateways/mvnw",
+          "hash": "15069388377727069083"
+        },
+        {
+          "file": "api/gateways/mvnw.cmd",
+          "hash": "13144227073390459929"
+        },
+        {
+          "file": "api/gateways/pom.xml",
+          "hash": "5307394717073195320"
+        },
+        {
+          "file": "api/gateways/src/main/java/com/zone01/gateways/GatewaysApplication.java",
+          "hash": "14145182976243993233"
+        },
+        {
+          "file": "api/gateways/src/main/resources/application.yml",
+          "hash": "8123215193717367850"
+        },
+        {
+          "file": "api/gateways/src/main/resources/gateway-cert.crt",
+          "hash": "5543570158259727772"
+        },
+        {
+          "file": "api/gateways/src/main/resources/keystore.p12",
+          "hash": "855435857598704329"
+        },
+        {
+          "file": "api/gateways/src/test/java/com/zone01/gateways/GatewaysApplicationTests.java",
+          "hash": "514859301034794030"
+        },
+        {
+          "file": "api/media/.gitattributes",
+          "hash": "6003687593561338678"
+        },
+        {
+          "file": "api/media/.gitignore",
+          "hash": "13117984693027047402"
+        },
+        {
+          "file": "api/media/.mvn/wrapper/maven-wrapper.properties",
+          "hash": "7720921598456675219"
+        },
+        {
+          "file": "api/media/mvnw",
+          "hash": "15069388377727069083"
+        },
+        {
+          "file": "api/media/mvnw.cmd",
+          "hash": "13144227073390459929"
+        },
+        {
+          "file": "api/media/pom.xml",
+          "hash": "15045861922576065998"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/MediaApplication.java",
+          "hash": "9484097984374795481"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/config/AccessValidation.java",
+          "hash": "9711972003835917287"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/config/AppConfig.java",
+          "hash": "8443597178503766308"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/config/AppExceptionsHandler.java",
+          "hash": "8257906383222177924"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/Media.java",
+          "hash": "14787518391966071909"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/MediaController.java",
+          "hash": "775174794290852686"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/MediaRepository.java",
+          "hash": "4074436306307158030"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/MediaService.java",
+          "hash": "16294096269243015692"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/ProductClient.java",
+          "hash": "4918057968185752012"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/ProductsDTO.java",
+          "hash": "16872471512106047409"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/Role.java",
+          "hash": "71276861237882461"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/UserDTO.java",
+          "hash": "18227101141857883518"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/media/UsersClient.java",
+          "hash": "10979485118367242807"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/utils/ExceptionPattern.java",
+          "hash": "1433692432646563627"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/utils/FileServices.java",
+          "hash": "11996320280505266430"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/utils/ProductValidationServices.java",
+          "hash": "9908252754618615079"
+        },
+        {
+          "file": "api/media/src/main/java/com/zone01/media/utils/Response.java",
+          "hash": "1214326724288585646"
+        },
+        {
+          "file": "api/media/src/main/resources/application.yml",
+          "hash": "16328316271048847687"
+        },
+        {
+          "file": "api/media/src/test/java/com/zone01/media/MediaApplicationTests.java",
+          "hash": "854244398795596176"
+        },
+        {
+          "file": "api/products/.gitattributes",
+          "hash": "6003687593561338678"
+        },
+        {
+          "file": "api/products/.gitignore",
+          "hash": "13117984693027047402"
+        },
+        {
+          "file": "api/products/.mvn/wrapper/maven-wrapper.properties",
+          "hash": "1889146720999403735"
+        },
+        {
+          "file": "api/products/Dockerfile",
+          "hash": "5632098796822955781"
+        },
+        {
+          "file": "api/products/mvnw",
+          "hash": "15069388377727069083"
+        },
+        {
+          "file": "api/products/mvnw.cmd",
+          "hash": "1237986550895226753"
+        },
+        {
+          "file": "api/products/pom.xml",
+          "hash": "12709969697151030875"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/ProductsApplication.java",
+          "hash": "3691641305962034192"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/config/AccessValidation.java",
+          "hash": "12063116766978268267"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/config/AppConfig.java",
+          "hash": "5818915445447841978"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/config/AppExceptionsHandler.java",
+          "hash": "9364403743804028341"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/MediaClient.java",
+          "hash": "2287607630811192828"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/MediaDTO.java",
+          "hash": "26230430754735290"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/Products.java",
+          "hash": "15040228687538234945"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/ProductsController.java",
+          "hash": "105314156930687766"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/ProductsRepository.java",
+          "hash": "1062824830375610383"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/ProductsService.java",
+          "hash": "10679913867210902675"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/Role.java",
+          "hash": "6530896672444662312"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/UpdateProducts.java",
+          "hash": "13626713656596229566"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/UserDTO.java",
+          "hash": "15657666326308662737"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/products/UsersClient.java",
+          "hash": "16237941316801394825"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/utils/ExceptionPattern.java",
+          "hash": "8547804579470756132"
+        },
+        {
+          "file": "api/products/src/main/java/com/zone01/products/utils/Response.java",
+          "hash": "14049096758501193027"
+        },
+        {
+          "file": "api/products/src/main/resources/application.yml",
+          "hash": "12369477941344606365"
+        },
+        {
+          "file": "api/products/src/test/java/com/zone01/products/ProductsApplicationTests.java",
+          "hash": "14692053720796751330"
+        },
+        {
+          "file": "api/registery/.gitignore",
+          "hash": "13117984693027047402"
+        },
+        {
+          "file": "api/registery/.mvn/wrapper/maven-wrapper.properties",
+          "hash": "7720921598456675219"
+        },
+        {
+          "file": "api/registery/Dockerfile",
+          "hash": "5632098796822955781"
+        },
+        {
+          "file": "api/registery/mvnw",
+          "hash": "15069388377727069083"
+        },
+        {
+          "file": "api/registery/mvnw.cmd",
+          "hash": "13144227073390459929"
+        },
+        {
+          "file": "api/registery/pom.xml",
+          "hash": "15834489894813369448"
+        },
+        {
+          "file": "api/registery/src/main/java/com/zone01/registery/RegisteryApplication.java",
+          "hash": "6074761875525442096"
+        },
+        {
+          "file": "api/registery/src/main/resources/application.yml",
+          "hash": "7719657727663249523"
+        },
+        {
+          "file": "api/registery/src/test/java/com/zone01/registery/RegisteryApplicationTests.java",
+          "hash": "7571425246067076070"
+        },
+        {
+          "file": "api/users/.gitignore",
+          "hash": "13117984693027047402"
+        },
+        {
+          "file": "api/users/.mvn/wrapper/maven-wrapper.properties",
+          "hash": "7720921598456675219"
+        },
+        {
+          "file": "api/users/Dockerfile",
+          "hash": "5632098796822955781"
+        },
+        {
+          "file": "api/users/mvnw",
+          "hash": "15069388377727069083"
+        },
+        {
+          "file": "api/users/mvnw.cmd",
+          "hash": "13144227073390459929"
+        },
+        {
+          "file": "api/users/pom.xml",
+          "hash": "12144529129634937621"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/UsersApplication.java",
+          "hash": "8179131772589097048"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/config/AppExceptionsHandler.java",
+          "hash": "2692419165025433945"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/config/ApplicationConfig.java",
+          "hash": "12100445207505679371"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/config/CorsConfig.java",
+          "hash": "11793719588609630483"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/config/JwtAuthenticationFilter.java",
+          "hash": "323583450062062424"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/config/JwtService.java",
+          "hash": "3894247685203458610"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/config/SecurityConfiguration.java",
+          "hash": "6779571693859020409"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/user/User.java",
+          "hash": "12400742363688432931"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/user/UserController.java",
+          "hash": "3230244422543619403"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/user/UserRepository.java",
+          "hash": "5685498672751235957"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/user/UserService.java",
+          "hash": "12303510690481527088"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/AuthenticationResponse.java",
+          "hash": "509642214376910617"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/ExceptionPattern.java",
+          "hash": "15265380229192447457"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/FileServices.java",
+          "hash": "7805999883285208705"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/Permission.java",
+          "hash": "2947821763322886611"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/Response.java",
+          "hash": "10614841449802350098"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/ResponseAccessDenied.java",
+          "hash": "7327657601391290719"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/Role.java",
+          "hash": "12644530984570062603"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/UpdateUser.java",
+          "hash": "10829014412815506967"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/UserDTO.java",
+          "hash": "4152289278815472961"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/UserLoginDTO.java",
+          "hash": "10965136802930705852"
+        },
+        {
+          "file": "api/users/src/main/java/com/zone01/users/utils/UserRegistrationDTO.java",
+          "hash": "6312158482597372414"
+        },
+        {
+          "file": "api/users/src/main/resources/application.yml",
+          "hash": "2531078463053654823"
+        },
+        {
+          "file": "api/users/src/main/resources/uploads/1ecb44ec-05c2-40eb-9f75-2f8e325877e6_.png",
+          "hash": "18112877638953151887"
+        },
+        {
+          "file": "api/users/src/main/resources/uploads/378ae554-960b-4891-866f-a861d6db65e9_.png",
+          "hash": "18112877638953151887"
+        },
+        {
+          "file": "api/users/src/main/resources/uploads/3a3dd468-c534-4758-a0ca-7f65cb256a97_.png",
+          "hash": "18112877638953151887"
+        },
+        {
+          "file": "api/users/src/main/resources/uploads/a1b8c76b-01bf-4bff-b14d-4f78038acd05_.png",
+          "hash": "18112877638953151887"
+        },
+        {
+          "file": "api/users/src/test/java/com/zone01/users/UsersApplicationTests.java",
+          "hash": "8405290021323273722"
+        },
+        {
+          "file": "assets/mock-data.json",
+          "hash": "4609043301716164372"
+        },
+        {
+          "file": "components.json",
+          "hash": "4370329252249620216"
+        },
+        {
+          "file": "package-lock.json",
+          "hash": "12345702396010503019"
+        },
+        {
+          "file": "package.json",
+          "hash": "2334045076049470434",
+          "deps": [
+            "npm:@angular-devkit/build-angular",
+            "npm:@angular/cli",
+            "npm:@angular/compiler-cli",
+            "npm:@spartan-ng/cli",
+            "npm:@types/express",
+            "npm:@types/jasmine",
+            "npm:@types/node",
+            "npm:autoprefixer",
+            "npm:jasmine-core",
+            "npm:karma",
+            "npm:karma-chrome-launcher",
+            "npm:karma-coverage",
+            "npm:karma-jasmine",
+            "npm:karma-jasmine-html-reporter",
+            "npm:postcss",
+            "npm:tailwindcss",
+            "npm:typescript",
+            "npm:@angular/animations",
+            "npm:@angular/common",
+            "npm:@angular/compiler",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/platform-browser-dynamic",
+            "npm:@angular/platform-server",
+            "npm:@angular/router",
+            "npm:@angular/ssr",
+            "npm:@auth0/angular-jwt",
+            "npm:express",
+            "npm:http-proxy-middleware",
+            "npm:primeicons",
+            "npm:primeng",
+            "npm:rollup",
+            "npm:rxjs",
+            "npm:tslib",
+            "npm:zone.js"
+          ]
+        },
+        {
+          "file": "public/favicon.ico",
+          "hash": "3988961587069885523"
+        },
+        {
+          "file": "server.ts",
+          "hash": "17247624917652365036"
+        },
+        {
+          "file": "src/app/app.component.spec.ts",
+          "hash": "11569309531620801861"
+        },
+        {
+          "file": "src/app/app.component.ts",
+          "hash": "6522281900625488194"
+        },
+        {
+          "file": "src/app/app.config.server.ts",
+          "hash": "14750464052796800194"
+        },
+        {
+          "file": "src/app/app.config.ts",
+          "hash": "432786234744887295"
+        },
+        {
+          "file": "src/app/app.routes.ts",
+          "hash": "7876400352481908234"
+        },
+        {
+          "file": "src/app/components/card/card/card.component.html",
+          "hash": "15174863217231253191"
+        },
+        {
+          "file": "src/app/components/card/card/card.component.ts",
+          "hash": "11127905596837723915"
+        },
+        {
+          "file": "src/app/components/card/statcard/statcard.component.html",
+          "hash": "4389840869385550016"
+        },
+        {
+          "file": "src/app/components/card/statcard/statcard.component.spec.ts",
+          "hash": "14246564026946563248"
+        },
+        {
+          "file": "src/app/components/card/statcard/statcard.component.ts",
+          "hash": "1370694950658571709"
+        },
+        {
+          "file": "src/app/components/forms/add-avatar/add-avatar.component.html",
+          "hash": "8916525502988345338"
+        },
+        {
+          "file": "src/app/components/forms/add-avatar/add-avatar.component.ts",
+          "hash": "15564670310786207091"
+        },
+        {
+          "file": "src/app/components/forms/new-product/new-product.component.html",
+          "hash": "10630405758547703384"
+        },
+        {
+          "file": "src/app/components/forms/new-product/new-product.component.ts",
+          "hash": "11420843120965441990"
+        },
+        {
+          "file": "src/app/components/forms/register/register.component.html",
+          "hash": "15461037395588619933"
+        },
+        {
+          "file": "src/app/components/forms/register/register.component.spec.ts",
+          "hash": "15725190071510653360"
+        },
+        {
+          "file": "src/app/components/forms/register/register.component.ts",
+          "hash": "16270358998102361153"
+        },
+        {
+          "file": "src/app/components/layout/footer/footer.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/components/layout/footer/footer.component.html",
+          "hash": "1755806903207571333"
+        },
+        {
+          "file": "src/app/components/layout/footer/footer.component.spec.ts",
+          "hash": "6523126951382397383"
+        },
+        {
+          "file": "src/app/components/layout/footer/footer.component.ts",
+          "hash": "15332587947562602055"
+        },
+        {
+          "file": "src/app/components/layout/header/header.component.html",
+          "hash": "12882994730266486295"
+        },
+        {
+          "file": "src/app/components/layout/header/header.component.spec.ts",
+          "hash": "14720898316259393382"
+        },
+        {
+          "file": "src/app/components/layout/header/header.component.ts",
+          "hash": "4804639868251089150"
+        },
+        {
+          "file": "src/app/components/layout/hero/hero.component.html",
+          "hash": "12094690063249015969"
+        },
+        {
+          "file": "src/app/components/layout/hero/hero.component.spec.ts",
+          "hash": "7691309853654869351"
+        },
+        {
+          "file": "src/app/components/layout/hero/hero.component.ts",
+          "hash": "5083934038264403192"
+        },
+        {
+          "file": "src/app/components/layout/navbar/navbar.component.html",
+          "hash": "13054614051485531113"
+        },
+        {
+          "file": "src/app/components/layout/navbar/navbar.component.spec.ts",
+          "hash": "14913797552671527316"
+        },
+        {
+          "file": "src/app/components/layout/navbar/navbar.component.ts",
+          "hash": "17907969119106212038"
+        },
+        {
+          "file": "src/app/components/layout/side-bar/side-bar.component.html",
+          "hash": "17745092295368782777"
+        },
+        {
+          "file": "src/app/components/layout/side-bar/side-bar.component.spec.ts",
+          "hash": "8147438255142040668"
+        },
+        {
+          "file": "src/app/components/layout/side-bar/side-bar.component.ts",
+          "hash": "7223060725338925801"
+        },
+        {
+          "file": "src/app/components/ui/ui-button-helm/src/index.ts",
+          "hash": "8982221364966377158"
+        },
+        {
+          "file": "src/app/components/ui/ui-button-helm/src/lib/hlm-button.directive.ts",
+          "hash": "6707392129396539941"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/index.ts",
+          "hash": "16562238750490677596"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/lib/hlm-card-content.directive.ts",
+          "hash": "3041435324140004025"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/lib/hlm-card-description.directive.ts",
+          "hash": "12315658723134421129"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/lib/hlm-card-footer.directive.ts",
+          "hash": "10972621399707141653"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/lib/hlm-card-header.directive.ts",
+          "hash": "10914822965028795660"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/lib/hlm-card-title.directive.ts",
+          "hash": "9057266089303559552"
+        },
+        {
+          "file": "src/app/components/ui/ui-card-helm/src/lib/hlm-card.directive.ts",
+          "hash": "7761636437151111445"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/index.ts",
+          "hash": "933315377037635710"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-close.directive.ts",
+          "hash": "17866661867509768723"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-content.component.ts",
+          "hash": "7760576295734710438"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-description.directive.ts",
+          "hash": "9759836324361226386"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-footer.component.ts",
+          "hash": "8998691143250607769"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-header.component.ts",
+          "hash": "7114877699117126652"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-overlay.directive.ts",
+          "hash": "14546294629942273129"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog-title.directive.ts",
+          "hash": "7320718966849072903"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog.component.ts",
+          "hash": "16056925347774960390"
+        },
+        {
+          "file": "src/app/components/ui/ui-dialog-helm/src/lib/hlm-dialog.service.ts",
+          "hash": "6172892527299412933"
+        },
+        {
+          "file": "src/app/components/ui/ui-formfield-helm/src/index.ts",
+          "hash": "1379682831294187538"
+        },
+        {
+          "file": "src/app/components/ui/ui-formfield-helm/src/lib/form-field.spec.ts",
+          "hash": "828620970068933365"
+        },
+        {
+          "file": "src/app/components/ui/ui-formfield-helm/src/lib/hlm-error.directive.ts",
+          "hash": "2202752804672666086"
+        },
+        {
+          "file": "src/app/components/ui/ui-formfield-helm/src/lib/hlm-form-field.component.ts",
+          "hash": "834808206488500332"
+        },
+        {
+          "file": "src/app/components/ui/ui-formfield-helm/src/lib/hlm-hint.directive.ts",
+          "hash": "1353356541003300064"
+        },
+        {
+          "file": "src/app/components/ui/ui-icon-helm/src/index.ts",
+          "hash": "15313191911740362975"
+        },
+        {
+          "file": "src/app/components/ui/ui-icon-helm/src/lib/hlm-icon.component.spec.ts",
+          "hash": "4553494485907318760"
+        },
+        {
+          "file": "src/app/components/ui/ui-icon-helm/src/lib/hlm-icon.component.ts",
+          "hash": "166660981264464896"
+        },
+        {
+          "file": "src/app/components/ui/ui-input-helm/src/index.ts",
+          "hash": "487913567356772959"
+        },
+        {
+          "file": "src/app/components/ui/ui-input-helm/src/lib/hlm-input-error.directive.ts",
+          "hash": "17996525915591253064"
+        },
+        {
+          "file": "src/app/components/ui/ui-input-helm/src/lib/hlm-input.directive.ts",
+          "hash": "8834241796495517286"
+        },
+        {
+          "file": "src/app/components/ui/ui-label-helm/src/index.ts",
+          "hash": "11520514252818889827"
+        },
+        {
+          "file": "src/app/components/ui/ui-label-helm/src/lib/hlm-label.directive.ts",
+          "hash": "162448599590982201"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/index.ts",
+          "hash": "14018309011524926443"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-content.directive.ts",
+          "hash": "4049320611198806980"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-group.directive.ts",
+          "hash": "9542696212381775805"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-label.directive.ts",
+          "hash": "10703297612296859893"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-option.component.ts",
+          "hash": "13316740413463585327"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-scroll-down.component.ts",
+          "hash": "11295596341856372592"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-scroll-up.component.ts",
+          "hash": "17717394611683218799"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-trigger.component.ts",
+          "hash": "9754805080090712718"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select-value.directive.ts",
+          "hash": "1440526127885385790"
+        },
+        {
+          "file": "src/app/components/ui/ui-select-helm/src/lib/hlm-select.directive.ts",
+          "hash": "2275226726307479160"
+        },
+        {
+          "file": "src/app/core/layout/footer/footer.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/core/layout/footer/footer.component.html",
+          "hash": "1755806903207571333"
+        },
+        {
+          "file": "src/app/core/layout/footer/footer.component.spec.ts",
+          "hash": "6523126951382397383"
+        },
+        {
+          "file": "src/app/core/layout/footer/footer.component.ts",
+          "hash": "15332587947562602055"
+        },
+        {
+          "file": "src/app/core/layout/header/header.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/core/layout/header/header.component.html",
+          "hash": "2051047353555067362"
+        },
+        {
+          "file": "src/app/core/layout/header/header.component.spec.ts",
+          "hash": "14720898316259393382"
+        },
+        {
+          "file": "src/app/core/layout/header/header.component.ts",
+          "hash": "16857603474273282534"
+        },
+        {
+          "file": "src/app/core/layout/navbar/navbar.component.html",
+          "hash": "6037216969639755892"
+        },
+        {
+          "file": "src/app/core/layout/navbar/navbar.component.spec.ts",
+          "hash": "14913797552671527316"
+        },
+        {
+          "file": "src/app/core/layout/navbar/navbar.component.ts",
+          "hash": "16400952127567905638"
+        },
+        {
+          "file": "src/app/core/services/alert/alert.service.spec.ts",
+          "hash": "13100053292442603514"
+        },
+        {
+          "file": "src/app/core/services/alert/alert.service.ts",
+          "hash": "6140656207725930026"
+        },
+        {
+          "file": "src/app/core/services/api/media.service.spec.ts",
+          "hash": "17168493577176113288"
+        },
+        {
+          "file": "src/app/core/services/api/media.service.ts",
+          "hash": "17875136526460200575"
+        },
+        {
+          "file": "src/app/core/services/api/product.service.spec.ts",
+          "hash": "15641537539620615365"
+        },
+        {
+          "file": "src/app/core/services/api/product.service.ts",
+          "hash": "1717406805114184330"
+        },
+        {
+          "file": "src/app/core/services/api/users.service.spec.ts",
+          "hash": "5927706932703840704"
+        },
+        {
+          "file": "src/app/core/services/api/users.service.ts",
+          "hash": "4170153457198547907"
+        },
+        {
+          "file": "src/app/core/services/auth/auth-guard.guard.spec.ts",
+          "hash": "11474697047205735548"
+        },
+        {
+          "file": "src/app/core/services/auth/auth-guard.guard.ts",
+          "hash": "16817546536575163917"
+        },
+        {
+          "file": "src/app/core/services/auth/auth-service.service.spec.ts",
+          "hash": "12348056406491527575"
+        },
+        {
+          "file": "src/app/core/services/auth/auth-service.service.ts",
+          "hash": "4161015853922091739"
+        },
+        {
+          "file": "src/app/core/services/cloud/cloud.service.spec.ts",
+          "hash": "15359602554670637988"
+        },
+        {
+          "file": "src/app/core/services/cloud/cloud.service.ts",
+          "hash": "9831373832695447590"
+        },
+        {
+          "file": "src/app/core/services/token/token.service.spec.ts",
+          "hash": "9376870976162868455"
+        },
+        {
+          "file": "src/app/core/services/token/token.service.ts",
+          "hash": "15902439531646332897"
+        },
+        {
+          "file": "src/app/core/services/utils/cart.service.spec.ts",
+          "hash": "4835626579989819090"
+        },
+        {
+          "file": "src/app/core/services/utils/cart.service.ts",
+          "hash": "2614468907268389219"
+        },
+        {
+          "file": "src/app/features/auth/sign-in/sign-in.component.css",
+          "hash": "2977647886035251702"
+        },
+        {
+          "file": "src/app/features/auth/sign-in/sign-in.component.html",
+          "hash": "2928387766640501131"
+        },
+        {
+          "file": "src/app/features/auth/sign-in/sign-in.component.spec.ts",
+          "hash": "8123404115530057974"
+        },
+        {
+          "file": "src/app/features/auth/sign-in/sign-in.component.ts",
+          "hash": "13408014554426808328"
+        },
+        {
+          "file": "src/app/features/auth/sign-up/sign-up.component.css",
+          "hash": "2977647886035251702"
+        },
+        {
+          "file": "src/app/features/auth/sign-up/sign-up.component.html",
+          "hash": "13611321511930053266"
+        },
+        {
+          "file": "src/app/features/auth/sign-up/sign-up.component.spec.ts",
+          "hash": "996072624143740908"
+        },
+        {
+          "file": "src/app/features/auth/sign-up/sign-up.component.ts",
+          "hash": "1364638904568556068"
+        },
+        {
+          "file": "src/app/features/dashboard/dashboard.component.css",
+          "hash": "16365073810408206522"
+        },
+        {
+          "file": "src/app/features/dashboard/dashboard.component.html",
+          "hash": "7552686141900520385"
+        },
+        {
+          "file": "src/app/features/dashboard/dashboard.component.spec.ts",
+          "hash": "5964202434007678732"
+        },
+        {
+          "file": "src/app/features/dashboard/dashboard.component.ts",
+          "hash": "14894231496623554704"
+        },
+        {
+          "file": "src/app/features/error/error/error.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/error/error/error.component.html",
+          "hash": "14134176656805446080"
+        },
+        {
+          "file": "src/app/features/error/error/error.component.spec.ts",
+          "hash": "1176994112766643929"
+        },
+        {
+          "file": "src/app/features/error/error/error.component.ts",
+          "hash": "974547528119910526"
+        },
+        {
+          "file": "src/app/features/error/not-found/not-found.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/error/not-found/not-found.component.html",
+          "hash": "2055145212757067268"
+        },
+        {
+          "file": "src/app/features/error/not-found/not-found.component.spec.ts",
+          "hash": "8529388088921913397"
+        },
+        {
+          "file": "src/app/features/error/not-found/not-found.component.ts",
+          "hash": "6980280971938017764"
+        },
+        {
+          "file": "src/app/features/home/home/home.component.css",
+          "hash": "2977647886035251702"
+        },
+        {
+          "file": "src/app/features/home/home/home.component.html",
+          "hash": "3354340042906044319"
+        },
+        {
+          "file": "src/app/features/home/home/home.component.spec.ts",
+          "hash": "9562499380277618699"
+        },
+        {
+          "file": "src/app/features/home/home/home.component.ts",
+          "hash": "13543608353502193510"
+        },
+        {
+          "file": "src/app/features/media-management/media-management.component.css",
+          "hash": "5026478217405913259"
+        },
+        {
+          "file": "src/app/features/media-management/media-management.component.html",
+          "hash": "10815831567344660823"
+        },
+        {
+          "file": "src/app/features/media-management/media-management.component.spec.ts",
+          "hash": "2004971559685020841"
+        },
+        {
+          "file": "src/app/features/media-management/media-management.component.ts",
+          "hash": "7445924249643720196"
+        },
+        {
+          "file": "src/app/features/product/product-detail/product-detail.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/product/product-detail/product-detail.component.html",
+          "hash": "7926139296565925343"
+        },
+        {
+          "file": "src/app/features/product/product-detail/product-detail.component.spec.ts",
+          "hash": "1689808568434232329"
+        },
+        {
+          "file": "src/app/features/product/product-detail/product-detail.component.ts",
+          "hash": "15916151362717715957"
+        },
+        {
+          "file": "src/app/features/product/product-list/product-list.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/product/product-list/product-list.component.html",
+          "hash": "5148341748665561176"
+        },
+        {
+          "file": "src/app/features/product/product-list/product-list.component.spec.ts",
+          "hash": "4442965479167573913"
+        },
+        {
+          "file": "src/app/features/product/product-list/product-list.component.ts",
+          "hash": "1324529400875141734"
+        },
+        {
+          "file": "src/app/pages/admin/admin.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/admin/admin.component.html",
+          "hash": "16583136878842833988"
+        },
+        {
+          "file": "src/app/pages/admin/admin.component.spec.ts",
+          "hash": "11704871626217187065"
+        },
+        {
+          "file": "src/app/pages/admin/admin.component.ts",
+          "hash": "230618544427529317"
+        },
+        {
+          "file": "src/app/pages/dashboards/dashboards.component.html",
+          "hash": "8808119569823195715"
+        },
+        {
+          "file": "src/app/pages/dashboards/dashboards.component.ts",
+          "hash": "3705898760844261544"
+        },
+        {
+          "file": "src/app/pages/error/error/error.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/error/error/error.component.html",
+          "hash": "14134176656805446080"
+        },
+        {
+          "file": "src/app/pages/error/error/error.component.spec.ts",
+          "hash": "1176994112766643929"
+        },
+        {
+          "file": "src/app/pages/error/error/error.component.ts",
+          "hash": "974547528119910526"
+        },
+        {
+          "file": "src/app/pages/error/not-found/not-found.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/error/not-found/not-found.component.html",
+          "hash": "2055145212757067268"
+        },
+        {
+          "file": "src/app/pages/error/not-found/not-found.component.spec.ts",
+          "hash": "8529388088921913397"
+        },
+        {
+          "file": "src/app/pages/error/not-found/not-found.component.ts",
+          "hash": "6980280971938017764"
+        },
+        {
+          "file": "src/app/pages/home/home.component.html",
+          "hash": "3865405090069647920"
+        },
+        {
+          "file": "src/app/pages/home/home.component.spec.ts",
+          "hash": "9562499380277618699"
+        },
+        {
+          "file": "src/app/pages/home/home.component.ts",
+          "hash": "8233297084091253751"
+        },
+        {
+          "file": "src/app/pages/listing/listing.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/listing/listing.component.html",
+          "hash": "11490352458475961542"
+        },
+        {
+          "file": "src/app/pages/listing/listing.component.spec.ts",
+          "hash": "4662340323293879143"
+        },
+        {
+          "file": "src/app/pages/listing/listing.component.ts",
+          "hash": "6665619095772943439"
+        },
+        {
+          "file": "src/app/pages/login/login.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/login/login.component.html",
+          "hash": "18149262422913194143"
+        },
+        {
+          "file": "src/app/pages/login/login.component.spec.ts",
+          "hash": "15179653654270572066"
+        },
+        {
+          "file": "src/app/pages/login/login.component.ts",
+          "hash": "4641267852617435274"
+        },
+        {
+          "file": "src/app/pages/signup/signup.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/signup/signup.component.html",
+          "hash": "15672353549537326996"
+        },
+        {
+          "file": "src/app/pages/signup/signup.component.spec.ts",
+          "hash": "9847009684558114008"
+        },
+        {
+          "file": "src/app/pages/signup/signup.component.ts",
+          "hash": "15290655301986965796"
+        },
+        {
+          "file": "src/app/services/cloudinary.service.spec.ts",
+          "hash": "11734799682706317316"
+        },
+        {
+          "file": "src/app/services/cloudinary.service.ts",
+          "hash": "1910042706988601782"
+        },
+        {
+          "file": "src/app/services/google-drive.service.spec.ts",
+          "hash": "3801339097482274991"
+        },
+        {
+          "file": "src/app/services/google-drive.service.ts",
+          "hash": "14733090143735497622"
+        },
+        {
+          "file": "src/app/services/media.service.spec.ts",
+          "hash": "5117998453072981582"
+        },
+        {
+          "file": "src/app/services/media.service.ts",
+          "hash": "5336584438698478997"
+        },
+        {
+          "file": "src/app/services/oauth-service.service.ts",
+          "hash": "8198509067761705154"
+        },
+        {
+          "file": "src/app/services/open-aiservice.service.ts",
+          "hash": "7587973860254178164"
+        },
+        {
+          "file": "src/app/services/product.service.ts",
+          "hash": "146571258201904151"
+        },
+        {
+          "file": "src/app/services/services/alert/alert.service.spec.ts",
+          "hash": "13100053292442603514"
+        },
+        {
+          "file": "src/app/services/services/alert/alert.service.ts",
+          "hash": "6140656207725930026"
+        },
+        {
+          "file": "src/app/services/services/api/media.service.spec.ts",
+          "hash": "17168493577176113288"
+        },
+        {
+          "file": "src/app/services/services/api/media.service.ts",
+          "hash": "17875136526460200575"
+        },
+        {
+          "file": "src/app/services/services/api/product.service.spec.ts",
+          "hash": "15641537539620615365"
+        },
+        {
+          "file": "src/app/services/services/api/product.service.ts",
+          "hash": "1717406805114184330"
+        },
+        {
+          "file": "src/app/services/services/api/users.service.spec.ts",
+          "hash": "5927706932703840704"
+        },
+        {
+          "file": "src/app/services/services/api/users.service.ts",
+          "hash": "4170153457198547907"
+        },
+        {
+          "file": "src/app/services/services/auth/auth-guard.guard.spec.ts",
+          "hash": "11474697047205735548"
+        },
+        {
+          "file": "src/app/services/services/auth/auth-guard.guard.ts",
+          "hash": "16817546536575163917"
+        },
+        {
+          "file": "src/app/services/services/auth/auth-service.service.spec.ts",
+          "hash": "12348056406491527575"
+        },
+        {
+          "file": "src/app/services/services/auth/auth-service.service.ts",
+          "hash": "7246805167456797516"
+        },
+        {
+          "file": "src/app/services/services/cloud/cloud.service.spec.ts",
+          "hash": "15359602554670637988"
+        },
+        {
+          "file": "src/app/services/services/cloud/cloud.service.ts",
+          "hash": "9831373832695447590"
+        },
+        {
+          "file": "src/app/services/services/token/token.service.spec.ts",
+          "hash": "9376870976162868455"
+        },
+        {
+          "file": "src/app/services/services/token/token.service.ts",
+          "hash": "15902439531646332897"
+        },
+        {
+          "file": "src/app/services/services/utils/cart.service.spec.ts",
+          "hash": "4835626579989819090"
+        },
+        {
+          "file": "src/app/services/services/utils/cart.service.ts",
+          "hash": "2614468907268389219"
+        },
+        {
+          "file": "src/app/sheared/components/add-product/add-product.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/add-product/add-product.component.html",
+          "hash": "2367454803378323670"
+        },
+        {
+          "file": "src/app/sheared/components/add-product/add-product.component.spec.ts",
+          "hash": "12498103701830005521"
+        },
+        {
+          "file": "src/app/sheared/components/add-product/add-product.component.ts",
+          "hash": "11511261627062617421"
+        },
+        {
+          "file": "src/app/sheared/components/alert/alert.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/alert/alert.component.html",
+          "hash": "15821639285762769259"
+        },
+        {
+          "file": "src/app/sheared/components/alert/alert.component.spec.ts",
+          "hash": "2987139914475896648"
+        },
+        {
+          "file": "src/app/sheared/components/alert/alert.component.ts",
+          "hash": "7444306429850073718"
+        },
+        {
+          "file": "src/app/sheared/components/edit-product/edit-product.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/edit-product/edit-product.component.html",
+          "hash": "7024191719515940969"
+        },
+        {
+          "file": "src/app/sheared/components/edit-product/edit-product.component.spec.ts",
+          "hash": "10929780035349739194"
+        },
+        {
+          "file": "src/app/sheared/components/edit-product/edit-product.component.ts",
+          "hash": "18381330460152345144"
+        },
+        {
+          "file": "src/app/sheared/components/media-management/media-management.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/media-management/media-management.component.html",
+          "hash": "8439341537429330370"
+        },
+        {
+          "file": "src/app/sheared/components/media-management/media-management.component.spec.ts",
+          "hash": "2004971559685020841"
+        },
+        {
+          "file": "src/app/sheared/components/media-management/media-management.component.ts",
+          "hash": "8185062319492275995"
+        },
+        {
+          "file": "src/app/sheared/components/product-buy/product-buy.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/product-buy/product-buy.component.html",
+          "hash": "4591604387188724637"
+        },
+        {
+          "file": "src/app/sheared/components/product-buy/product-buy.component.spec.ts",
+          "hash": "16696947676122125278"
+        },
+        {
+          "file": "src/app/sheared/components/product-buy/product-buy.component.ts",
+          "hash": "5960581741816409457"
+        },
+        {
+          "file": "src/app/sheared/components/product-management/product-management.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/product-management/product-management.component.html",
+          "hash": "7031401326758824138"
+        },
+        {
+          "file": "src/app/sheared/components/product-management/product-management.component.spec.ts",
+          "hash": "1812759969125275285"
+        },
+        {
+          "file": "src/app/sheared/components/product-management/product-management.component.ts",
+          "hash": "263326401288456910"
+        },
+        {
+          "file": "src/app/sheared/components/product/product.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/product/product.component.html",
+          "hash": "8974655879077435000"
+        },
+        {
+          "file": "src/app/sheared/components/product/product.component.spec.ts",
+          "hash": "5884587217706874220"
+        },
+        {
+          "file": "src/app/sheared/components/product/product.component.ts",
+          "hash": "2334332651594318135"
+        },
+        {
+          "file": "src/app/sheared/components/text-preview/text-preview.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/sheared/components/text-preview/text-preview.component.html",
+          "hash": "7928565692336764121"
+        },
+        {
+          "file": "src/app/sheared/components/text-preview/text-preview.component.spec.ts",
+          "hash": "17336159264533628426"
+        },
+        {
+          "file": "src/app/sheared/components/text-preview/text-preview.component.ts",
+          "hash": "9720931987396923572"
+        },
+        {
+          "file": "src/app/types/index.ts",
+          "hash": "3384333701505059859"
+        },
+        {
+          "file": "src/index.html",
+          "hash": "74872956743266179"
+        },
+        {
+          "file": "src/main.server.ts",
+          "hash": "11653607448136507287"
+        },
+        {
+          "file": "src/main.ts",
+          "hash": "4927504514031276065"
+        },
+        {
+          "file": "src/styles.css",
+          "hash": "6738213855924485353"
+        },
+        {
+          "file": "tailwind.config.ts",
+          "hash": "1547055639985563385"
+        },
+        {
+          "file": "tsconfig.app.json",
+          "hash": "7541409410423088479"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "823159237449296042"
+        },
+        {
+          "file": "tsconfig.spec.json",
+          "hash": "8918301549046766373"
+        }
+      ]
+    },
+    "nonProjectFiles": []
+  }
+}

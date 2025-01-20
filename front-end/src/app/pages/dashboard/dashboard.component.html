@@ -82,19 +82,11 @@
                                 text>
                         </p-button>
                     </div>
-
-                    <!-- Products Table -->
                     <p-table
                             [value]="products.content"
-                            [paginator]="true"
-                            [rows]="products.page.size"
-                            [totalRecords]="products.page.totalElements"
-                            [first]="products.page.number * products.page.size"
                             [showCurrentPageReport]="true"
                             [tableStyle]="{ 'min-width': '50rem', 'background-color': 'white' }"
                             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                            (onPage)="onPageChange($event)"
-                            [rowsPerPageOptions]="[10, 25, 50]"
                             [loading]="loading"
                             styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines">
 
@@ -113,15 +105,20 @@
 
                         <ng-template pTemplate="body" let-content>
                             <tr class="hover:bg-gray-50">
-                                <td class="font-medium text-gray-700">{{content.product.name}}</td>
+                                <td class="text-sm tablet:text-md font-medium text-gray-700 capitalize">{{content.product.name}}</td>
                                 <td class="w-32">
-                                    <img
-                                            [src]="'https://localhost:8082/api/v1/media/' + content?.media[0]?.productId + '/' + content?.media[0]?.imagePath"
-                                            [alt]="content.product.name"
-                                            class="rounded-lg shadow-sm object-cover w-24 h-24" />
+                                    <img *ngIf="content.media?.length"
+                                         [src]="getMedia(content.product.id, content?.media[0].imagePath)"
+                                         [alt]="content.product.name"
+                                         class="rounded-lg shadow-sm object-cover w-24 h-24">
+
+                                    <div *ngIf="!content.media?.length"
+                                         class="rounded-lg shadow-sm object-cover w-24 h-24 bg-gray-100 flex items-center justify-center">
+                                        <i class="pi pi-image text-3xl text-gray-400"></i>
+                                    </div>
                                 </td>
                                 <td class="text-sky-600 font-medium">{{content.product.price | currency:'USD'}}</td>
-                                <td class="text-gray-600">{{content.product.description}}</td>
+                                <td class="text-gray-600"><app-text-preview [text]="content.product.description"/></td>
                                 <td class="text-gray-700">{{content.product.quantity}}</td>
                                 <td><app-edit-product [product]="content.product" (productEdited)="onActionProduct($event)" />
                                 <td>
@@ -143,6 +140,13 @@
                             </tr>
                         </ng-template>
                     </p-table>
+                    <p-paginator
+                            (onPageChange)="onPageChange($event)"
+                            [first]="currentPage * pageSize"
+                            [rows]="pageSize"
+                            [totalRecords]="products.page.totalElements"
+                            [rowsPerPageOptions]="[5, 10, 15, 20, 30]">
+                    </p-paginator>
                 </div>
             </div>
         </ng-container>

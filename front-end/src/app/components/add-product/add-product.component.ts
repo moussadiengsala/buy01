@@ -2,7 +2,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {ProductService} from "../../services/product/product.service";
-import {Product, Role, ToastMessage} from "../../types";
+import {CreateProduct, Product, Role, ToastMessage} from "../../types";
 import {AlertService} from "../../services/alert/alert.service";
 import {AlertComponent} from "../alert/alert.component";
 import {MessageService} from "primeng/api";
@@ -28,8 +28,8 @@ export class AddProductComponent {
       private messageService: MessageService
   ) {
       this.addProductForm = this.fb.group({
-        name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20), Validators.pattern(/^[A-Za-zÀ-ÿ\s'-]+$/)]],
-        description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255), Validators.pattern(/^[A-Za-zÀ-ÿ\s'-]+$/)]],
+        name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20), Validators.pattern(/^[A-Za-zÀ-ÿ0-9\s'-]+$/)]],
+        description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255), Validators.pattern(/^[A-Za-zÀ-ÿ0-9\s.,!?()'-]+$/)]],
         price: ['', [ Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/) ]],
         quantity: ['', [ Validators.required, Validators.min(1), Validators.pattern(/^[1-9]\d*$/) ]],
       });
@@ -38,19 +38,17 @@ export class AddProductComponent {
 
   onSubmit(): void {
     this.addProductForm.markAllAsTouched();
-
+    console.log(this.quantityControl)
     if (this.addProductForm.invalid) {
       this.messageService.add({severity: "warn", summary: "Invalid fields", detail: 'Make sure to fill all required fields correctly!'})
       return;
     }
 
-    const newProduct: Product = {
-      id: "",
+    const newProduct: CreateProduct = {
       name: this.addProductForm.value.name,
       description: this.addProductForm.value.description,
       price: this.addProductForm.value.price,
       quantity: this.addProductForm.value.quantity,
-      userID: ""
     };
     this.loading = true;
 

@@ -15,6 +15,7 @@ import {UploadImagesComponent} from "../../components/upload-images/upload-image
 import {MediaLayoutComponent} from "../../components/media-layout/media-layout.component";
 import {CarouselModule} from "primeng/carousel";
 import {Router} from "@angular/router";
+import {Paginator, PaginatorState} from "primeng/paginator";
 
 
 @Component({
@@ -29,7 +30,8 @@ import {Router} from "@angular/router";
         TextPreviewComponent,
         UploadImagesComponent,
         MediaLayoutComponent,
-        CarouselModule
+        CarouselModule,
+        Paginator
     ],
     templateUrl: './media-management.component.html',
     styleUrl: './media-management.component.css',
@@ -60,7 +62,7 @@ export class MediaManagementComponent {
     }
 
     ngOnInit(): void {
-        this.loadProductsWithMedia();
+        this.loadProducts();
         this.responsiveOptions = [
             {
                 breakpoint: '1400px',
@@ -89,7 +91,7 @@ export class MediaManagementComponent {
         return this.mediaService.getMedia(productId, imagePath)
     }
 
-    loadProductsWithMedia(): void {
+    loadProducts(): void {
         this.user$
             .pipe(
                 switchMap(user =>
@@ -128,9 +130,21 @@ export class MediaManagementComponent {
       }, 0);
     }
 
+    onPageChange(event: PaginatorState): void {
+        // Extract pagination details from event
+        if (event.page !== undefined) {
+            this.currentPage = event.page;
+        }
+        if (event.rows !== undefined) {
+            this.pageSize = event.rows;
+        }
+
+        this.loadProducts();
+    }
+
     handleMediaAction(event: ToastMessage) {
         this.messageService.add(event)
-        this.loadProductsWithMedia()
+        this.loadProducts()
     }
 
 }

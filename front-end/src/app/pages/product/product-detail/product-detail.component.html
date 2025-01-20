@@ -9,7 +9,12 @@
         <div *ngIf="product">
             <div class="flex flex-col tablet:grid tablet:grid-rows-1 tablet:grid-cols-2 tablet:gap-8 tablet:p-8">
                 <!-- Carousel Section -->
-                <div class="max-w-lg desktop:max-w-xl mx-auto">
+                <div *ngIf="!product.media?.length" class="p-8 max-w-lg w-full desktop:max-w-xl mx-auto">
+                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">
+                        <i class="pi pi-image text-3xl text-gray-400"></i>
+                    </div>
+                </div>
+                <div *ngIf="product.media?.length" class="max-w-lg desktop:max-w-xl mx-auto">
                     <p-carousel
                             [value]="product.media"
                             [numVisible]="1"
@@ -32,7 +37,7 @@
 
                 <!-- Product Details Section -->
                 <div class="space-y-4">
-                    <h2 class="text-xl tablet:text-2xl desktop:text-3xl font-semibold border-b-2 p-4 ">{{ product.product.name }}</h2>
+                    <h2 class="text-xl tablet:text-2xl desktop:text-3xl font-semibold border-b-2 p-4 capitalize">{{ product.product.name }}</h2>
                     <div class="p-4 border-b-2 flex justify-between">
                         <span class="text-2xl">${{ product.product.price }}</span>
                         <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'" [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'" />

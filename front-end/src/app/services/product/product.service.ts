@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ApiResponse, FullProduct, PaginatedResponse, Product, ProductMedia} from "../../types";
+import {ApiResponse, CreateProduct, FullProduct, PaginatedResponse, Product, ProductMedia} from "../../types";
 import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {TokenService} from "../token/token.service";
 import {MediaService} from "../media/media.service";
@@ -157,7 +157,7 @@ export class ProductService {
 
 
 // Create a new product
-  createProduct(product: Product): Observable<ApiResponse<Product>> {
+  createProduct(product: CreateProduct): Observable<ApiResponse<Product>> {
     return this.http.post<ApiResponse<Product>>(`${this.baseUrl}/`, product, { headers: this.getAuthHeaders() });
   }
 
