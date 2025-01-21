@@ -90,9 +90,9 @@ export class AuthService {
   }
 
   logout(): void {
+    this.router.navigate(['/auth/sign-in']);
     this.user.next(this.defaultUserPayload);
     this.tokenService.remove();
-    this.router.navigate(['/auth/sign-in']);
   }
 
     isSeller(): boolean {

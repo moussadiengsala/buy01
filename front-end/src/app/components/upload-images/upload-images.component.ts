@@ -1,14 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MessageService} from "primeng/api";
 import {CommonModule} from "@angular/common";
-import {ToastModule} from "primeng/toast";
 import {FileSelectEvent, FileUploadEvent, FileUploadModule} from 'primeng/fileupload';
 import {MediaService} from "../../services/media/media.service";
 import {catchError, finalize} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {ACTION, Media, ProductMedia, ToastMessage} from "../../types";
 
-// Constants for validation
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 2;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;

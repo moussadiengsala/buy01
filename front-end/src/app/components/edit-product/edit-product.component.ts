@@ -2,7 +2,6 @@ import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/co
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {Product, ToastMessage} from "../../types";
-import {AuthService} from "../../services/auth/auth-service.service";
 import {ProductService} from "../../services/product/product.service";
 import {AlertService} from "../../services/alert/alert.service";
 import {AlertComponent} from "../alert/alert.component";
@@ -15,7 +14,6 @@ import {ToastModule} from "primeng/toast";
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
     templateUrl: './edit-product.component.html',
-    styleUrl: './edit-product.component.css'
 })
 export class EditProductComponent {
   @Input({required: true}) product!: Product;

@@ -68,13 +68,17 @@ export class DashboardComponent {
     loadProducts(): void {
         this.user$
             .pipe(
-                switchMap(user =>
-                    this.productService.getProductsWithMediaByUserId(user.id, this.currentPage, this.pageSize)
-
-                )
+                switchMap(user => {
+                    if (!user.isAuthenticated) return of(null)
+                    return this.productService.getProductsWithMediaByUserId(user.id, this.currentPage, this.pageSize)
+                })
             )
             .subscribe({
                 next: (response) => {
+                    if (!response) {
+                        this.router.navigate(['/auth/sign-in']); // Redirect to login if user is null
+                        return
+                    }
                     this.products = response.data;
                 },
                 error: (err) => {

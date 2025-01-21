@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
-import { TieredMenuModule } from 'primeng/tieredmenu';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import {ProductService} from "../../services/product/product.service";
@@ -11,8 +10,7 @@ import {Product} from "../../types";
     selector: 'app-product-management',
     imports: [CommonModule, MenuModule, ButtonModule],
     standalone: true,
-    templateUrl: './product-management.component.html',
-    styleUrl: './product-management.component.css'
+    templateUrl: './product-management.component.html'
 })
 export class ProductManagementComponent {
   @Input({required: true}) product!: Product;

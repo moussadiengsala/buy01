@@ -1,20 +1,50 @@
+# Variables for paths
+REGISTRY_PATH = api/registery
+GATEWAYS_PATH = api/gateways
+USERS_PATH = api/users
+PRODUCTS_PATH = api/products
+MEDIA_PATH = api/media
 
+# Build registry service
 build-registery:
-	sudo docker-compose up --build registery
+	@echo "Building registry..."
+	(cd $(REGISTRY_PATH) && mvn clean install)
 
-up:
-	sudo docker-compose up -d
+# Launch dependencies using Docker Compose
+launch-dependencies: build-registery
+	@echo "Launching dependencies..."
+	sudo docker-compose -f docker-compose.dep.yml up -d
 
-down:
-	sudo docker-compose down -d
+down-dependencies:
+	@echo "Stoping dependencies..."
+	sudo docker-compose -f docker-compose.dep.yml down
 
-build-front-end:
-	sudo docker-compose up --build front-end
+# Build individual services
+build-gateways:
+	@echo "Building gateways..."
+	(cd $(GATEWAYS_PATH) && mvn clean install)
 
-delete-all-docker-image:
-	sudo docker image prune -a
+build-users:
+	@echo "Building users..."
+	(cd $(USERS_PATH) && mvn clean install)
 
-delete-all-docker-container:
-	sudo docker stop $(docker ps -aq)
-	sudo docker rm $(docker ps -aq)
+build-products:
+	@echo "Building products..."
+	(cd $(PRODUCTS_PATH) && mvn clean install)
 
+build-media:
+	@echo "Building media..."
+	(cd $(MEDIA_PATH) && mvn clean install)
+
+# Build all services
+build-services: build-gateways build-users build-products build-media
+	@echo "All services built successfully."
+
+# Launch services using Docker Compose
+launch-services: build-services
+	@echo "Launching services..."
+	sudo docker-compose -f docker-compose.services.yml up -d
+
+down-services:
+	@echo "Stoping services..."
+	sudo docker-compose -f docker-compose.services.yml down

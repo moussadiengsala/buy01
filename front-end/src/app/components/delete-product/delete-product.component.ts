@@ -1,13 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {ProductMedia, ToastMessage} from "../../types";
 import { ProductService } from "../../services/product/product.service";
-import { AlertService } from "../../services/alert/alert.service";
-import { AlertComponent } from "../alert/alert.component";
 import { NgIf } from "@angular/common";
-import { MessageService } from "primeng/api";
 import { catchError, finalize } from "rxjs/operators";
 import { of } from "rxjs";
-import { ToastModule } from "primeng/toast";
 
 @Component({
     selector: 'app-delete-product',

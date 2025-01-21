@@ -2,7 +2,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {ProductService} from "../../services/product/product.service";
-import {CreateProduct, Product, Role, ToastMessage} from "../../types";
+import {CreateProduct, ToastMessage} from "../../types";
 import {AlertService} from "../../services/alert/alert.service";
 import {AlertComponent} from "../alert/alert.component";
 import {MessageService} from "primeng/api";
@@ -13,7 +13,6 @@ import {ToastModule} from "primeng/toast";
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, AlertComponent, ToastModule],
     templateUrl: './add-product.component.html',
-    styleUrl: './add-product.component.css'
 })
 export class AddProductComponent {
   addProductForm: FormGroup;

@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import {FullProduct, Product, ProductMedia} from "../../types";
+import { ProductMedia} from "../../types";
 import {CartService} from "../../services/utils/cart.service";
 import {CardModule} from "primeng/card";
 import {MediaService} from "../../services/media/media.service";
@@ -14,7 +14,6 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
     imports: [CommonModule, ButtonModule, CardModule, TooltipModule, TextPreviewComponent, RouterLink, RouterLinkActive],
     standalone: true,
     templateUrl: './product.component.html',
-    styleUrl: './product.component.css'
 })
 export class ProductComponent {
   @Input({required: true}) product!: ProductMedia;

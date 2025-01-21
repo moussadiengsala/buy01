@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component } from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {AlertService} from "../../services/alert/alert.service";
 import {Alert, AlertVariant} from "../../types";
@@ -11,7 +11,6 @@ import {lucideCheck, lucideInfo, lucideCircleX, lucideMessageCircleWarning, luci
     imports: [NgClass, NgIf, NgForOf],
     providers: [provideIcons({ lucideCheck, lucideInfo, lucideCircleX, lucideMessageCircleWarning, lucideX })],
     templateUrl: './alert.component.html',
-    styleUrl: './alert.component.css'
 })
 export class AlertComponent {
   alert: Alert | null = null;

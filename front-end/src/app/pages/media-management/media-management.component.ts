@@ -8,7 +8,7 @@ import { MessageService } from 'primeng/api';
 import { BadgeModule } from 'primeng/badge';
 import {TextPreviewComponent} from "../../components/text-preview/text-preview.component";
 import {ProductService} from "../../services/product/product.service";
-import {forkJoin, Observable, switchMap} from "rxjs";
+import {forkJoin, Observable, of, switchMap, tap} from "rxjs";
 import {MediaService} from "../../services/media/media.service";
 import {AuthService} from "../../services/auth/auth-service.service";
 import {UploadImagesComponent} from "../../components/upload-images/upload-images.component";
@@ -16,6 +16,7 @@ import {MediaLayoutComponent} from "../../components/media-layout/media-layout.c
 import {CarouselModule} from "primeng/carousel";
 import {Router} from "@angular/router";
 import {Paginator, PaginatorState} from "primeng/paginator";
+import {filter} from "rxjs/operators";
 
 
 @Component({
@@ -94,12 +95,17 @@ export class MediaManagementComponent {
     loadProducts(): void {
         this.user$
             .pipe(
-                switchMap(user =>
-                    this.productService.getProductsWithMediaByUserId(user.id, this.currentPage, this.pageSize)
-                )
+                switchMap(user => {
+                    if (!user.isAuthenticated) return of(null);
+                    return this.productService.getProductsWithMediaByUserId(user.id, this.currentPage, this.pageSize)
+                })
             )
             .subscribe({
                 next: (response) => {
+                    if (!response) {
+                        this.router.navigate(['/auth/sign-in']); // Redirect to login if user is null
+                        return
+                    }
                     this.products = response.data;
 
                     if (this.selectedProduct) {
@@ -109,7 +115,6 @@ export class MediaManagementComponent {
                     }
                 },
                 error: (err) => {
-                    console.error('Error loading products:', err);
                     this.router.navigate(['/error', {
                         message: err?.error?.message || "Failed to load products",
                         status: err?.error?.status || 500

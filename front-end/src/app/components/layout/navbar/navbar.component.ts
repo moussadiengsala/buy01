@@ -38,7 +38,7 @@ export class NavbarComponent {
   }
 
   logOut(event: Event) {
-    this.toggleMenu(event)
     this.authService.logout()
+    this.toggleMenu(event)
   }
 }
