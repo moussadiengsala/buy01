@@ -26,7 +26,7 @@ public class UpdateProductsDTO {
                     value -> value != null &&
                             value.length() >= 2 &&
                             value.length() <= 50 &&
-                            value.matches("^[A-Za-z0-9\\s.-]+$"),
+                            value.matches("^[A-Za-zÀ-ÿ0-9\\s'-]+$"),
                     "Invalid name format");
             if (validationResponse != null) {return validationResponse;}
             product.setName(this.name);
@@ -38,7 +38,7 @@ public class UpdateProductsDTO {
                     value -> value != null &&
                             value.length() >= 10 &&
                             value.length() <= 255 &&
-                            value.matches("^[A-Za-z0-9\\s.,!?()-]+$"),
+                            value.matches("^[A-Za-zÀ-ÿ0-9\\s.,!?()'\\-]+$"),
                     "Invalid description format");
 
             if (validationResponse != null) {return validationResponse;}
