@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
+                echo 'Building... Testing if the Jenkins triggers commit as expected'
             }
         }
         stage('Test') {
