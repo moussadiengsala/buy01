@@ -20,8 +20,8 @@ pipeline {
         // }
         stage('Start services') {
           steps {
-            sh 'docker compose -f docker-compose.dep.yml up -d'
-            sh 'docker compose ps'
+            sh 'docker-compose -f docker-compose.dep.yml up -d'
+            sh 'docker-compose ps'
           }
         }
     }
