@@ -13,52 +13,17 @@ pipeline {
           }
         }
 
-        stage("building registery") {
-            steps {
-                dir('api/registery') { // Navigate to the products microservice directory
-                    echo 'Building Registery Service...'
-                    sh 'mvn clean install'
-                }
-            }
-        }
-
         // stage('Prune Docker data') {
         //   steps {
         //     sh 'docker system prune -a --volumes -f'
         //   }
         // }
-        stage('Start services') {
+        stage('Testing services') {
           steps {
-            sh 'docker-compose -f docker-compose.dep.yml up -d'
+            sh 'COMPOSE_PROFILES=test docker-compose up -d'
             sh 'docker ps'
+            sh 'docker images'
           }
-        }
-
-        stage("building users service") {
-            steps {
-                dir('api/users') { // Navigate to the products microservice directory
-                    echo 'Building Users Service...'
-                    sh 'mvn clean install'
-                }
-            }
-        }
-
-        stage("building products") {
-            steps {
-                dir('api/products') { // Navigate to the products microservice directory
-                    echo 'Building Products Service...'
-                    sh 'mvn clean install'
-                }
-            }
-        }
-
-        stage("building media") {
-            steps {
-                dir('api/media') { // Navigate to the products microservice directory
-                    echo 'Building Media Service...'
-                    sh 'mvn clean install'
-                }
-            }
         }
     }
 }
