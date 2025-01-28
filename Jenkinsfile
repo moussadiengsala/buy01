@@ -2,28 +2,30 @@ pipeline {
     agent any
 
     stages {
-        stage("verify tooling") {
-          steps {
-            sh '''
-              docker version
-              docker info
-              docker-compose version 
-              curl --version
-            '''
-          }
+        stage("Build Services") {
+            steps {
+                sh 'docker-compose build'
+            }
         }
 
-        // stage('Prune Docker data') {
-        //   steps {
-        //     sh 'docker system prune -a --volumes -f'
-        //   }
-        // }
-        stage('Testing services') {
-          steps {
-            sh 'COMPOSE_PROFILES=test docker-compose up -d'
-            sh 'docker ps'
-            sh 'docker images'
-          }
+        stage("Testing Services") {
+            steps {
+                sh 'COMPOSE_PROFILES=test docker-compose up -d'
+                sh 'docker ps'
+                sh 'docker images'
+            }
+        }
+
+        stage("Deploy Services") {
+            steps {
+                sh 'COMPOSE_PROFILES=run docker-compose up -d --force-recreate'
+            }
+        }
+
+        stage("Health Check") {
+            steps {
+                sh 'curl -f http://localhost:8082/actuator/health || exit 1'
+            }
         }
     }
 }
