@@ -29,41 +29,24 @@ pipeline {
             steps {
                 script {
                     echo "Building and testing all services..."
-                }
-            }
-        }
 
-        // Use the parallel block as the top-level step within its own stage
-        stage('Build & Test Backend Services') {
-            steps {
-                script {
-                    parallel(
-                        "User Service": {
-                            dir('api/users') {
-                                sh 'mvn clean package -DskipTests=false'
-                            }
-                        },
-                        "Product Service": {
-                            dir('api/products') {
-                                sh 'mvn clean package -DskipTests=false'
-                            }
-                        },
-                        "Media Service": {
-                            dir('api/media') {
-                                sh 'mvn clean package -DskipTests=false'
-                            }
-                        }
-                    )
-                }
-            }
-        }
+                    // Build and test backend services sequentially
+                    dir('api/users') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+                    dir('api/products') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+                    dir('api/media') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
 
-        stage('Build & Test Frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'ng test --watch=false'
-                    sh 'ng build --prod'
+                    // Build and test frontend
+                    dir('frontend') {
+                        sh 'npm install'
+                        sh 'ng test --watch=false'
+                        sh 'ng build --prod'
+                    }
                 }
             }
         }
@@ -94,32 +77,27 @@ pipeline {
             steps {
                 echo "Deploying microservices..."
 
-                parallel(
-                    "User Service": {
-                        sshagent([SSH_USER_KEY]) {
-                            sh """
-                                scp -o StrictHostKeyChecking=no user-service/target/*.jar ubuntu@${USER_SERVICE_IP}:${DEPLOY_PATH}/
-                                ssh ubuntu@${USER_SERVICE_IP} 'sudo systemctl restart user'
-                            """
-                        }
-                    },
-                    "Product Service": {
-                        sshagent([SSH_PRODUCT_KEY]) {
-                            sh """
-                                scp -o StrictHostKeyChecking=no product-service/target/*.jar ubuntu@${PRODUCT_SERVICE_IP}:${DEPLOY_PATH}/
-                                ssh ubuntu@${PRODUCT_SERVICE_IP} 'sudo systemctl restart product'
-                            """
-                        }
-                    },
-                    "Media Service": {
-                        sshagent([SSH_MEDIA_KEY]) {
-                            sh """
-                                scp -o StrictHostKeyChecking=no media-service/target/*.jar ubuntu@${MEDIA_SERVICE_IP}:${DEPLOY_PATH}/
-                                ssh ubuntu@${MEDIA_SERVICE_IP} 'sudo systemctl restart media'
-                            """
-                        }
-                    }
-                )
+                // Deploy each microservice sequentially
+                sshagent([SSH_USER_KEY]) {
+                    sh """
+                        scp -o StrictHostKeyChecking=no user-service/target/*.jar ubuntu@${USER_SERVICE_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${USER_SERVICE_IP} 'sudo systemctl restart user'
+                    """
+                }
+
+                sshagent([SSH_PRODUCT_KEY]) {
+                    sh """
+                        scp -o StrictHostKeyChecking=no product-service/target/*.jar ubuntu@${PRODUCT_SERVICE_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${PRODUCT_SERVICE_IP} 'sudo systemctl restart product'
+                    """
+                }
+
+                sshagent([SSH_MEDIA_KEY]) {
+                    sh """
+                        scp -o StrictHostKeyChecking=no media-service/target/*.jar ubuntu@${MEDIA_SERVICE_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${MEDIA_SERVICE_IP} 'sudo systemctl restart media'
+                    """
+                }
             }
         }
 
