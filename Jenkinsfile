@@ -22,7 +22,6 @@ pipeline {
         SSH_MEDIA_KEY = "ssh-media-service-key"
 
         SSH_FRONTEND_KEY = "ssh-frontend-service-key"
-
     }
 
     stages {
@@ -30,32 +29,37 @@ pipeline {
             steps {
                 script {
                     echo "Building and testing all services..."
+                }
+            }
+        }
 
-                    // Build and test backend services
-                    parallel(
-                        "User Service": {
-                            dir('api/users') {
-                                sh 'mvn clean package -DskipTests=false'
-                            }
-                        },
-                        "Product Service": {
-                            dir('api/products') {
-                                sh 'mvn clean package -DskipTests=false'
-                            }
-                        },
-                        "Media Service": {
-                            dir('api/media') {
-                                sh 'mvn clean package -DskipTests=false'
-                            }
-                        }
-                    )
-
-                    // Build and test frontend
-                    dir('frontend') {
-                        sh 'npm install'
-                        sh 'ng test --watch=false'
-                        sh 'ng build --prod'
+        // Use the parallel block as the top-level step within its own stage
+        stage('Build & Test Backend Services') {
+            parallel {
+                "User Service": {
+                    dir('api/users') {
+                        sh 'mvn clean package -DskipTests=false'
                     }
+                },
+                "Product Service": {
+                    dir('api/products') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+                },
+                "Media Service": {
+                    dir('api/media') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+                }
+            }
+        }
+
+        stage('Build & Test Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'ng test --watch=false'
+                    sh 'ng build --prod'
                 }
             }
         }
