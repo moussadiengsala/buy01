@@ -35,21 +35,25 @@ pipeline {
 
         // Use the parallel block as the top-level step within its own stage
         stage('Build & Test Backend Services') {
-            parallel {
-                "User Service": {
-                    dir('api/users') {
-                        sh 'mvn clean package -DskipTests=false'
-                    }
-                },
-                "Product Service": {
-                    dir('api/products') {
-                        sh 'mvn clean package -DskipTests=false'
-                    }
-                },
-                "Media Service": {
-                    dir('api/media') {
-                        sh 'mvn clean package -DskipTests=false'
-                    }
+            steps {
+                script {
+                    parallel(
+                        "User Service": {
+                            dir('api/users') {
+                                sh 'mvn clean package -DskipTests=false'
+                            }
+                        },
+                        "Product Service": {
+                            dir('api/products') {
+                                sh 'mvn clean package -DskipTests=false'
+                            }
+                        },
+                        "Media Service": {
+                            dir('api/media') {
+                                sh 'mvn clean package -DskipTests=false'
+                            }
+                        }
+                    )
                 }
             }
         }
