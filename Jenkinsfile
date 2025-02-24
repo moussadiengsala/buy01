@@ -25,31 +25,31 @@ pipeline {
     }
 
     stages {
-//         stage('Build & Test') {
-//             steps {
-//                 script {
-//                     echo "Building and testing all services..."
-//
-//                     // Build and test backend services sequentially
-//                     dir('api/users') {
-//                         sh 'mvn clean package -DskipTests=false'
-//                     }
-//                     dir('api/products') {
-//                         sh 'mvn clean package -DskipTests=false'
-//                     }
-//                     dir('api/media') {
-//                         sh 'mvn clean package -DskipTests=false'
-//                     }
-//
-//                     // Build and test frontend
-//                     dir('frontend') {
-//                         sh 'npm install'
-//                         sh 'ng test --watch=false'
-//                         sh 'ng build --prod'
-//                     }
-//                 }
-//             }
-//         }
+        stage('Build & Test') {
+            steps {
+                script {
+                    echo "Building and testing all services..."
+
+                    // Build and test backend services sequentially
+                    dir('api/users') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+                    dir('api/products') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+                    dir('api/media') {
+                        sh 'mvn clean package -DskipTests=false'
+                    }
+
+                    // Build and test frontend
+                    dir('frontend') {
+                        sh 'npm install'
+                        sh 'ng test --watch=false'
+                        sh 'ng build --prod'
+                    }
+                }
+            }
+        }
 
 //         stage('Deploy GATEWAY and REGISTRY') {
 //             steps {
