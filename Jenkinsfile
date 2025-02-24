@@ -32,13 +32,13 @@ pipeline {
 
                     // Build and test backend services sequentially
                     dir('api/users') {
-                        sh 'mvn clean package -DskipTests=false'
+                        sh 'mvn clean package -Pprod -DskipTests=false'
                     }
                     dir('api/products') {
-                        sh 'mvn clean package -DskipTests=false'
+                        sh 'mvn clean package -Pprod -DskipTests=false'
                     }
                     dir('api/media') {
-                        sh 'mvn clean package -DskipTests=false'
+                        sh 'mvn clean package -Pprod -DskipTests=false'
                     }
 
                     // Build and test frontend
@@ -51,68 +51,68 @@ pipeline {
             }
         }
 
-//         stage('Deploy GATEWAY and REGISTRY') {
-//             steps {
-//                 sshagent([SSH_REGISTRY_KEY, SSH_GATEWAY_KEY]) {
-//                     // Deploy Registry
-//                     sh """
-//                         scp -o StrictHostKeyChecking=no registry-service/target/*.jar ubuntu@${REGISTRY_IP}:${DEPLOY_PATH}/
-//                         ssh ubuntu@${REGISTRY_IP} 'sudo systemctl restart registry'
-//                     """
-//
-//                     // Wait for Registry to initialize
-//                     sleep(time: 30, unit: 'SECONDS')
-//
-//                     // Deploy Gateway
-//                     sh """
-//                         scp -o StrictHostKeyChecking=no gateway-service/target/*.jar ubuntu@${GATEWAY_IP}:${DEPLOY_PATH}/
-//                         ssh ubuntu@${GATEWAY_IP} 'sudo systemctl restart gateway'
-//                     """
-//                 }
-//             }
-//         }
-//
-//         // Stage 3: Deploy Microservices
-//         stage('Deploy Microservices') {
-//             steps {
-//                 echo "Deploying microservices..."
-//
-//                 // Deploy each microservice sequentially
-//                 sshagent([SSH_USER_KEY]) {
-//                     sh """
-//                         scp -o StrictHostKeyChecking=no user-service/target/*.jar ubuntu@${USER_SERVICE_IP}:${DEPLOY_PATH}/
-//                         ssh ubuntu@${USER_SERVICE_IP} 'sudo systemctl restart user'
-//                     """
-//                 }
-//
-//                 sshagent([SSH_PRODUCT_KEY]) {
-//                     sh """
-//                         scp -o StrictHostKeyChecking=no product-service/target/*.jar ubuntu@${PRODUCT_SERVICE_IP}:${DEPLOY_PATH}/
-//                         ssh ubuntu@${PRODUCT_SERVICE_IP} 'sudo systemctl restart product'
-//                     """
-//                 }
-//
-//                 sshagent([SSH_MEDIA_KEY]) {
-//                     sh """
-//                         scp -o StrictHostKeyChecking=no media-service/target/*.jar ubuntu@${MEDIA_SERVICE_IP}:${DEPLOY_PATH}/
-//                         ssh ubuntu@${MEDIA_SERVICE_IP} 'sudo systemctl restart media'
-//                     """
-//                 }
-//             }
-//         }
-//
-//         // Stage 4: Deploy Frontend
-//         stage('Deploy Frontend') {
-//             steps {
-//                 echo "Deploying frontend..."
-//                 sshagent([SSH_FRONTEND_KEY]) {
-//                     sh """
-//                         scp -r frontend/dist/* ubuntu@${FRONTEND_IP}:${FRONTEND_DEPLOY_PATH}/
-//                         ssh ubuntu@${FRONTEND_IP} 'sudo systemctl restart nginx'
-//                     """
-//                 }
-//             }
-//         }
+        stage('Deploy GATEWAY and REGISTRY') {
+            steps {
+                sshagent([SSH_REGISTRY_KEY, SSH_GATEWAY_KEY]) {
+                    // Deploy Registry
+                    sh """
+                        scp -o StrictHostKeyChecking=no registry-service/target/*.jar ubuntu@${REGISTRY_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${REGISTRY_IP} 'sudo systemctl restart registry'
+                    """
+
+                    // Wait for Registry to initialize
+                    sleep(time: 30, unit: 'SECONDS')
+
+                    // Deploy Gateway
+                    sh """
+                        scp -o StrictHostKeyChecking=no gateway-service/target/*.jar ubuntu@${GATEWAY_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${GATEWAY_IP} 'sudo systemctl restart gateway'
+                    """
+                }
+            }
+        }
+
+        // Stage 3: Deploy Microservices
+        stage('Deploy Microservices') {
+            steps {
+                echo "Deploying microservices..."
+
+                // Deploy each microservice sequentially
+                sshagent([SSH_USER_KEY]) {
+                    sh """
+                        scp -o StrictHostKeyChecking=no user-service/target/*.jar ubuntu@${USER_SERVICE_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${USER_SERVICE_IP} 'sudo systemctl restart user'
+                    """
+                }
+
+                sshagent([SSH_PRODUCT_KEY]) {
+                    sh """
+                        scp -o StrictHostKeyChecking=no product-service/target/*.jar ubuntu@${PRODUCT_SERVICE_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${PRODUCT_SERVICE_IP} 'sudo systemctl restart product'
+                    """
+                }
+
+                sshagent([SSH_MEDIA_KEY]) {
+                    sh """
+                        scp -o StrictHostKeyChecking=no media-service/target/*.jar ubuntu@${MEDIA_SERVICE_IP}:${DEPLOY_PATH}/
+                        ssh ubuntu@${MEDIA_SERVICE_IP} 'sudo systemctl restart media'
+                    """
+                }
+            }
+        }
+
+        // Stage 4: Deploy Frontend
+        stage('Deploy Frontend') {
+            steps {
+                echo "Deploying frontend..."
+                sshagent([SSH_FRONTEND_KEY]) {
+                    sh """
+                        scp -r frontend/dist/* ubuntu@${FRONTEND_IP}:${FRONTEND_DEPLOY_PATH}/
+                        ssh ubuntu@${FRONTEND_IP} 'sudo systemctl restart nginx'
+                    """
+                }
+            }
+        }
     }
 
     post {
