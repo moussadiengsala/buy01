@@ -9,6 +9,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 
 import java.time.Duration;
+import java.util.List;
 
 @Configuration
 public class ReplyingKafkaConfig {
@@ -24,10 +25,10 @@ public class ReplyingKafkaConfig {
     }
 
     @Bean
-    public ReplyingKafkaTemplate<String, String, Response<?>> replyingMediaKafkaTemplate(
-            ProducerFactory<String, String> producerFactory,
+    public ReplyingKafkaTemplate<String, Object, Response<?>> replyingMediaKafkaTemplate(
+            ProducerFactory<String, Object> producerFactory,
             ConcurrentMessageListenerContainer<String, Response<?>> repliesMediaContainer) {
-        ReplyingKafkaTemplate<String, String, Response<?>> replyingTemplate =
+        ReplyingKafkaTemplate<String, Object, Response<?>> replyingTemplate =
                 new ReplyingKafkaTemplate<>(producerFactory, repliesMediaContainer);
         replyingTemplate.setDefaultReplyTimeout(Duration.ofSeconds(5));
         return replyingTemplate;

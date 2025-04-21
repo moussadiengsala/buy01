@@ -143,4 +143,6 @@ export class DashboardComponent {
         this.messageService.add(event);
         this.loadProducts()
     }
+
+    protected readonly Math = Math;
 }

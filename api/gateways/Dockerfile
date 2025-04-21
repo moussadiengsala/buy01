@@ -1,12 +1,9 @@
-FROM maven:3-openjdk-17-slim
-
+FROM maven:3.8.4-openjdk-17 AS builder
 WORKDIR /app
-
-COPY mvnw pom.xml ./
-COPY .mvn/ .mvn
-RUN ./mvnw dependency:go-offline
-
+COPY pom.xml .
 COPY src ./src
+RUN mvn clean package -DskipTests
 
-CMD ["mvn"]
-
+FROM openjdk:17-jdk-slim
+COPY --from=builder /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

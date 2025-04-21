@@ -13,43 +13,56 @@ import { of } from "rxjs";
 })
 export class DeleteProductComponent {
   @Input() productMedia!: ProductMedia;
-  @Output() productDeleted = new EventEmitter<ToastMessage>(); // Emits product ID after deletion
+  @Output() productDeleted = new EventEmitter<ToastMessage>();
 
   isVisible: boolean = false;
   isLoading: boolean = false;
+  deleteError: string = '';
 
   constructor(private productService: ProductService) {}
 
   deleteProduct(): void {
+    if (this.isLoading) return;
+    
     this.isLoading = true;
+    this.deleteError = '';
+    
     this.productService.deleteProduct(this.productMedia.product.id).pipe(
         catchError((error) => {
-          console.error('Upload failed:', error);
+          console.error('Delete failed:', error);
+          this.deleteError = error?.error?.message || "Failed to delete the product. Please try again.";
           this.productDeleted.emit({
             severity: 'error',
-            summary: 'Error deleting the product.',
-            detail: error?.error?.message || "Failed to delete the product.",
+            summary: 'Error Deleting Product',
+            detail: this.deleteError,
             status: "FAILED"
           });
-          return of(error);
+          return of(null);
         }),
         finalize(() => {
           this.isLoading = false;
-          this.isVisible = false;
         })
     ).subscribe((response) => {
-      this.productDeleted.emit({
-        severity: 'success',
-        summary: 'Success',
-        detail: response?.message || "The product is deleted successfully.",
-        status: "OK"
-      });
+      if (response) {
+        this.productDeleted.emit({
+          severity: 'success',
+          summary: 'Product Deleted',
+          detail: response?.message || "Product successfully deleted from your inventory.",
+          status: "OK"
+        });
+        this.toggle();
+      }
     });
-    this.toggle()
   }
 
   toggle(): void {
     if (this.isLoading) return;
+    this.deleteError = '';
     this.isVisible = !this.isVisible;
+  }
+  
+  getProductDetails(): string {
+    const product = this.productMedia.product;
+    return `${product.name} (${product.price ? '$' + product.price : 'No price'}, Qty: ${product.quantity || 0})`;
   }
 }

@@ -1,50 +1,46 @@
-# Variables for paths
-REGISTRY_PATH = api/registery
-GATEWAYS_PATH = api/gateways
-USERS_PATH = api/users
-PRODUCTS_PATH = api/products
-MEDIA_PATH = api/media
+# ===== Configuration =====
+SERVICES := registery gateways users products media
+DEPENDENCIES := mongodb kafka registery
 
-# Build registry service
-build-registery:
-	@echo "Building registry..."
-	(cd $(REGISTRY_PATH) && mvn clean install)
+# Docker compose files
+DEPS_COMPOSE = docker-compose.dep.yml
+SERVICES_COMPOSE = docker-compose.services.yml
 
-# Launch dependencies using Docker Compose
-launch-dependencies: build-registery
-	@echo "Launching dependencies..."
-	sudo docker-compose -f docker-compose.dep.yml up -d
+# ===== Docker Operations =====
+up-deps:
+	@echo "Starting dependencies..."
+	docker-compose -f $(DEPS_COMPOSE) up -d
 
-down-dependencies:
-	@echo "Stoping dependencies..."
-	sudo docker-compose -f docker-compose.dep.yml down
+down-deps:
+	@echo "Stopping dependencies..."
+	docker-compose -f $(DEPS_COMPOSE) down
 
-# Build individual services
-build-gateways:
-	@echo "Building gateways..."
-	(cd $(GATEWAYS_PATH) && mvn clean install)
-
-build-users:
-	@echo "Building users..."
-	(cd $(USERS_PATH) && mvn clean install)
-
-build-products:
-	@echo "Building products..."
-	(cd $(PRODUCTS_PATH) && mvn clean install)
-
-build-media:
-	@echo "Building media..."
-	(cd $(MEDIA_PATH) && mvn clean install)
-
-# Build all services
-build-services: build-gateways build-users build-products build-media
-	@echo "All services built successfully."
-
-# Launch services using Docker Compose
-launch-services: build-services
-	@echo "Launching services..."
-	sudo docker-compose -f docker-compose.services.yml up -d
+up-services:
+	@echo "Building and starting services..."
+	docker-compose -f $(SERVICES_COMPOSE) up -d --build
 
 down-services:
-	@echo "Stoping services..."
-	sudo docker-compose -f docker-compose.services.yml down
+	@echo "Stopping services..."
+	docker-compose -f $(SERVICES_COMPOSE) down
+
+up: up-deps up-services
+down: down-services down-deps
+
+# ===== Utility Targets =====
+logs:
+	docker-compose -f $(DEPS_COMPOSE) -f $(SERVICES_COMPOSE) logs -f
+
+clean:
+	@echo "Cleaning Docker resources..."
+	docker-compose -f $(DEPS_COMPOSE) -f $(SERVICES_COMPOSE) down -v
+	docker system prune -f
+
+# ===== Individual Service Control =====
+restart-%:
+	docker-compose -f $(SERVICES_COMPOSE) restart $*
+
+logs-%:
+	docker-compose -f $(SERVICES_COMPOSE) logs -f $*
+
+rebuild-%:
+	docker-compose -f $(SERVICES_COMPOSE) up -d --build $*

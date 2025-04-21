@@ -6,9 +6,10 @@ import { ProductDetailComponent } from './pages/product/product-detail/product-d
 import { NotFoundComponent } from './pages/error/not-found/not-found.component';
 import { ErrorComponent } from './pages/error/error/error.component';
 import { AuthGuard, SellerGuard } from './services/auth/auth-guard.guard';
-import { HomeComponent } from './pages/home/home/home.component';
+import { HomeComponent } from './pages/home/home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MediaManagementComponent } from './pages/media-management/media-management.component';
+import {UserProfileComponent} from "./pages/user-profile/user-profile.component";
 
 export const routes: Routes = [
     {
@@ -19,6 +20,11 @@ export const routes: Routes = [
       path: 'dashboard', 
       component: DashboardComponent,
       canActivate: [AuthGuard] 
+    },
+    {
+        path: 'profile',
+        component: UserProfileComponent,
+        canActivate: [AuthGuard]
     },
     { 
       path: 'media-management', 

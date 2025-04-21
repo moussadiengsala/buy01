@@ -1,0 +1,47 @@
+<div class="w-full min-h-screen bg-gradient-to-b from-indigo-50 to-white">
+    <header class="container mx-auto px-4">
+        <div class='relative flex flex-col justify-center items-center space-y-8 w-full py-20'>
+            <h2 class="text-sm text-indigo-600 font-medium tracking-wide text-center w-full max-w-xl">
+                Your One-Stop Shop for Premium Products
+            </h2>
+            <h1 class="text-2xl font-bold text-gray-900 text-center tablet:text-5xl desktop:text-7xl tablet:max-w-2xl desktop:max-w-4xl leading-tight">
+                Elevate Your Shopping Experience
+            </h1>
+            <p class="text-gray-600 text-center text-sm desktop:text-base max-w-2xl">
+                Discover curated collections of premium products, handpicked just for you. 
+                Enjoy lightning-fast delivery, exclusive deals, and a seamless shopping experience.
+            </p>
+            <div class="flex flex-col tablet:flex-row gap-4 mt-4">
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <a routerLink="/products" routerLinkActive="active" ariaCurrentWhenActive="page" class="flex items-center gap-2">
+                        <span>Start Shopping</span>
+                        <i class="pi pi-arrow-right"></i>
+                    </a>
+                </button>
+                <button class="bg-white hover:bg-gray-50 text-indigo-600 px-8 py-3 rounded-lg transition-all duration-300 border border-indigo-200 hover:border-indigo-300">
+                    <a routerLink="/auth/sign-up" routerLinkActive="active" ariaCurrentWhenActive="page">
+                        Create Account
+                    </a>
+                </button>
+            </div>
+            <div class="flex flex-wrap justify-center gap-8 mt-12 text-sm text-gray-500">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-truck text-indigo-600"></i>
+                    <span>Free Shipping</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-shield text-indigo-600"></i>
+                    <span>Secure Payments</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-sync text-indigo-600"></i>
+                    <span>Easy Returns</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-headset text-indigo-600"></i>
+                    <span>24/7 Support</span>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>

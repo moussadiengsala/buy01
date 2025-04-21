@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface ProductsRepository extends MongoRepository<Products, String> {
     Page<Products> findProductsByUserID(String userId, Pageable pageable);
     Page<Products> findAll( Pageable pageable);
+
+    Optional<List<Products>> findByUserID(String id);
 }

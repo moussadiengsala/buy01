@@ -18,6 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaProducer {
 
+
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
@@ -31,6 +32,11 @@ public class KafkaProducer {
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfig());
+    }
+
+    @Bean
+    public ProducerFactory<String, String> producerFactoryAuth() {
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 

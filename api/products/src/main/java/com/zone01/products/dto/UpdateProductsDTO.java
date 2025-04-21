@@ -5,6 +5,7 @@ import com.zone01.products.products.Products;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.HttpStatus;
 
 import java.util.function.Predicate;
@@ -29,7 +30,8 @@ public class UpdateProductsDTO {
                             value.matches("^[A-Za-zÀ-ÿ0-9\\s'-]+$"),
                     "Invalid name format");
             if (validationResponse != null) {return validationResponse;}
-            product.setName(this.name);
+            String escapedName = StringEscapeUtils.escapeHtml4(this.name.toLowerCase());
+            product.setName(escapedName);
             isValueUpdated = true;
         }
 
@@ -42,7 +44,8 @@ public class UpdateProductsDTO {
                     "Invalid description format");
 
             if (validationResponse != null) {return validationResponse;}
-            product.setDescription(this.description);
+            String escapedDescription = StringEscapeUtils.escapeHtml4(this.description.toLowerCase());
+            product.setDescription(escapedDescription);
             isValueUpdated = true;
         }
 

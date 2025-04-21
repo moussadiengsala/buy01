@@ -22,7 +22,6 @@ public class UpdateUserDTO {
     private String name;
     private String prev_password;
     private String new_password;
-    private Role role;
     private MultipartFile avatar;
 
     public Response<Object> applyUpdates(PasswordEncoder passwordEncoder, User user, FileServices fileServices) {
@@ -34,7 +33,7 @@ public class UpdateUserDTO {
                             value.matches("^[A-Za-zÀ-ÿ\\s'-]+$"),
                     "Name must be between 2 and 20 characters and can only contain letters, spaces, hyphens, and apostrophes");
             if (validationResponse != null) {return validationResponse;}
-            user.setName(this.name);
+            user.setName(this.name.toLowerCase());
         }
 
         // Password update with comprehensive validation
@@ -44,18 +43,10 @@ public class UpdateUserDTO {
             user.setPassword(passwordEncoder.encode(this.new_password));
         }
 
-        // Role update with validation
-        if (this.role != null) {
-            Response<Object> validationResponse = validateField("role", this.role,
-                    value -> value == Role.CLIENT || value == Role.SELLER,
-                    "Invalid role. Must be CLIENT or SELLER");
-            if (validationResponse != null) {return validationResponse;}
-            user.setRole(this.role);
-        }
-
         // Avatar update with validation
         if (this.avatar != null && !this.avatar.isEmpty()) {
             Response<Object> validationResponse = this.validateAvatar(fileServices, user);
+            System.out.println(validationResponse);
             if (validationResponse != null) {return validationResponse;}
         }
         return null;
@@ -83,7 +74,7 @@ public class UpdateUserDTO {
 
         return validateField("new_password", newPassword,
                 password -> password.length() >= 8 &&
-                        password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"),
+                        password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$"),
                 "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
 
     }
@@ -99,6 +90,7 @@ public class UpdateUserDTO {
 
         try {
             Response<Object> fileValidationResponse = fileServices.validateFile(this.avatar);
+
             if (fileValidationResponse != null) {
                 return fileValidationResponse;
             }

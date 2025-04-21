@@ -1,37 +1,118 @@
-<div class="w-full px-5 py-10">
+<div class="w-full min-h-screen bg-gradient-to-b from-indigo-50 to-white px-5 py-10">
     <!-- Header Section -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-black mb-2">Products</h1>
-        <p class="text-gray-600">Browse our collection of products</p>
+        <h2 class="text-sm text-indigo-600 font-medium tracking-wide mb-2">Shop with confidence</h2>
+        <h1 class="text-3xl tablet:text-4xl desktop:text-5xl font-bold text-gray-900 mb-3">Products</h1>
+        <p class="text-gray-600 max-w-xl">Browse our curated collection of premium products, selected for quality and value.</p>
     </div>
+
+    <!-- Product Filters (Optional) -->
+<!--    <div class="flex flex-wrap gap-4 mb-8">-->
+<!--        <div class="flex items-center p-2 bg-white rounded-lg shadow-sm border border-indigo-100">-->
+<!--            <i class="pi pi-filter text-indigo-600 mr-2"></i>-->
+<!--            <select class="bg-transparent focus:outline-none text-gray-700">-->
+<!--                <option>All Categories</option>-->
+<!--                <option>Electronics</option>-->
+<!--                <option>Clothing</option>-->
+<!--                <option>Home & Garden</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--        <div class="flex items-center p-2 bg-white rounded-lg shadow-sm border border-indigo-100">-->
+<!--            <i class="pi pi-sort-alt text-indigo-600 mr-2"></i>-->
+<!--            <select class="bg-transparent focus:outline-none text-gray-700">-->
+<!--                <option>Sort by: Featured</option>-->
+<!--                <option>Price: Low to High</option>-->
+<!--                <option>Price: High to Low</option>-->
+<!--                <option>Newest First</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </div>-->
 
     <!-- Loading State -->
     <div *ngIf="products === null" class="flex justify-center items-center h-64">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <p class="mt-4 text-indigo-600">Loading products...</p>
+        </div>
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="products && !products.content.length" class="text-center">
-        <i class="pi pi-shopping-cart text-4xl text-gray-300 mb-4"></i>
-        <h3 class="text-md tablet:text-lg desktop:text-xl font-medium text-gray-500 mb-4">No Products Added Yet</h3>
+    <div *ngIf="products && !products.content.length" class="bg-white rounded-xl shadow-md p-10 text-center border border-indigo-100">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-indigo-100 mb-6">
+            <i class="pi pi-shopping-bag text-3xl text-indigo-600"></i>
+        </div>
+        <h3 class="text-xl font-medium text-gray-800 mb-3">No Products Available Yet</h3>
+        <p class="text-gray-600 mb-6">Our team is working hard to add new products soon.</p>
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+            <a class="flex items-center gap-2">
+                <i class="pi pi-bell"></i>
+                <span>Get Notified When Products Arrive</span>
+            </a>
+        </button>
     </div>
 
-    <div *ngIf="products && products.content.length">
+    <div *ngIf="products && products.content.length" class="space-y-8">
         <!-- Products Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 xl:grid-cols-4 gap-6">
             <div *ngFor="let item of products.content; trackBy: trackByProductId"
-                 class="overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
-                    <app-product [product]="item" />
+                 class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-indigo-50">
+                <app-product [product]="item" />
             </div>
         </div>
 
         <!-- Pagination -->
-        <p-paginator
-                (onPageChange)="onPageChange($event)"
-                [first]="currentPage * pageSize"
-                [rows]="pageSize"
-                [totalRecords]="products.page.totalElements"
-                [rowsPerPageOptions]="[5, 10, 15, 20, 30]">
-        </p-paginator>
+        <div class="flex justify-center mt-10">
+            <p-paginator
+                    (onPageChange)="onPageChange($event)"
+                    [first]="currentPage * pageSize"
+                    [rows]="pageSize"
+                    [totalRecords]="products.page.totalElements"
+                    [rowsPerPageOptions]="[5, 10, 15, 20, 30]"
+                    styleClass="p-paginator-custom">
+            </p-paginator>
+        </div>
     </div>
 </div>
+
+
+
+
+
+
+<!--<div class="w-full px-5 py-10">-->
+<!--    &lt;!&ndash; Header Section &ndash;&gt;-->
+<!--    <div class="mb-8">-->
+<!--        <h1 class="text-3xl font-bold text-black mb-2">Products</h1>-->
+<!--        <p class="text-gray-600">Browse our collection of products</p>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Loading State &ndash;&gt;-->
+<!--    <div *ngIf="products === null" class="flex justify-center items-center h-64">-->
+<!--        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Empty State &ndash;&gt;-->
+<!--    <div *ngIf="products && !products.content.length" class="text-center">-->
+<!--        <i class="pi pi-shopping-cart text-4xl text-gray-300 mb-4"></i>-->
+<!--        <h3 class="text-md tablet:text-lg desktop:text-xl font-medium text-gray-500 mb-4">No Products Added Yet</h3>-->
+<!--    </div>-->
+
+<!--    <div *ngIf="products && products.content.length">-->
+<!--        &lt;!&ndash; Products Grid &ndash;&gt;-->
+<!--        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">-->
+<!--            <div *ngFor="let item of products.content; trackBy: trackByProductId"-->
+<!--                 class="overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">-->
+<!--                    <app-product [product]="item" />-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--        <p-paginator-->
+<!--                (onPageChange)="onPageChange($event)"-->
+<!--                [first]="currentPage * pageSize"-->
+<!--                [rows]="pageSize"-->
+<!--                [totalRecords]="products.page.totalElements"-->
+<!--                [rowsPerPageOptions]="[5, 10, 15, 20, 30]">-->
+<!--        </p-paginator>-->
+<!--    </div>-->
+<!--</div>-->

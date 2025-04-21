@@ -5,7 +5,7 @@ import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {TokenService} from "../token/token.service";
 import {MediaService} from "../media/media.service";
 import {map} from "rxjs/operators";
-import {UsersService} from "../user/users.service";
+import {UserService} from "../user/users.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class ProductService {
       private http: HttpClient,
       private tokenService: TokenService,
       private mediaService: MediaService,
-      private userService: UsersService
+      private userService: UserService
   ) {}
 
   private getAuthHeaders(): HttpHeaders {

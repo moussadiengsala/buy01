@@ -1,0 +1,4 @@
+.p-fileupload-file-list  {
+    max-height: 200px ; 
+    overflow-y: scroll !important;
+}

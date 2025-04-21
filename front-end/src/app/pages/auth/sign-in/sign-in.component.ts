@@ -60,7 +60,9 @@ export class SignInComponent {
               },
           error: (error) => {
               this.loading = false;
-              this.alertService.error(error?.error?.message || 'Error', error?.error?.data || 'Failed to login')
+              console.log(error);
+              const msg: string = error ? `${error}` : 'Failed to login';
+              this.alertService.error('Failed to login', msg)
           }
       });
 

@@ -17,11 +17,13 @@ import {ToastModule} from "primeng/toast";
 })
 export class EditProductComponent {
   @Input({required: true}) product!: Product;
-  @Output() productEdited = new EventEmitter<ToastMessage>()
+  @Output() productEdited = new EventEmitter<ToastMessage>();
 
-  isEditProductVisible: boolean = false
+  isEditProductVisible: boolean = false;
   editProductForm: FormGroup;
   loading: boolean = false;
+  formSubmitted: boolean = false;
+  originalValues: any = {};
 
   constructor(
       private fb: FormBuilder,
@@ -30,44 +32,74 @@ export class EditProductComponent {
       private messageService: MessageService
   ) {
     this.editProductForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20), Validators.pattern(/^[A-Za-zÀ-ÿ\s'-]+$/)]],
-      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255), Validators.pattern(/^[A-Za-zÀ-ÿ\s'-]+$/)]],
-      price: ['', [ Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/) ]],
-      quantity: ['', [ Validators.required, Validators.min(1), Validators.pattern(/^[1-9]\d*$/) ]],
+      name: ['', [
+        Validators.required, 
+        Validators.minLength(2), 
+        Validators.maxLength(20), 
+        Validators.pattern(/^[A-Za-zÀ-ÿ\s'-]+$/)
+      ]],
+      description: ['', [
+        Validators.required, 
+        Validators.minLength(10), 
+        Validators.maxLength(255), 
+        Validators.pattern(/^[A-Za-zÀ-ÿ\s.,!?()'-]+$/)
+      ]],
+      price: ['', [ 
+        Validators.required, 
+        Validators.min(0.01), 
+        Validators.pattern(/^\d+(\.\d{1,2})?$/) 
+      ]],
+      quantity: ['', [ 
+        Validators.required, 
+        Validators.min(1), 
+        Validators.pattern(/^[1-9]\d*$/) 
+      ]],
     });
-    this.alertService.clear()
+    this.alertService.clear();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product'] && this.product) {
-      this.editProductForm.patchValue({
+      const formValues = {
         name: this.product.name,
         description: this.product.description,
         price: this.product.price,
         quantity: this.product.quantity,
-      });
+      };
+      
+      this.editProductForm.patchValue(formValues);
+      this.originalValues = {...formValues}; // Store a copy for comparison
     }
   }
 
   onSubmit(): void {
+    this.formSubmitted = true;
     this.editProductForm.markAllAsTouched();
 
-    // if (this.editProductForm.invalid) {
-    //   this.messageService.add({severity: "warn", summary: "Invalid fields", detail: 'Make sure to fill all required fields correctly!'})
-    //   return;
-    // }
+    if (this.editProductForm.invalid) {
+      this.messageService.add({
+        severity: "warn", 
+        summary: "Invalid Form", 
+        detail: 'Please correct the errors in the form before submitting.'
+      });
+      return;
+    }
 
     const updatedProduct: Product = {
-      id: "",
+      id: this.product.id,
       name: this.editProductForm.value.name,
       description: this.editProductForm.value.description,
       price: this.editProductForm.value.price,
       quantity: this.editProductForm.value.quantity,
-      userID: ""
+      userID: this.product.userID
     };
 
-    if (this.isValuesChanges(updatedProduct, this.product)) {
-      this.messageService.add({severity: "warn", summary: "Invalid", detail: 'Make sure to change some fields before submitting!'})
+    if (this.isValuesUnchanged(updatedProduct)) {
+      this.messageService.add({
+        severity: "warn", 
+        summary: "No Changes", 
+        detail: 'Please modify at least one field before saving.'
+      });
       return;
     }
 
@@ -75,28 +107,48 @@ export class EditProductComponent {
     this.productService.updateProduct(this.product.id, updatedProduct).subscribe({
       next: (response) => {
         this.loading = false;
+        this.formSubmitted = false;
         this.editProductForm.reset();
-        this.productEdited.emit({severity: "success", summary: "Success", detail: response.message || 'Product is updated successful!', status: "OK"})
-        this.toggle()
+        this.productEdited.emit({
+          severity: "success", 
+          summary: "Product Updated", 
+          detail: response.message || 'Product was successfully updated!', 
+          status: "OK"
+        });
+        this.toggle();
       },
       error: (error) => {
         this.loading = false;
         this.alertService.error(
-            error?.error?.message || 'Error',
-            error?.error?.data || 'Failed to update product'
-        )
+          error?.error?.message || 'Error',
+          error?.error?.data || 'Failed to update product. Please try again.'
+        );
       }
     });
   }
 
-  isValuesChanges(product1: Product, product2: Product) {
-    return product1.name == product2.name &&
-        product1.description == product2.description &&
-        product1.price == product2.price &&
-        product1.quantity == product2.quantity;
+  isValuesUnchanged(product: Product): boolean {
+    return product.name === this.originalValues.name &&
+        product.description === this.originalValues.description &&
+        Number(product.price) === Number(this.originalValues.price) &&
+        Number(product.quantity) === Number(this.originalValues.quantity);
   }
 
-  toggle() {this.isEditProductVisible = !this.isEditProductVisible}
+  toggle(): void {
+    this.isEditProductVisible = !this.isEditProductVisible;
+    
+    if (this.isEditProductVisible && this.product) {
+      // Reset form with current product data when opening
+      this.editProductForm.patchValue({
+        name: this.product.name,
+        description: this.product.description,
+        price: this.product.price,
+        quantity: this.product.quantity,
+      });
+      this.formSubmitted = false;
+      this.alertService.clear();
+    }
+  }
 
   get nameControl() {return this.editProductForm.controls['name'];}
   get descriptionControl() {return this.editProductForm.controls['description'];}

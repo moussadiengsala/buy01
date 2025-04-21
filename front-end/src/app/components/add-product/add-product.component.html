@@ -1,6 +1,6 @@
 <!-- Add Products Button -->
 <button
-        class="inline-flex items-center px-3 py-2 gap-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+        class="inline-flex items-center px-4 py-2.5 gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm transition-all duration-200 transform hover:-translate-y-0.5"
         (click)="toggle()">
     <i class="pi pi-plus-circle text-lg"></i>
     <span class="hidden tablet:block">Add Product</span>
@@ -14,68 +14,140 @@
     <div class="flex items-center justify-center h-full pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <p-toast />
         <!-- Background overlay -->
-        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-70 backdrop-blur-sm transition-opacity"
              aria-hidden="true"
              (click)="toggle()"></div>
 
         <!-- Modal panel -->
-        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-xl font-bold text-black">Add New Product</h3>
+        <div class="inline-block align-bottom bg-white rounded-xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div class="relative px-6 py-4 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800">Add New Product</h3>
+                <p class="text-sm text-gray-500 mt-1">Fill out the form below to add a new product to your inventory</p>
+                <button 
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200"
+                    (click)="toggle()">
+                    <i class="pi pi-times text-xl"></i>
+                </button>
             </div>
 
             <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()" class="px-6 py-6 flex flex-col gap-6">
                 <!-- Name Field -->
-                <div class="w-full flex flex-col gap-1">
-                    <label for="name" class="text-black font-medium">Name</label>
-                    <input id="name" type="text" formControlName="name" class="h-10 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <div *ngIf="nameControl?.invalid && (nameControl?.dirty || !nameControl?.untouched)">
-                        <small *ngIf="nameControl?.errors?.['required']" class="text-red-500">Name is required</small>
-                        <small *ngIf="nameControl?.errors?.['minlength']" class="text-red-500">Name must be at least 2 characters</small>
-                        <small *ngIf="nameControl?.errors?.['maxlength']" class="text-red-500">Name cannot exceed 20 characters</small>
-                        <small *ngIf="nameControl?.errors?.['pattern']" class="text-red-500">Nmae is invalid</small>
+                <div class="w-full flex flex-col gap-1.5">
+                    <label for="name" class="text-gray-700 font-medium text-sm">Product Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="pi pi-tag text-gray-400"></i>
+                        </div>
+                        <input id="name" type="text" formControlName="name" 
+                            class="h-11 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                            placeholder="Enter product name" />
+                    </div>
+                    <div *ngIf="nameControl?.invalid && (nameControl?.dirty || !nameControl?.untouched)" class="mt-1">
+                        <small *ngIf="nameControl?.errors?.['required']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Name is required
+                        </small>
+                        <small *ngIf="nameControl?.errors?.['minlength']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Name must be at least 2 characters
+                        </small>
+                        <small *ngIf="nameControl?.errors?.['maxlength']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Name cannot exceed 20 characters
+                        </small>
+                        <small *ngIf="nameControl?.errors?.['pattern']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Name is invalid
+                        </small>
                     </div>
                 </div>
 
                 <!-- Description Field -->
-                <div class="w-full flex flex-col gap-1">
-                    <label for="description" class="text-black font-medium">Description</label>
-                    <textarea id="description" formControlName="description" class="h-20 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                    <div *ngIf="descriptionControl?.invalid && (descriptionControl?.dirty || !descriptionControl?.untouched)">
-                        <small *ngIf="descriptionControl?.errors?.['required']" class="text-red-500">Description is required</small>
-                        <small *ngIf="descriptionControl?.errors?.['minlength']" class="text-red-500">Description must be at least 10 characters</small>
-                        <small *ngIf="descriptionControl?.errors?.['maxlength']" class="text-red-500">Description cannot exceed 255 characters</small>
-                        <small *ngIf="descriptionControl?.errors?.['pattern']" class="text-red-500">Description is invalid</small>
+                <div class="w-full flex flex-col gap-1.5">
+                    <label for="description" class="text-gray-700 font-medium text-sm">Description</label>
+                    <div class="relative">
+                        <div class="absolute top-3 left-3 pointer-events-none">
+                            <i class="pi pi-align-left text-gray-400"></i>
+                        </div>
+                        <textarea id="description" formControlName="description" 
+                            class="h-24 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            placeholder="Enter product description"></textarea>
+                    </div>
+                    <div *ngIf="descriptionControl?.invalid && (descriptionControl?.dirty || !descriptionControl?.untouched)" class="mt-1">
+                        <small *ngIf="descriptionControl?.errors?.['required']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Description is required
+                        </small>
+                        <small *ngIf="descriptionControl?.errors?.['minlength']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Description must be at least 10 characters
+                        </small>
+                        <small *ngIf="descriptionControl?.errors?.['maxlength']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Description cannot exceed 255 characters
+                        </small>
+                        <small *ngIf="descriptionControl?.errors?.['pattern']" class="text-red-500 flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle"></i> Description is invalid
+                        </small>
                     </div>
                 </div>
 
-                <!-- Price Field -->
-                <div class="w-full flex flex-col gap-1">
-                    <label for="price" class="text-black font-medium">Price</label>
-                    <input id="price" type="number" formControlName="price" class="h-10 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <div *ngIf="priceControl?.invalid && (priceControl?.dirty || !priceControl?.untouched)">
-                        <small *ngIf="priceControl?.errors?.['required']" class="text-red-500">Price is required</small>
-                        <small *ngIf="priceControl?.errors?.['min']" class="text-red-500">Price must be greater than 0</small>
-                        <small *ngIf="priceControl?.errors?.['pattern']" class="text-red-500">Price is invalid</small>
+                <div class="grid grid-cols-1 tablet:grid-cols-2 gap-6">
+                    <!-- Price Field -->
+                    <div class="w-full flex flex-col gap-1.5">
+                        <label for="price" class="text-gray-700 font-medium text-sm">Price</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="pi pi-dollar text-gray-400"></i>
+                            </div>
+                            <input id="price" type="number" formControlName="price" 
+                                class="h-11 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                placeholder="0.00" />
+                        </div>
+                        <div *ngIf="priceControl?.invalid && (priceControl?.dirty || !priceControl?.untouched)" class="mt-1">
+                            <small *ngIf="priceControl?.errors?.['required']" class="text-red-500 flex items-center gap-1">
+                                <i class="pi pi-exclamation-circle"></i> Price is required
+                            </small>
+                            <small *ngIf="priceControl?.errors?.['min']" class="text-red-500 flex items-center gap-1">
+                                <i class="pi pi-exclamation-circle"></i> Price must be greater than 0
+                            </small>
+                            <small *ngIf="priceControl?.errors?.['pattern']" class="text-red-500 flex items-center gap-1">
+                                <i class="pi pi-exclamation-circle"></i> Price is invalid
+                            </small>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Quantity Field -->
-                <div class="w-full flex flex-col gap-1">
-                    <label for="quantity" class="text-black font-medium">Quantity</label>
-                    <input id="quantity" type="number" formControlName="quantity" class="h-10 w-full px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <div *ngIf="quantityControl?.invalid && (quantityControl?.dirty || !quantityControl?.untouched)">
-                        <small *ngIf="quantityControl?.errors?.['required']" class="text-red-500">Quantity is required</small>
-                        <small *ngIf="quantityControl?.errors?.['min']" class="text-red-500">Quantity must be greater than 0</small>
-                        <small *ngIf="quantityControl?.errors?.['pattern']" class="text-red-500">Quantity is invalid</small>
+                    <!-- Quantity Field -->
+                    <div class="w-full flex flex-col gap-1.5">
+                        <label for="quantity" class="text-gray-700 font-medium text-sm">Quantity</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="pi pi-box text-gray-400"></i>
+                            </div>
+                            <input id="quantity" type="number" formControlName="quantity" 
+                                class="h-11 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                placeholder="0" />
+                        </div>
+                        <div *ngIf="quantityControl?.invalid && (quantityControl?.dirty || !quantityControl?.untouched)" class="mt-1">
+                            <small *ngIf="quantityControl?.errors?.['required']" class="text-red-500 flex items-center gap-1">
+                                <i class="pi pi-exclamation-circle"></i> Quantity is required
+                            </small>
+                            <small *ngIf="quantityControl?.errors?.['min']" class="text-red-500 flex items-center gap-1">
+                                <i class="pi pi-exclamation-circle"></i> Quantity must be greater than 0
+                            </small>
+                            <small *ngIf="quantityControl?.errors?.['pattern']" class="text-red-500 flex items-center gap-1">
+                                <i class="pi pi-exclamation-circle"></i> Quantity is invalid
+                            </small>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Buttons -->
-                <div class="flex justify-end gap-4">
-                    <button type="button" class="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300" (click)="toggle()">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" >Save</button>
-<!--                    [disabled]="addProductForm.invalid"-->
+                <div class="flex justify-end gap-4 mt-2">
+                    <button type="button" 
+                        class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
+                        (click)="toggle()">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center gap-2"
+                        [ngClass]="{'opacity-70 cursor-not-allowed': loading}">
+                        <i *ngIf="loading" class="pi pi-spin pi-spinner"></i>
+                        <span>{{ loading ? 'Saving...' : 'Save Product' }}</span>
+                    </button>
                 </div>
             </form>
             <app-alert />

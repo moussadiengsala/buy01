@@ -3,6 +3,83 @@
     width: 100%;
 }
 
+/* Simple card styling */
+.bg-white {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.bg-white:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Table styling */
+:host ::ng-deep .p-datatable {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    padding: 0.75rem;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Button styling */
+:host ::ng-deep .p-button.p-button-text {
+    color: #3b82f6;
+}
+
+:host ::ng-deep .p-button.p-button-text:hover {
+    background-color: #f1f5f9;
+}
+
+/* Loading spinner */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Product image */
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+/* Paginator */
+:host ::ng-deep .p-paginator {
+    background-color: transparent;
+    border: none;
+    padding: 0.75rem;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    background-color: #3b82f6;
+    color: white;
+}
+
+/* Toast */
+:host ::ng-deep .p-toast .p-toast-message {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 /*th, td {*/
 /*    background-color: white !important;*/
 /*    color: black !important;*/

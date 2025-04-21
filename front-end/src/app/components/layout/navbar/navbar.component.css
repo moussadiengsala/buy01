@@ -1,0 +1,47 @@
+/* navbar.component.css */
+
+/*!* Fix for scroll issues *!*/
+/*:host ::ng-deep nav div {*/
+/*    max-height: 90vh;*/
+/*    overflow-y: auto;*/
+/*    -webkit-overflow-scrolling: touch;*/
+/*}*/
+
+/* Active link styling */
+:host ::ng-deep .active {
+    color: #3B82F6;
+    font-weight: 600;
+}
+
+/*!* Badge styling *!*/
+/*:host ::ng-deep .p-badge {*/
+/*    background-color: #3B82F6;*/
+/*}*/
+
+:host ::ng-deep nav {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+:host ::ng-deep .menu-overlay {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+:host ::ng-deep .menu-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+:host ::ng-deep .menu-panel {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+:host ::ng-deep .menu-panel.open {
+    transform: translateY(0);
+    opacity: 1;
+}

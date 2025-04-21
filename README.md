@@ -58,36 +58,16 @@ buy-01/
 
 ## Setup and Installation
 
-### 1. Dependencies
-Launch the required dependencies:
+### 1. 
+Start the Project:
 ```bash
-make launch-dependencies
+make up
 ```
 
-### 2. Services
-Build and launch all services:
+### 2. 
+Stop the Project:
 ```bash
-make launch-services
-```
-
-To stop dependencies:
-```bash
-make down-dependencies
-```
-
-To stop services:
-```bash
-make down-services
-```
-
-### Individual Service Management
-Build specific services:
-```bash
-make build-registery
-make build-gateways
-make build-users
-make build-products
-make build-media
+make down
 ```
 
 ## Security Measures

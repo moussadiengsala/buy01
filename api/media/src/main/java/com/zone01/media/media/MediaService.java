@@ -169,45 +169,89 @@ public class MediaService {
         }
     }
 
-    public Response<Object> deleteMediaByProductId(String productId) {
+    public Response<Object> deleteMediaByProductIds(List<String> productIds) {
         try {
-            List<Media> mediaToDelete = mediaRepository.findMediaByProductId(productId);
+            // Use the correct repository method for list-based lookup
+            List<Media> mediaToDelete = mediaRepository.findMediaByProductIdIn(productIds);
             if (mediaToDelete.isEmpty()) {
                 return Response.<Object>builder()
                         .status(HttpStatus.OK.value())
-                        .message("ok")
+                        .message("No media found for the given product IDs.")
                         .data(null)
                         .build();
             }
 
-            // Delete files from filesystem
+            // Delete media files from filesystem
             for (Media media : mediaToDelete) {
                 try {
                     fileServices.deleteOldFile(media.getProductId(), media.getImagePath());
                 } catch (Exception e) {
                     return Response.<Object>builder()
                             .status(HttpStatus.BAD_REQUEST.value())
-                            .message("Media delete failed: " + e.getMessage())
+                            .message("File deletion failed for product ID " + media.getProductId() + ": " + e.getMessage())
                             .data(null)
                             .build();
                 }
             }
 
-            // Delete media records from database
+            // Delete from database
             mediaRepository.deleteAll(mediaToDelete);
 
             return Response.<Object>builder()
                     .status(HttpStatus.OK.value())
-                    .message("All media for the product deleted successfully")
+                    .message("All media for the provided product IDs deleted successfully.")
                     .data(null)
                     .build();
 
         } catch (Exception e) {
             return Response.<Object>builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .message("Media deletion failed: " + e.getMessage())
                     .data(null)
                     .build();
         }
     }
+
+
+//    public Response<Object> deleteMediaByProductIds(List<String> productIds) {
+//        try {
+//            List<Media> mediaToDelete = mediaRepository.findMediaByProductId(productIds);
+//            if (mediaToDelete.isEmpty()) {
+//                return Response.<Object>builder()
+//                        .status(HttpStatus.OK.value())
+//                        .message("ok")
+//                        .data(null)
+//                        .build();
+//            }
+//
+//            // Delete files from filesystem
+//            for (Media media : mediaToDelete) {
+//                try {
+//                    fileServices.deleteOldFile(media.getProductId(), media.getImagePath());
+//                } catch (Exception e) {
+//                    return Response.<Object>builder()
+//                            .status(HttpStatus.BAD_REQUEST.value())
+//                            .message("Media delete failed: " + e.getMessage())
+//                            .data(null)
+//                            .build();
+//                }
+//            }
+//
+//            // Delete media records from database
+//            mediaRepository.deleteAll(mediaToDelete);
+//
+//            return Response.<Object>builder()
+//                    .status(HttpStatus.OK.value())
+//                    .message("All media for the product deleted successfully")
+//                    .data(null)
+//                    .build();
+//
+//        } catch (Exception e) {
+//            return Response.<Object>builder()
+//                    .status(HttpStatus.BAD_REQUEST.value())
+//                    .message("Media deletion failed: " + e.getMessage())
+//                    .data(null)
+//                    .build();
+//        }
+//    }
 }

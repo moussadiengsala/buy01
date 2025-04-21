@@ -1,6 +1,7 @@
 package com.zone01.users.user;
 
 import com.zone01.users.config.JwtService;
+import com.zone01.users.config.kafka.ProductServices;
 import com.zone01.users.dto.UpdateUserDTO;
 import com.zone01.users.dto.UserDTO;
 import com.zone01.users.dto.UserLoginDTO;
@@ -31,6 +32,7 @@ public class UserService {
     private final JwtService jwtService;
     private final FileServices fileServices;
     private final AuthenticationManager authenticationManager;
+    private final ProductServices productServices;
 
     @Autowired // can be omitted if the class has only one constructor
     public UserService(
@@ -38,13 +40,14 @@ public class UserService {
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             AuthenticationManager authenticationManager,
-            FileServices fileServices
+            FileServices fileServices, ProductServices productServices
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.fileServices = fileServices;
+        this.productServices = productServices;
     }
 
     public Optional<UserDTO> getUserById(String id) {
@@ -89,7 +92,7 @@ public class UserService {
         }
 
         User new_user = User.builder()
-                .name(user.getName())
+                .name(user.getName().toLowerCase())
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(user.getPassword()))
                 .role(user.getRole())
@@ -147,31 +150,31 @@ public class UserService {
     public Response<Object> updateUser(String userId, UpdateUserDTO updateUserDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
         Response<Object> updateResponse = updateUserDTO.applyUpdates(passwordEncoder, user, fileServices);
         if (updateResponse != null) { return updateResponse;}
 
         User updatedUser = userRepository.save(user);
-        UserDTO updatedUserDTO = new UserDTO(
-                updatedUser.getId(),
-                updatedUser.getName(),
-                updatedUser.getEmail(),
-                updatedUser.getRole(),
-                updatedUser.getAvatar()
-        );
+        var jwtToken = jwtService.generateToken(updatedUser);
+        var refreshToken = jwtService.generateRefreshToken(updatedUser);
 
-        // Build and return response
         return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
-                .data(updatedUserDTO)
-                .message("User updated successfully")
+                .message("Your informations has been updated successfully.")
+                .data(AuthenticationResponse.builder()
+                        .accessToken(jwtToken)
+                        .refreshToken(refreshToken)
+                        .build())
                 .build();
     }
 
-    public Response<UserDTO> deleteUser(String id) {
+    public Response<Object> deleteUser(String id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Response<Object> productResponse = productServices.deleteProductRelatedToUser(user.getId());
+        if (productResponse != null) {
+            return productResponse;
+        }
 
         userRepository.deleteById(id);
         UserDTO deletedUserDTO = new UserDTO(
@@ -183,7 +186,7 @@ public class UserService {
         );
 
         // Return success response
-        return Response.<UserDTO>builder()
+        return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
                 .data(deletedUserDTO)
                 .message("User deleted successfully")

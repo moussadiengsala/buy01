@@ -9,6 +9,7 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -20,21 +21,24 @@ import java.util.regex.Pattern;
 public class MediaServices {
     private final ObjectMapper jacksonObjectMapper;
 
-    private final ReplyingKafkaTemplate<String, String, Response<?>> replyingMediaKafkaTemplate;
+    private final ReplyingKafkaTemplate<String, Object, Response<?>> replyingMediaKafkaTemplate;
     private static final long REPLY_TIMEOUT_SECONDS = 30;
     private static final String PRODUCT_REQUEST = "product-request-to-media";
 
-    public Response<Object> deleteMediaRelatedToProduct(String productId) {
+    public Response<Object> deleteMediaRelatedToProduct(List<String> productIds) {
         try {
             // Create a ProducerRecord with reply topic header
-            ProducerRecord<String, String> record =
-                    new ProducerRecord<>(PRODUCT_REQUEST, productId);
+            ProducerRecord<String, Object> record =
+                    new ProducerRecord<>(
+                            PRODUCT_REQUEST,
+                            productIds
+                    );
 
             record.headers().add("X-Correlation-ID", UUID.randomUUID().toString().getBytes());
             record.headers().add("X-Correlation-Source", "media".getBytes());
 
             // Send and receive the response
-            RequestReplyFuture<String, String, Response<?>> replyFuture =
+            RequestReplyFuture<String, Object, Response<?>> replyFuture =
                     replyingMediaKafkaTemplate.sendAndReceive(record);
 
             // Wait for response

@@ -18,6 +18,7 @@ export class AddProductComponent {
   addProductForm: FormGroup;
   isAddProductVisible: boolean = false;
   loading: boolean = false;
+  formSubmitted: boolean = false;
   @Output() productAdded = new EventEmitter<ToastMessage>();
 
   constructor(
@@ -27,19 +28,42 @@ export class AddProductComponent {
       private messageService: MessageService
   ) {
       this.addProductForm = this.fb.group({
-        name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20), Validators.pattern(/^[A-Za-zÀ-ÿ0-9\s'-]+$/)]],
-        description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255), Validators.pattern(/^[A-Za-zÀ-ÿ0-9\s.,!?()'-]+$/)]],
-        price: ['', [ Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/) ]],
-        quantity: ['', [ Validators.required, Validators.min(1), Validators.pattern(/^[1-9]\d*$/) ]],
+        name: ['', [
+          Validators.required, 
+          Validators.minLength(2), 
+          Validators.maxLength(50),
+          Validators.pattern(/^[A-Za-zÀ-ÿ0-9\s'-]+$/)
+        ]],
+        description: ['', [
+          Validators.required, 
+          Validators.minLength(10), 
+          Validators.maxLength(255), 
+          Validators.pattern(/^[A-Za-zÀ-ÿ0-9\s.,!?()'-]+$/)
+        ]],
+        price: ['', [ 
+          Validators.required, 
+          Validators.min(0.01), 
+          Validators.pattern(/^\d+(\.\d{1,2})?$/) 
+        ]],
+        quantity: ['', [ 
+          Validators.required, 
+          Validators.min(1), 
+          Validators.pattern(/^[1-9]\d*$/) 
+        ]],
       });
-      this.alertService.clear()
+      this.alertService.clear();
   }
 
   onSubmit(): void {
+    this.formSubmitted = true;
     this.addProductForm.markAllAsTouched();
-    console.log(this.quantityControl)
+    
     if (this.addProductForm.invalid) {
-      this.messageService.add({severity: "warn", summary: "Invalid fields", detail: 'Make sure to fill all required fields correctly!'})
+      this.messageService.add({
+        severity: "warn", 
+        summary: "Invalid Form", 
+        detail: 'Please correct the errors in the form before submitting.'
+      });
       return;
     }
 
@@ -54,25 +78,39 @@ export class AddProductComponent {
     this.productService.createProduct(newProduct).subscribe({
       next: (response) => {
         this.loading = false;
+        this.formSubmitted = false;
         this.addProductForm.reset();
-        this.productAdded.emit({severity: "success", summary: "Success", detail: response.message || 'Product created successful!', status: "OK"})
-        this.toggle()
+        this.productAdded.emit({
+          severity: "success", 
+          summary: "Product Added", 
+          detail: response.message || 'Product successfully added to your inventory!', 
+          status: "OK"
+        });
+        this.toggle();
       },
       error: (error) => {
         this.loading = false;
         this.alertService.error(
             error?.error?.message || 'Error',
-            error?.error?.data || 'Failed to create product'
-        )
+            error?.error?.data || 'Failed to create product. Please try again.'
+        );
       }
     });
   }
 
-  toggle() {this.isAddProductVisible = !this.isAddProductVisible}
+  toggle(): void {
+    this.isAddProductVisible = !this.isAddProductVisible;
+    
+    if (!this.isAddProductVisible) {
+      // Reset form when closing the modal
+      this.formSubmitted = false;
+      this.addProductForm.reset();
+      this.alertService.clear();
+    }
+  }
 
   get nameControl() {return this.addProductForm.controls['name'];}
   get descriptionControl() {return this.addProductForm.controls['description'];}
   get priceControl() {return this.addProductForm.controls['price'];}
   get quantityControl() {return this.addProductForm.controls['quantity'];}
-
 }

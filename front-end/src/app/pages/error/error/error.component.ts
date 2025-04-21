@@ -8,7 +8,8 @@ import {switchMap} from "rxjs";
         RouterLink
     ],
     standalone: true,
-    templateUrl: './error.component.html'
+    templateUrl: './error.component.html',
+    styleUrl: './error.component.css'
 })
 export class ErrorComponent {
 

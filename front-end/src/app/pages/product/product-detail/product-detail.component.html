@@ -1,17 +1,27 @@
-<div class="w-full p-5">
+<div class="w-full min-h-screen bg-gradient-to-b from-indigo-50 to-white p-5">
     <div>
-
-        <div *ngIf="!product">
-            No product
+        <div *ngIf="!product" class="flex justify-center items-center h-64">
+            <div class="text-center p-8 rounded-xl shadow-xl bg-white border border-indigo-100 max-w-lg">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
+                    <i class="pi pi-exclamation-circle text-2xl text-indigo-600"></i>
+                </div>
+                <h3 class="text-xl font-medium text-gray-800 mb-2">Product Not Found</h3>
+                <p class="text-gray-600 mb-6">The product you're looking for is not available.</p>
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <a routerLink="/products" class="flex items-center justify-center gap-2">
+                        <i class="pi pi-arrow-left"></i>
+                        <span>Back to Products</span>
+                    </a>
+                </button>
+            </div>
         </div>
 
-        <!--        -->
-        <div *ngIf="product">
-            <div class="flex flex-col tablet:grid tablet:grid-rows-1 tablet:grid-cols-2 tablet:gap-8 tablet:p-8">
+        <div *ngIf="product" class="max-w-6xl mx-auto">
+            <div class="flex flex-col tablet:grid tablet:grid-rows-1 tablet:grid-cols-2 tablet:gap-8 desktop:gap-12 tablet:p-8">
                 <!-- Carousel Section -->
                 <div *ngIf="!product.media?.length" class="p-8 max-w-lg w-full desktop:max-w-xl mx-auto">
-                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">
-                        <i class="pi pi-image text-3xl text-gray-400"></i>
+                    <div class="w-full aspect-square bg-white border border-indigo-100 rounded-xl shadow-md flex items-center justify-center">
+                        <i class="pi pi-image text-4xl text-indigo-300"></i>
                     </div>
                 </div>
                 <div *ngIf="product.media?.length" class="max-w-lg desktop:max-w-xl mx-auto">
@@ -22,34 +32,53 @@
                             [circular]="false"
                             [showNavigators]="false"
                             [responsiveOptions]="responsiveOptions"
-                            class="shadow-lg rounded-lg overflow-hidden space-x-4"
+                            class="shadow-xl rounded-xl overflow-hidden"
                     >
                         <ng-template let-media pTemplate="item">
-                                <div class="relative w-full flex items-center justify-center rounded-md overflow-hidden">
-                                    <img [src]="getMedia(media.productId, media.imagePath)"
-                                            [alt]="media.name"
-                                            class="h-full object-contain"
-                                    />
-                                </div>
+                            <div class="relative w-full flex items-center justify-center rounded-xl overflow-hidden bg-white p-4">
+                                <img [src]="getMedia(media.productId, media.imagePath)"
+                                     [alt]="media.name"
+                                     class="h-full object-contain"
+                                />
+                            </div>
                         </ng-template>
                     </p-carousel>
+
+                    <!-- Thumbnail navigation (optional enhancement) -->
+                    <div class="mt-4 flex gap-2 justify-center">
+                        <div *ngFor="let media of product.media; let i = index"
+                             class="w-16 h-16 border-2 rounded-lg cursor-pointer transition-all"
+                             [ngClass]="{'border-indigo-600': i === 0, 'border-gray-200 hover:border-indigo-300': i !== 0}">
+                            <img [src]="getMedia(media.productId, media.imagePath)"
+                                 [alt]="media.id"
+                                 class="w-full h-full object-cover rounded-lg" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Product Details Section -->
-                <div class="space-y-4">
-                    <h2 class="text-xl tablet:text-2xl desktop:text-3xl font-semibold border-b-2 p-4 capitalize">{{ product.product.name }}</h2>
-                    <div class="p-4 border-b-2 flex justify-between">
-                        <span class="text-2xl">${{ product.product.price }}</span>
-                        <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'" [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'" />
+                <div class="space-y-6 mt-8 tablet:mt-0 bg-white p-6 rounded-xl shadow-md border border-indigo-50">
+                    <div>
+                        <h2 class="text-sm text-indigo-600 font-medium tracking-wide">Premium Collection</h2>
+                        <h1 class="text-2xl tablet:text-3xl desktop:text-4xl font-bold text-gray-900 mt-1 capitalize">{{ product.product.name }}</h1>
                     </div>
 
-                    <div class="p-4 space-y-4">
-                        <h3 class="">Choose The Size</h3>
+                    <div class="flex justify-between items-center py-4 border-b border-indigo-100">
+                        <span class="text-2xl desktop:text-3xl font-bold text-gray-900">${{ product.product.price }}</span>
+                        <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'"
+                               [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'"
+                               styleClass="rounded-full px-4 py-2" />
+                    </div>
+
+                    <div class="py-4 space-y-4">
+                        <h3 class="text-lg font-medium text-gray-800">Choose The Size</h3>
                         <div class="flex space-x-4">
                             <!-- Custom Radio for Size S -->
                             <div>
                                 <input type="radio" id="size-s" name="size" class="hidden peer" />
-                                <label for="size-s" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                <label for="size-s" class="border-2 border-gray-200 px-4 py-2 rounded-lg cursor-pointer transition-all duration-300
+                                                          peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600
+                                                          hover:border-indigo-300">
                                     S
                                 </label>
                             </div>
@@ -57,7 +86,9 @@
                             <!-- Custom Radio for Size M -->
                             <div>
                                 <input type="radio" id="size-m" name="size" class="hidden peer" />
-                                <label for="size-m" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                <label for="size-m" class="border-2 border-gray-200 px-4 py-2 rounded-lg cursor-pointer transition-all duration-300
+                                                          peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600
+                                                          hover:border-indigo-300">
                                     M
                                 </label>
                             </div>
@@ -65,7 +96,9 @@
                             <!-- Custom Radio for Size L -->
                             <div>
                                 <input type="radio" id="size-l" name="size" class="hidden peer" />
-                                <label for="size-l" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                <label for="size-l" class="border-2 border-gray-200 px-4 py-2 rounded-lg cursor-pointer transition-all duration-300
+                                                          peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600
+                                                          hover:border-indigo-300">
                                     L
                                 </label>
                             </div>
@@ -73,28 +106,201 @@
                             <!-- Custom Radio for Size XL -->
                             <div>
                                 <input type="radio" id="size-xl" name="size" class="hidden peer" />
-                                <label for="size-xl" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">
+                                <label for="size-xl" class="border-2 border-gray-200 px-4 py-2 rounded-lg cursor-pointer transition-all duration-300
+                                                            peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600
+                                                            hover:border-indigo-300">
                                     XL
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="py-10">
-                        <p-accordion>
-                            <p-accordionTab header="Product Description" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
-                                <p class="m-0">{{ product.product.description }}</p>
+                    <div class="py-4">
+                        <p-accordion styleClass="border-none">
+                            <p-accordionTab header="Product Description" [headerStyle]="{ 'font-weight': 'medium', 'padding': '1.5rem 15px', 'color': '#4F46E5' }">
+                                <p class="text-gray-700 leading-relaxed">{{ product.product.description }}</p>
                             </p-accordionTab>
-                            <p-accordionTab header="Delivery and Returns" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">
-                                <p class="m-0">Free delivery and returns within 30 days.</p>
+                            <p-accordionTab header="Delivery and Returns" [headerStyle]="{ 'font-weight': 'medium', 'padding': '1.5rem 15px', 'color': '#4F46E5' }">
+                                <div class="space-y-3 text-gray-700">
+                                    <div class="flex items-center gap-2">
+                                        <i class="pi pi-truck text-indigo-600"></i>
+                                        <span>Free delivery on orders over $50</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="pi pi-sync text-indigo-600"></i>
+                                        <span>Easy returns within 30 days</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="pi pi-shield text-indigo-600"></i>
+                                        <span>Secure payments</span>
+                                    </div>
+                                </div>
                             </p-accordionTab>
                         </p-accordion>
                     </div>
 
-                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white py-2 desktop:py-4 rounded text-md tablet:text-lg">Purchase Now</button>
+                    <div class="flex gap-4 pt-4">
+                        <button class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 desktop:py-4 rounded-lg text-md tablet:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                            <i class="pi pi-shopping-cart"></i>
+                            <span>Add to Cart</span>
+                        </button>
+                        <button class="bg-white hover:bg-gray-50 text-indigo-600 p-3 desktop:p-4 rounded-lg border-2 border-indigo-200 hover:border-indigo-300 transition-all duration-300">
+                            <i class="pi pi-heart text-xl"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
+            <!-- Customer Reviews Section (Optional Enhancement) -->
+            <div class="mt-12 p-6 bg-white rounded-xl shadow-md border border-indigo-50">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Customer Reviews</h3>
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-1">
+                            <i class="pi pi-star-fill text-yellow-400"></i>
+                            <i class="pi pi-star-fill text-yellow-400"></i>
+                            <i class="pi pi-star-fill text-yellow-400"></i>
+                            <i class="pi pi-star-fill text-yellow-400"></i>
+                            <i class="pi pi-star text-yellow-400"></i>
+                            <span class="ml-2 text-gray-700">4.0 out of 5</span>
+                        </div>
+                        <button class="text-indigo-600 hover:text-indigo-800 font-medium">Write a Review</button>
+                    </div>
+                    <p class="text-gray-500 italic">Be the first to review this product</p>
+                </div>
+            </div>
+
+            <!-- Related Products Section (Optional Enhancement) -->
+<!--            <div class="mt-12">-->
+<!--                <h3 class="text-xl font-bold text-gray-900 mb-6">You May Also Like</h3>-->
+<!--                <div class="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-4">-->
+<!--                    &lt;!&ndash; Placeholder for related products &ndash;&gt;-->
+<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
+<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
+<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
+<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
+<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
+<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
+<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
+<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
+<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+<!--<div class="w-full p-5">-->
+<!--    <div>-->
+
+<!--        <div *ngIf="!product">-->
+<!--            No product-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash;        &ndash;&gt;-->
+<!--        <div *ngIf="product">-->
+<!--            <div class="flex flex-col tablet:grid tablet:grid-rows-1 tablet:grid-cols-2 tablet:gap-8 tablet:p-8">-->
+<!--                &lt;!&ndash; Carousel Section &ndash;&gt;-->
+<!--                <div *ngIf="!product.media?.length" class="p-8 max-w-lg w-full desktop:max-w-xl mx-auto">-->
+<!--                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">-->
+<!--                        <i class="pi pi-image text-3xl text-gray-400"></i>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div *ngIf="product.media?.length" class="max-w-lg desktop:max-w-xl mx-auto">-->
+<!--                    <p-carousel-->
+<!--                            [value]="product.media"-->
+<!--                            [numVisible]="1"-->
+<!--                            [numScroll]="1"-->
+<!--                            [circular]="false"-->
+<!--                            [showNavigators]="false"-->
+<!--                            [responsiveOptions]="responsiveOptions"-->
+<!--                            class="shadow-lg rounded-lg overflow-hidden space-x-4"-->
+<!--                    >-->
+<!--                        <ng-template let-media pTemplate="item">-->
+<!--                                <div class="relative w-full flex items-center justify-center rounded-md overflow-hidden">-->
+<!--                                    <img [src]="getMedia(media.productId, media.imagePath)"-->
+<!--                                            [alt]="media.name"-->
+<!--                                            class="h-full object-contain"-->
+<!--                                    />-->
+<!--                                </div>-->
+<!--                        </ng-template>-->
+<!--                    </p-carousel>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Product Details Section &ndash;&gt;-->
+<!--                <div class="space-y-4">-->
+<!--                    <h2 class="text-xl tablet:text-2xl desktop:text-3xl font-semibold border-b-2 p-4 capitalize">{{ product.product.name }}</h2>-->
+<!--                    <div class="p-4 border-b-2 flex justify-between">-->
+<!--                        <span class="text-2xl">${{ product.product.price }}</span>-->
+<!--                        <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'" [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'" />-->
+<!--                    </div>-->
+
+<!--                    <div class="p-4 space-y-4">-->
+<!--                        <h3 class="">Choose The Size</h3>-->
+<!--                        <div class="flex space-x-4">-->
+<!--                            &lt;!&ndash; Custom Radio for Size S &ndash;&gt;-->
+<!--                            <div>-->
+<!--                                <input type="radio" id="size-s" name="size" class="hidden peer" />-->
+<!--                                <label for="size-s" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
+<!--                                    S-->
+<!--                                </label>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Custom Radio for Size M &ndash;&gt;-->
+<!--                            <div>-->
+<!--                                <input type="radio" id="size-m" name="size" class="hidden peer" />-->
+<!--                                <label for="size-m" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
+<!--                                    M-->
+<!--                                </label>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Custom Radio for Size L &ndash;&gt;-->
+<!--                            <div>-->
+<!--                                <input type="radio" id="size-l" name="size" class="hidden peer" />-->
+<!--                                <label for="size-l" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
+<!--                                    L-->
+<!--                                </label>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Custom Radio for Size XL &ndash;&gt;-->
+<!--                            <div>-->
+<!--                                <input type="radio" id="size-xl" name="size" class="hidden peer" />-->
+<!--                                <label for="size-xl" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
+<!--                                    XL-->
+<!--                                </label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="py-10">-->
+<!--                        <p-accordion>-->
+<!--                            <p-accordionTab header="Product Description" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">-->
+<!--                                <p class="m-0">{{ product.product.description }}</p>-->
+<!--                            </p-accordionTab>-->
+<!--                            <p-accordionTab header="Delivery and Returns" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">-->
+<!--                                <p class="m-0">Free delivery and returns within 30 days.</p>-->
+<!--                            </p-accordionTab>-->
+<!--                        </p-accordion>-->
+<!--                    </div>-->
+
+<!--                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white py-2 desktop:py-4 rounded text-md tablet:text-lg">Purchase Now</button>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->

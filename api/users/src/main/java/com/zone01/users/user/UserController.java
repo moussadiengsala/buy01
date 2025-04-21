@@ -91,7 +91,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<Response<Object>> updateUser(
             @PathVariable String id,
-            @Valid @ModelAttribute UpdateUserDTO updateUserDTO
+            @ModelAttribute UpdateUserDTO updateUserDTO
             ) {
         Response<Object> updatedUser = userService.updateUser(id, updateUserDTO);
         return ResponseEntity.status(updatedUser.getStatus()).body(updatedUser);
@@ -99,8 +99,8 @@ public class UserController {
 
     @PreAuthorize("#id == authentication.principal.id")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<UserDTO>> deleteUser(@PathVariable String id) {
-        Response<UserDTO> deletedUser = userService.deleteUser(id);
+    public ResponseEntity<Response<Object>> deleteUser(@PathVariable String id) {
+        Response<Object> deletedUser = userService.deleteUser(id);
         return ResponseEntity.status(deletedUser.getStatus()).body(deletedUser);
     }
 

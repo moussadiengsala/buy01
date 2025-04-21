@@ -3,11 +3,13 @@ package com.zone01.users.dto;
 import com.zone01.users.model.Role;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class UserRegistrationDTO {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 20, message = "Name must be between 2 and 20 characters")

@@ -9,14 +9,17 @@ import com.zone01.products.model.Response;
 import com.zone01.products.model.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductsService {
@@ -43,14 +46,16 @@ public class ProductsService {
     }
 
     public Products createProduct(CreateProductDTO product, HttpServletRequest request) {
-
         UserDTO currentUser = AccessValidation.getCurrentUser(request);
+
+        String escapedName = StringEscapeUtils.escapeHtml4(product.getName().toLowerCase());
+        String escapedDescription = StringEscapeUtils.escapeHtml4(product.getDescription().toLowerCase());
 
         Products newProduct = Products
                 .builder()
-                .name(product.getName())
+                .name(escapedName)
                 .price(product.getPrice())
-                .description(product.getDescription())
+                .description(escapedDescription)
                 .quantity(product.getQuantity())
                 .userID(currentUser.getId())
                 .build();
@@ -115,7 +120,7 @@ public class ProductsService {
         }
 
         Products product = (Products) authorizationResponse.getData();
-        Response<Object> deletedMediaResponse = mediaServices.deleteMediaRelatedToProduct(product.getId());
+        Response<Object> deletedMediaResponse = mediaServices.deleteMediaRelatedToProduct(List.of(product.getId()));
         if (deletedMediaResponse != null) {
             return Response.<Object>builder()
                     .status(deletedMediaResponse.getStatus())
@@ -129,6 +134,37 @@ public class ProductsService {
         return Response.<Object>builder()
                 .status(HttpStatus.OK.value())
                 .data(authorizationResponse.getData())
+                .message("Product deleted successfully")
+                .build();
+    }
+
+    public Response<Object> deleteProductsByUserId(String userId) {
+        Optional<List<Products>> productOptional = productsRepository.findByUserID(userId);
+        if (productOptional.isEmpty()) {
+            return Response.<Object>builder()
+                    .status(HttpStatus.OK.value())
+                    .data(null)
+                    .message("Nothing to delete")
+                    .build();
+        }
+
+        List<Products> products = productOptional.get();
+        List<String> ids = products.stream().map(Products::getId).collect(Collectors.toList());
+
+        Response<Object> deletedMediaResponse = mediaServices.deleteMediaRelatedToProduct(ids);
+        if (deletedMediaResponse != null) {
+            return Response.<Object>builder()
+                    .status(deletedMediaResponse.getStatus())
+                    .data(null)
+                    .message(deletedMediaResponse.getMessage())
+                    .build();
+        }
+
+        productsRepository.deleteAllById(ids);
+
+        return Response.<Object>builder()
+                .status(HttpStatus.OK.value())
+                .data(null)
                 .message("Product deleted successfully")
                 .build();
     }

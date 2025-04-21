@@ -1,0 +1,73 @@
+  version: "3.8"
+  services:
+    mongodb:
+      image: mongo
+      container_name: mongodb
+      ports:
+        - 27017:27017
+      volumes:
+        - data:/data/db
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=rootuser
+        - MONGO_INITDB_ROOT_PASSWORD=password
+        - MONGO_INITDB_DATABASE=buy01
+      networks:
+        - backend
+
+    mongo-express:
+      image: mongo-express
+      container_name: mongo-express
+      ports:
+        - 8081:8081
+      environment:
+        - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+        - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+        - ME_CONFIG_MONGODB_SERVER=mongodb
+      networks:
+        - backend
+
+    kafka:
+      image: apache/kafka:latest
+      container_name: kafka
+      ports:
+        - "9092:9092"
+      environment:
+        # Configure listeners for both docker and host communication
+        KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
+        KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:9093
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
+
+        # Settings required for KRaft mode
+        KAFKA_NODE_ID: 1
+        KAFKA_PROCESS_ROLES: broker,controller
+        KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+        KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
+
+        # Listener to use for broker-to-broker communication
+        KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
+        # Required for a single node cluster
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      networks:
+        - backend
+
+    # registery:
+    #   build:
+    #     context: ./api/registery/
+    #     dockerfile: Dockerfile
+    #   container_name: registery
+    #   ports:
+    #     - 8761:8761
+    #   environment:
+    #     SPRING_APPLICATION_NAME: registery
+    #     SERVER_PORT: 8761
+    #     EUREKA_INSTANCE_HOSTNAME: registery
+    #     EUREKA_CLIENT_FETCH_REGISTRY: "false"
+    #     EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+    #   networks:
+    #     - backend
+
+  volumes:
+    data: {}
+  networks:
+    backend:
+      driver: bridge

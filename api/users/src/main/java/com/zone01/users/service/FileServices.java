@@ -102,6 +102,7 @@ public class FileServices {
     }
 
     public Response<Object> deleteOldAvatar(String avatar) throws IOException {
+        if (avatar == null || avatar.isEmpty()) { return null; }
         Path filePath = Paths.get(baseUploadDirectory).resolve(avatar).normalize();
         if (!filePath.startsWith(Paths.get(baseUploadDirectory))) {
             return buildErrorResponse("Invalid file path");

@@ -1,65 +1,85 @@
-<div class="w-full p-3">
-    <h2 class="text-xl font-bold capitalize tablet:text-2xl desktop:text-4xl tablet:max-w-lg desktop:max-w-4xl">
-        <span>Sign In</span>
-    </h2>
-    <p-toast />
-
-    <div class="px-4 py-7 mx-auto w-full max-w-md min-w-sm rounded-md">
-        <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 justify-center items-center w-full">
-
-            <div class="w-full flex gap-2 flex-col">
-                <label for="email" class="text-zinc-600">Email</label>
-                <input id="email" type="email" formControlName="email" class="h-10 w-full p-2 border-slate-500/30 border-2 rounded-md bg-transparent"/>
-                <div *ngIf="emailControl?.invalid && (emailControl?.dirty || !emailControl?.untouched)">
-                    <small
-                            class="block p-error"
-                    >
-                        <div *ngIf="emailControl?.errors?.['required']">Email is required.</div>
-                        <div *ngIf="emailControl?.errors?.['email']">Email should be valid</div>
-                    </small>
-                </div>
-            </div>
-
-            <div class="w-full flex gap-2 flex-col">
-                <label for="password" class="text-zinc-600">Password</label>
-                <p-password [feedback]="false" id="password" formControlName="password" inputStyleClass="h-10 p-2 w-full border-slate-500/30 border-2" styleClass="w-full" />
-                <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || !passwordControl?.untouched)" class="text-red-500">
-                    <div *ngIf="passwordControl?.errors?.['required']">
-                        Password is required
-                    </div>
-                    <div *ngIf="passwordControl?.errors?.['pattern']">
-                        Password must:
-                        <ul class="list-disc pl-5">
-                            <li>Be at least 8 characters long</li>
-                            <li>Contain at least one uppercase letter</li>
-                            <li>Contain at least one lowercase letter</li>
-                            <li>Contain at least one number</li>
-                            <li>Contain at least one special character</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-      
-            <button type="submit" class="bg-blue-500 w-full rounded-md text-white font-bold p-2 mt-2" >
-                <span *ngIf="!loading">Login</span>
-                <span *ngIf="loading">Login...</span>
-            </button>
-        </form>
-    
-        <div class="flex space-x-2 my-4">
-            <span class="text-zinc-500">
-                Don't have compte ?
-            </span>
-            <a 
-                routerLink="/auth/sign-up" 
-                routerLinkActive="active" 
-                ariaCurrentWhenActive="page"
-                class="underline cursor-pointer capitalize">
-                Signup
-            </a>
+<div class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-bold text-gray-900">
+                Welcome Back
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Sign in to your account to continue
+            </p>
         </div>
-    
-        <app-alert />
+        <form class="mt-8 space-y-6" [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                    <input id="email" 
+                           name="email" 
+                           type="email" 
+                           formControlName="email"
+                           class="input-field mt-1"
+                           placeholder="Enter your email"
+                           [ngClass]="{'border-red-500': signInForm.get('email')?.invalid && signInForm.get('email')?.touched}">
+                    <div *ngIf="signInForm.get('email')?.invalid && signInForm.get('email')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                        Please enter a valid email address
+                    </div>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" 
+                           name="password" 
+                           type="password" 
+                           formControlName="password"
+                           class="input-field mt-1"
+                           placeholder="Enter your password"
+                           [ngClass]="{'border-red-500': signInForm.get('password')?.invalid && signInForm.get('password')?.touched}">
+                    <div *ngIf="signInForm.get('password')?.invalid && signInForm.get('password')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                        Password must be at least 8 characters
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" 
+                           name="remember-me" 
+                           type="checkbox" 
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                        Remember me
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" 
+                        [disabled]="signInForm.invalid"
+                        class="btn-primary w-full flex justify-center py-3">
+                    <span class="flex items-center">
+                        <i class="pi pi-sign-in mr-2"></i>
+                        Sign in
+                    </span>
+                </button>
+            </div>
+
+            <app-alert />
+
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account?
+                    <a routerLink="/auth/sign-up" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        Sign up
+                    </a>
+                </p>
+            </div>
+        </form>
     </div>
 </div>
 
