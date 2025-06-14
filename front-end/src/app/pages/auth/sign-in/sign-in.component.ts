@@ -10,7 +10,7 @@ import { MessageService } from 'primeng/api';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MessagesModule } from 'primeng/messages';
 import {Role, UserLoginRequest} from "../../../types";
-import {AuthService} from "../../../services/auth/auth-service.service";
+import {AuthService} from "../../../services/auth/auth.service";
 import {AlertComponent} from "../../../components/alert/alert.component";
 import {AlertService} from "../../../services/alert/alert.service";
 import {ToastModule} from "primeng/toast";

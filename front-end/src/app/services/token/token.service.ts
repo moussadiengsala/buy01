@@ -11,10 +11,9 @@ import {catchError, map} from "rxjs/operators";
 })
 export class TokenService {
   private API_URL = "https://localhost:8082/api/v1/users"
-  private jwtHelper: JwtHelperService = new JwtHelperService();
   private readonly STORAGE_NAME: string = "BUY_01"
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private jwtHelper: JwtHelperService ) {}
 
   set token(token: Tokens) {
     if (isPlatformBrowser(this.platformId)) {
@@ -58,7 +57,6 @@ export class TokenService {
             })
         );
   }
-
 
   parse(): User | null {
     const token = this.token?.accessToken;

@@ -103,8 +103,9 @@ export class AddProductComponent {
     
     if (!this.isAddProductVisible) {
       // Reset form when closing the modal
-      this.formSubmitted = false;
       this.addProductForm.reset();
+      this.addProductForm.markAsPristine();  // Add this line to mark it as pristine
+      this.formSubmitted = false;
       this.alertService.clear();
     }
   }

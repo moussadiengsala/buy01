@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+     environment {
+        CHROME_BIN = '/usr/bin/google-chrome'
+        MONGODB_URI = "mongodb://rootuser:password@192.168.1.108:27017/buy01?authSource=admin"
+        KAFKA_BOOTSTRAP_SERVERS = "192.168.1.108:9092"
+        EUREKA_CLIENT = "http://192.168.1.108:8761/eureka/"
+     }
+
     stages {
         stage('Start Required Services') {
             steps {
@@ -8,16 +15,16 @@ pipeline {
                     // Start Docker Compose services if not running
                     sh '''
                     if ! docker ps --format "{{.Names}}" | grep -q "registery"; then
-                        COMPOSE_PROFILES="run" docker-compose up -d registery
+                        docker-compose -f docker-compose.services.yml up -d registery
                     fi
                     if ! docker ps --format "{{.Names}}" | grep -q "mongodb"; then
-                        docker-compose up -d mongodb
+                        docker-compose -f docker-compose.dep.yml up -d mongodb
                     fi
                     if ! docker ps --format "{{.Names}}" | grep -q "kafka"; then
-                        docker-compose up -d kafka
+                        docker-compose -f docker-compose.dep.yml up -d kafka
                     fi
                     if ! docker ps --format "{{.Names}}" | grep -q "gateway"; then
-                        COMPOSE_PROFILES="run" docker-compose up -d gateway
+                        docker-compose -f docker-compose.services.yml up -d gateway
                     fi
                     '''
                     sh 'docker ps'
@@ -31,37 +38,35 @@ pipeline {
                     // Run tests for frontend
                     dir('front-end') {
                         sh 'npm install'
-                        sh 'ng test'
+                        sh 'ng test --no-watch --code-coverage --browsers=ChromeHeadlessCI'
                     }
 
                     // Run tests for microservices
                     dir('api/users') {
-                        sh './mvnw test'
+                        sh 'mvn test -Dspring.profiles.active=prod' // -Dspring.data.mongodb.uri=$MONGODB_URI -Dspring.eureka.client.serviceUrl.defaultZone=$EUREKA_CLIENT -Dspring.kafka.bootstrap-servers=$KAFKA_BOOTSTRAP_SERVERS
                     }
                     dir('api/products') {
-                        sh './mvnw test'
+                        sh 'mvn test -Dspring.profiles.active=prod' // -Dspring.data.mongodb.uri=$MONGODB_URI -Dspring.eureka.client.serviceUrl.defaultZone=$EUREKA_CLIENT -Dspring.kafka.bootstrap-servers=$KAFKA_BOOTSTRAP_SERVERS
                     }
                     dir('api/media') {
-                        sh './mvnw test'
+                        sh 'mvn test -Dspring.profiles.active=prod' // -Dspring.data.mongodb.uri=$MONGODB_URI -Dspring.eureka.client.serviceUrl.defaultZne=$EUREKA_CLIENT -Dspring.kafka.bootstrap-servers=$KAFKA_BOOTSTRAP_SERVERS
                     }
                 }
             }
         }
 
-        stage('Verify Files') {
+        stage('Deployment') {
             steps {
                 script {
-                    echo 'Checking cloned files...'
-                    sh 'ls -la'
-                }
-            }
-        }
+                    echo 'Deploying services with Docker Compose...'
 
-        stage('Simple Command') {
-            steps {
-                script {
-                    echo 'Running a simple shell command...'
-                    sh 'echo "Jenkins pipeline is working!"'
+                    def services = ['users', 'products', 'media', 'front-end']
+
+                    services.each { service ->
+                        sh "docker-compose -f docker-compose.services.yml up -d --build ${service}"
+                    }
+
+                    sh 'docker ps' // Show running containers for verification
                 }
             }
         }

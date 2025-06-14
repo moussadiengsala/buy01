@@ -10,7 +10,7 @@ import {TextPreviewComponent} from "../../components/text-preview/text-preview.c
 import {ProductService} from "../../services/product/product.service";
 import {forkJoin, Observable, of, switchMap, tap} from "rxjs";
 import {MediaService} from "../../services/media/media.service";
-import {AuthService} from "../../services/auth/auth-service.service";
+import {AuthService} from "../../services/auth/auth.service";
 import {UploadImagesComponent} from "../../components/upload-images/upload-images.component";
 import {MediaLayoutComponent} from "../../components/media-layout/media-layout.component";
 import {CarouselModule} from "primeng/carousel";

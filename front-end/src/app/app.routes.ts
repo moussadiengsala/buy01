@@ -5,7 +5,7 @@ import { ProductListComponent } from './pages/product/product-list/product-list.
 import { ProductDetailComponent } from './pages/product/product-detail/product-detail.component';
 import { NotFoundComponent } from './pages/error/not-found/not-found.component';
 import { ErrorComponent } from './pages/error/error/error.component';
-import { AuthGuard, SellerGuard } from './services/auth/auth-guard.guard';
+import { AuthGuard, SellerGuard } from './services/auth/auth.guard';
 import { HomeComponent } from './pages/home/home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MediaManagementComponent } from './pages/media-management/media-management.component';

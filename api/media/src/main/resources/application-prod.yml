@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: docker
+      on-profile: prod
   application:
     name: media
   servlet:
@@ -10,22 +10,18 @@ spring:
       max-request-size: 10MB
 
   kafka:
-    bootstrap-servers: kafka:9093
+    bootstrap-servers: 172.20.0.1:9092
 
   data:
     mongodb:
       authentication-database: admin
-      username: rootuser
-      password: password
-      database: buy01
-      port: 27017
-      host: mongodb
+      uri: mongodb://rootuser:password@172.20.0.1:27017/buy01?authSource=admin
       auto-index-creation: true
 
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://registery:8761/eureka/
+    service-url:
+      defaultZone: http://172.20.0.1:8761/eureka/
 
 media:
   upload:

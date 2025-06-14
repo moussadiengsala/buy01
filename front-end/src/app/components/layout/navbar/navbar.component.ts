@@ -6,7 +6,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { UserPayload } from '../../../types';
 import { CartService } from "../../../services/utils/cart.service";
-import { AuthService } from "../../../services/auth/auth-service.service";
+import { AuthService } from "../../../services/auth/auth.service";
 import {filter} from "rxjs/operators";
 
 @Component({

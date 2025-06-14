@@ -1,13 +1,9 @@
 import {
-    ActivatedRouteSnapshot,
-    CanActivate,
-    CanActivateFn, GuardResult,
-    MaybeAsync,
-    Router,
-    RouterStateSnapshot
+    CanActivateFn,
+    Router
 } from '@angular/router';
-import { AuthService } from './auth-service.service';
-import {inject, Injectable} from '@angular/core';
+import { AuthService } from './auth.service';
+import {inject} from '@angular/core';
 import {filter, map, take} from 'rxjs/operators';
 import {switchMap} from "rxjs";
 
@@ -21,7 +17,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
         switchMap(() => authService.userState$),
         take(1),
         map(user => {
-            if (!user.isAuthenticated) {
+            if (!user?.isAuthenticated) {
                 router.navigate(['/auth/sign-in']);
                 return false;
             }
@@ -49,11 +45,4 @@ export const SellerGuard: CanActivateFn = (route, state) => {
           })
   );
 };
-
-export function appInitializerFactory(authService: AuthService) {
-    return () => authService.initializationComplete$.pipe(
-        filter((isComplete) => isComplete),
-        take(1)
-    ).toPromise();
-}
 

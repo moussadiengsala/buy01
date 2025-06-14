@@ -1,14 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { AlertService } from './alert.service';
-import { Alert, AlertVariant } from '../../types';
-import { BehaviorSubject } from 'rxjs';
+import {AlertVariant} from "../../types";
 
 describe('AlertService', () => {
   let service: AlertService;
-  let alertSubject: BehaviorSubject<Alert | null>;
-
   beforeEach(() => {
-    alertSubject = new BehaviorSubject<Alert | null>(null);
     TestBed.configureTestingModule({
       providers: [AlertService]
     });

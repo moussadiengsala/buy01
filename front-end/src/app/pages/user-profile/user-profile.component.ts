@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { UserService } from "../../services/user/users.service";
-import { AuthService } from "../../services/auth/auth-service.service";
+import { UserService } from "../../services/user/user.service";
+import { AuthService } from "../../services/auth/auth.service";
 import { Observable, of } from "rxjs";
 import { Role, UserPayload } from "../../types";
 import { catchError, finalize, take } from "rxjs/operators";

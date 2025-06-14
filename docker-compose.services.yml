@@ -1,5 +1,21 @@
 version: "3.8"
 services:
+  registery:
+    build:
+      context: ./api/registery/
+      dockerfile: Dockerfile
+    container_name: registery
+    ports:
+      - 8761:8761
+    environment:
+      SPRING_APPLICATION_NAME: registery
+      SERVER_PORT: 8761
+      EUREKA_INSTANCE_HOSTNAME: registery
+      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+    networks:
+      - backend
+
   front-end:
     build:
       context: ./front-end
@@ -7,6 +23,8 @@ services:
     container_name: front-end
     ports:
       - "4200:4200"
+    depends_on:
+      - registery
 
   gateway:
     build:
@@ -25,6 +43,8 @@ services:
       SERVER_SSL_KEY_ALIAS: gateway
     networks:
       - backend
+    depends_on:
+      - registery
 
   users:
     build:
@@ -35,7 +55,7 @@ services:
       - 8083:8083
     environment:
       SPRING_APPLICATION_NAME: users
-      SPRING_PROFILES_ACTIVE: docker  # Activate docker profile
+      SPRING_PROFILES_ACTIVE: prod  # Activate docker profile
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registery:8761/eureka/
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       SPRING_DATA_MONGODB_USERNAME: rootuser
@@ -44,6 +64,7 @@ services:
       SPRING_DATA_MONGODB_PORT: 27017
       SPRING_DATA_MONGODB_HOST: mongodb
     depends_on:
+      - registery
       - gateway
     networks:
       - backend
@@ -57,7 +78,7 @@ services:
       - 8084:8084
     environment:
       SPRING_APPLICATION_NAME: products
-      SPRING_PROFILES_ACTIVE: docker  # Activate docker profile
+      SPRING_PROFILES_ACTIVE: prod  # Activate docker profile
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registery:8761/eureka/
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       SPRING_DATA_MONGODB_USERNAME: rootuser
@@ -66,6 +87,7 @@ services:
       SPRING_DATA_MONGODB_PORT: 27017
       SPRING_DATA_MONGODB_HOST: mongodb
     depends_on:
+      - registery
       - gateway
     networks:
       - backend
@@ -80,7 +102,7 @@ services:
       - 8085:8085
     environment:
       SPRING_APPLICATION_NAME: media
-      SPRING_PROFILES_ACTIVE: docker  # Activate docker profile
+      SPRING_PROFILES_ACTIVE: prod  # Activate docker profile
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registery:8761/eureka/
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       SPRING_DATA_MONGODB_USERNAME: rootuser
@@ -89,6 +111,7 @@ services:
       SPRING_DATA_MONGODB_PORT: 27017
       SPRING_DATA_MONGODB_HOST: mongodb
     depends_on:
+      - registery
       - gateway
     networks:
       - backend

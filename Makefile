@@ -1,6 +1,10 @@
+# ===== Install Jenkins =====
+install-jenkins:
+	cd jenkins && DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3) docker-compose up --build
+
 # ===== Configuration =====
 SERVICES := registery gateways users products media
-DEPENDENCIES := mongodb kafka registery
+DEPENDENCIES := mongodb mongo-express kafka
 
 # Docker compose files
 DEPS_COMPOSE = docker-compose.dep.yml

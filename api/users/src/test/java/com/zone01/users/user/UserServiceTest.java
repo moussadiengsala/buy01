@@ -1,6 +1,7 @@
 package com.zone01.users.user;
 
 import com.zone01.users.config.JwtService;
+import com.zone01.users.config.kafka.ProductServices;
 import com.zone01.users.dto.UpdateUserDTO;
 import com.zone01.users.dto.UserDTO;
 import com.zone01.users.dto.UserLoginDTO;
@@ -11,10 +12,12 @@ import com.zone01.users.model.Role;
 import com.zone01.users.service.FileServices;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,39 +27,31 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+//@SpringBootTest
 class UserServiceTest {
-
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private PasswordEncoder passwordEncoder;
-
     @Mock
     private JwtService jwtService;
-
     @Mock
     private FileServices fileServices;
-
     @Mock
     private AuthenticationManager authenticationManager;
-
     @Mock
     private HttpServletRequest httpServletRequest;
-
     @Mock
     private MultipartFile multipartFile;
+    @Mock
+    private ProductServices productServices;
 
     @InjectMocks
     private UserService userService;
@@ -108,11 +103,13 @@ class UserServiceTest {
                 .build();
     }
 
-    // getUserById tests
     @Test
     void getUserById_Success() {
-        when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing getUserById_Success");
+        System.out.println("--------------------------------------------------------------");
 
+        when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
         Optional<UserDTO> result = userService.getUserById("123");
 
         assertTrue(result.isPresent());
@@ -125,16 +122,21 @@ class UserServiceTest {
 
     @Test
     void getUserById_NotFound() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing getUserById_NotFound");
+        System.out.println("--------------------------------------------------------------");
+
         when(userRepository.findById("123")).thenReturn(Optional.empty());
-
         Optional<UserDTO> result = userService.getUserById("123");
-
         assertFalse(result.isPresent());
     }
 
-    // createUser tests
     @Test
     void createUser_Success() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing createUser_Success");
+        System.out.println("--------------------------------------------------------------");
+
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
         when(passwordEncoder.encode("Password123!")).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(testUser);
@@ -153,6 +155,10 @@ class UserServiceTest {
 
     @Test
     void createUser_DuplicateEmail() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing createUser_DuplicateEmail");
+        System.out.println("--------------------------------------------------------------");
+
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
         Response<Object> response = userService.createUser(testRegistrationDTO);
@@ -164,6 +170,10 @@ class UserServiceTest {
 
     @Test
     void createUser_WithAvatar_Success() throws IOException {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing createUser_WithAvatar_Success");
+        System.out.println("--------------------------------------------------------------");
+
         testRegistrationDTO.setAvatar(multipartFile);
         testRegistrationDTO.setRole(Role.SELLER);
 
@@ -184,6 +194,10 @@ class UserServiceTest {
 
     @Test
     void createUser_WithAvatar_ValidationError() throws IOException {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing createUser_WithAvatar_ValidationError");
+        System.out.println("--------------------------------------------------------------");
+
         testRegistrationDTO.setAvatar(multipartFile);
         testRegistrationDTO.setRole(Role.SELLER);
 
@@ -203,6 +217,10 @@ class UserServiceTest {
 
     @Test
     void createUser_WithAvatar_IOException() throws IOException {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing createUser_WithAvatar_IOException");
+        System.out.println("--------------------------------------------------------------");
+
         testRegistrationDTO.setAvatar(multipartFile);
         testRegistrationDTO.setRole(Role.SELLER);
 
@@ -216,11 +234,15 @@ class UserServiceTest {
         assertEquals("File error", response.getMessage());
     }
 
-    // authenticate tests
     @Test
     void authenticate_Success() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing authenticate_Success");
+        System.out.println("--------------------------------------------------------------");
+
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-        doNothing().when(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(new UsernamePasswordAuthenticationToken("user", "password"));
         when(jwtService.generateToken(any(User.class))).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refresh-token");
 
@@ -235,6 +257,10 @@ class UserServiceTest {
 
     @Test
     void authenticate_EmailNotFound() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing authenticate_EmailNotFound");
+        System.out.println("--------------------------------------------------------------");
+
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
         Response<AuthenticationResponse> response = userService.authenticate(testLoginDTO);
@@ -246,45 +272,70 @@ class UserServiceTest {
 
     @Test
     void authenticate_InvalidCredentials() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing authenticate_InvalidCredentials");
+        System.out.println("--------------------------------------------------------------");
+
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
         doThrow(new BadCredentialsException("Invalid credentials"))
                 .when(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
 
-        Response<AuthenticationResponse> response = userService.authenticate(testLoginDTO);
+        BadCredentialsException exception = assertThrows(
+                BadCredentialsException.class,
+                () -> userService.authenticate(testLoginDTO)
+        );
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertTrue(response.getMessage().contains("Invalid credentials"));
+        assertEquals("Invalid credentials", exception.getMessage());
     }
 
-    // updateUser tests
     @Test
     void updateUser_Success() {
-        UpdateUserDTO updateUserDTO = mock(UpdateUserDTO.class);
-        when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
-        when(updateUserDTO.applyUpdates(any(), any(), any())).thenReturn(null);
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing updateUser_Success");
+        System.out.println("--------------------------------------------------------------");
 
+        UpdateUserDTO updateUserDTO = mock(UpdateUserDTO.class);
+
+        when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class))).thenReturn(testUser);  // Assuming save returns User entity
+        when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refresh-token");
+        when(jwtService.generateToken(any(User.class))).thenReturn("access-token");
+
+        // Now simulate the userService mapping testUser into UserDTO
         Response<Object> response = userService.updateUser("123", updateUserDTO);
+        AuthenticationResponse result = (AuthenticationResponse) response.getData();
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertEquals("User updated successfully", response.getMessage());
+        assertEquals("Your informations has been updated successfully.", response.getMessage());
         assertNotNull(response.getData());
-        UserDTO updatedUser = (UserDTO) response.getData();
-        assertEquals("123", updatedUser.getId());
+        assertEquals("access-token", result.getAccessToken());
+        assertEquals("refresh-token", result.getRefreshToken());
     }
+
 
     @Test
     void updateUser_UserNotFound() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing updateUser_UserNotFound");
+        System.out.println("--------------------------------------------------------------");
+
         UpdateUserDTO updateUserDTO = mock(UpdateUserDTO.class);
         when(userRepository.findById("123")).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             userService.updateUser("123", updateUserDTO);
         });
+
+        assertTrue(thrown.getMessage().contains("User not found"));
     }
 
     @Test
     void updateUser_ValidationError() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("testing createUser_WithAvatar_IOException");
+        System.out.println("--------------------------------------------------------------");
+
+
         UpdateUserDTO updateUserDTO = mock(UpdateUserDTO.class);
         Response<Object> validationError = Response.<Object>builder()
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -292,18 +343,22 @@ class UserServiceTest {
                 .build();
 
         when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
-        when(updateUserDTO.applyUpdates(any(), any(), any())).thenReturn(validationError);
+        when(updateUserDTO.applyUpdates(eq(passwordEncoder), eq(testUser), eq(fileServices))).thenReturn(validationError);
 
         Response<Object> response = userService.updateUser("123", updateUserDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
         assertEquals("Invalid update data", response.getMessage());
+
+        verify(userRepository, never()).save(any(User.class));
+
     }
 
-    // deleteUser tests
     @Test
+    @DisplayName("Should delete user successfully")
     void deleteUser_Success() {
         when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
+        when(productServices.deleteProductRelatedToUser("123")).thenReturn(null);
         doNothing().when(userRepository).deleteById("123");
 
         Response<Object> response = userService.deleteUser("123");
@@ -311,10 +366,33 @@ class UserServiceTest {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals("User deleted successfully", response.getMessage());
         assertNotNull(response.getData());
-//        assertEquals("123", response.getData().getId());
+        UserDTO deletedUser = (UserDTO) response.getData();
+        assertEquals("123", deletedUser.getId());
+
+        verify(userRepository).deleteById("123");
     }
 
     @Test
+    @DisplayName("Should handle product service error")
+    void deleteUser_ProductServiceError() {
+        Response<Object> productError = Response.<Object>builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("Failed to delete related products")
+                .build();
+
+        when(userRepository.findById("123")).thenReturn(Optional.of(testUser));
+        when(productServices.deleteProductRelatedToUser("123")).thenReturn(productError);
+
+        Response<Object> response = userService.deleteUser("123");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+        assertEquals("Failed to delete related products", response.getMessage());
+
+        verify(userRepository, never()).deleteById(anyString());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when user is not found")
     void deleteUser_UserNotFound() {
         when(userRepository.findById("123")).thenReturn(Optional.empty());
 
@@ -325,8 +403,9 @@ class UserServiceTest {
 
     // getAllUsers tests
     @Test
+    @DisplayName("Should return all users successfully")
     void getAllUsers_Success() {
-        List<User> users = Arrays.asList(testUser);
+        List<User> users = Collections.singletonList(testUser);
         when(userRepository.findAll()).thenReturn(users);
 
         Response<List<UserDTO>> response = userService.getAllUsers();
@@ -339,8 +418,9 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Should return empty list when no users exist")
     void getAllUsers_Empty() {
-        when(userRepository.findAll()).thenReturn(Arrays.asList());
+        when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
         Response<List<UserDTO>> response = userService.getAllUsers();
 
@@ -352,6 +432,7 @@ class UserServiceTest {
 
     // refreshToken tests
     @Test
+    @DisplayName("Should refresh token successfully")
     void refreshToken_Success() {
         Map<String, Object> extractedData = new HashMap<>();
         extractedData.put("data", "test@example.com");
@@ -359,18 +440,20 @@ class UserServiceTest {
         when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer refresh-token");
         when(jwtService.extractUsername("refresh-token")).thenReturn(extractedData);
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-        when(jwtService.generateToken(any(User.class))).thenReturn("new-access-token");
-        when(jwtService.generateRefreshToken(any(User.class))).thenReturn("new-refresh-token");
+        when(jwtService.isTokenValid("refresh-token", testUser)).thenReturn(true);
+        when(jwtService.generateToken(testUser)).thenReturn("new-access-token");
 
         Response<AuthenticationResponse> response = userService.refreshToken(httpServletRequest);
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals("Token refreshed successfully", response.getMessage());
         assertNotNull(response.getData());
         assertEquals("new-access-token", response.getData().getAccessToken());
-        assertEquals("new-refresh-token", response.getData().getRefreshToken());
+        assertEquals("refresh-token", response.getData().getRefreshToken());
     }
 
     @Test
+    @DisplayName("Should return error when authorization header is missing")
     void refreshToken_MissingHeader() {
         when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
 
@@ -382,6 +465,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Should return error when token is invalid")
     void refreshToken_InvalidToken() {
         Map<String, Object> extractedData = new HashMap<>();
         extractedData.put("error", "Invalid token");
@@ -397,6 +481,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Should return error when user is not found")
     void refreshToken_UserNotFound() {
         Map<String, Object> extractedData = new HashMap<>();
         extractedData.put("data", "test@example.com");
@@ -412,8 +497,27 @@ class UserServiceTest {
         assertNull(response.getData());
     }
 
+    @Test
+    @DisplayName("Should return error when refresh token is invalid for user")
+    void refreshToken_InvalidTokenForUser() {
+        Map<String, Object> extractedData = new HashMap<>();
+        extractedData.put("data", "test@example.com");
+
+        when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer refresh-token");
+        when(jwtService.extractUsername("refresh-token")).thenReturn(extractedData);
+        when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        when(jwtService.isTokenValid("refresh-token", testUser)).thenReturn(false);
+
+        Response<AuthenticationResponse> response = userService.refreshToken(httpServletRequest);
+
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatus());
+        assertEquals("Invalid or expired refresh token", response.getMessage());
+        assertNull(response.getData());
+    }
+
     // getUserAvatar tests
     @Test
+    @DisplayName("Should get user avatar successfully")
     void getUserAvatar_Success() {
         Response<Object> expectedResponse = Response.<Object>builder()
                 .status(HttpStatus.OK.value())

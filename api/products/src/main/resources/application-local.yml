@@ -13,11 +13,11 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      username: rootuser
-      password: password
-      database: buy01
-      port: 27017
-      host: localhost
+#      username: rootuser
+#      password: password
+#      database: buy01
+#      port: 27017
+#      host: localhost
       auto-index-creation: true
 
 server:

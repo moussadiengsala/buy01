@@ -16,7 +16,7 @@ import { MenuModule } from 'primeng/menu';
 import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import {EditProductComponent} from "../../components/edit-product/edit-product.component";
 import {AddProductComponent} from "../../components/add-product/add-product.component";
-import {AuthService} from "../../services/auth/auth-service.service";
+import {AuthService} from "../../services/auth/auth.service";
 import {BehaviorSubject, combineLatest, flatMap, Observable, of, startWith, switchMap, takeUntil} from "rxjs";
 import {ProductService} from "../../services/product/product.service";
 import {DeleteProductComponent} from "../../components/delete-product/delete-product.component";

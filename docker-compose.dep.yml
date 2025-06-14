@@ -50,22 +50,6 @@
       networks:
         - backend
 
-    # registery:
-    #   build:
-    #     context: ./api/registery/
-    #     dockerfile: Dockerfile
-    #   container_name: registery
-    #   ports:
-    #     - 8761:8761
-    #   environment:
-    #     SPRING_APPLICATION_NAME: registery
-    #     SERVER_PORT: 8761
-    #     EUREKA_INSTANCE_HOSTNAME: registery
-    #     EUREKA_CLIENT_FETCH_REGISTRY: "false"
-    #     EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
-    #   networks:
-    #     - backend
-
   volumes:
     data: {}
   networks:

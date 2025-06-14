@@ -68,9 +68,9 @@ export class AlertComponent {
     };
   }
 
-  protected readonly lucideCheck = lucideCheck;
-  protected readonly lucideCircleX = lucideCircleX;
-  protected readonly lucideInfo = lucideInfo;
-  protected readonly lucideMessageCircleWarning = lucideMessageCircleWarning;
-  protected readonly lucideX = lucideX;
+  public readonly lucideCheck = lucideCheck;
+  public readonly lucideCircleX = lucideCircleX;
+  public readonly lucideInfo = lucideInfo;
+  public readonly lucideMessageCircleWarning = lucideMessageCircleWarning;
+  public readonly lucideX = lucideX;
 }

@@ -5,7 +5,7 @@ import { TokenService } from "../token/token.service";
 import { MediaService } from "../media/media.service";
 import { ApiResponse, PaginatedResponse, Product, Tokens, User } from "../../types";
 import {environment} from "../../environment";
-import {AuthService} from "../auth/auth-service.service";
+import {AuthService} from "../auth/auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +40,6 @@ export class UserService {
   }
 
   updateUser(userId: string, user: FormData): Observable<ApiResponse<Tokens> | null> {
-      console.log(user);
     return this.http
         .put<ApiResponse<Tokens>>(`${this.API_URL}/${userId}`, user, {
           headers: this.getAuthHeaders(),
@@ -96,66 +95,3 @@ export class UserService {
     );
   }
 }
-
-
-
-
-// import { Injectable } from '@angular/core';
-// import {HttpClient, HttpHeaders, HttpStatusCode} from "@angular/common/http";
-// import {TokenService} from "../token/token.service";
-// import {MediaService} from "../media/media.service";
-// import {map, Observable} from "rxjs";
-// import {ApiResponse, PaginatedResponse, Product, Tokens, User} from "../../types";
-//
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class UserService {
-//   private API_URL = "https://localhost:8082/api/v1/users"
-//
-//   constructor(
-//       private http: HttpClient,
-//       private tokenService: TokenService,
-//   ) {}
-//
-//   private getAuthHeaders(): HttpHeaders {
-//     const token = this.tokenService.token;
-//     return new HttpHeaders({
-//       'Authorization': `Bearer ${token?.accessToken}`
-//     });
-//   }
-//
-//   getUserById(id: string): Observable<ApiResponse<User>> {
-//     return this.http.get<ApiResponse<User>>(
-//         `${this.API_URL}/${id}`,
-//         { headers: this.getAuthHeaders() }
-//     );
-//   }
-//
-//   updateUser(userId: string, user: FormData): Observable<ApiResponse<Tokens> | null> {
-//     console.log(user); // FormData { name → "Mois" }
-//     return this.http
-//         .put<ApiResponse<Tokens>>(`${this.API_URL}/${userId}`, user, {
-//           headers: this.getAuthHeaders(),
-//           reportProgress: true,
-//           observe: 'response'
-//         })
-//         .pipe(
-//             map(response => {
-//               const body = response.body;
-//               if (body?.data && HttpStatusCode.Ok === body.status) {
-//                 this.tokenService.token = body.data; // Store tokens
-//                 const user: User | null = this.tokenService.parse(); // Extract user data from token
-//                 if (!user) throw Error("Unable to parse the token.")
-//                 this.user.next({ ...user, isAuthenticated: true }); // Update user state
-//               }
-//               return body;
-//             })
-//         );
-//   }
-//
-//   deleteUser(userId: string)  {
-//     return this.http
-//         .delete<ApiResponse<User>>(`${this.API_URL}/${userId}`, { headers: this.getAuthHeaders() })
-//   }
-// }

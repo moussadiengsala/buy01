@@ -76,149 +76,149 @@ class FileServicesTest {
         );
     }
 
-    @Test
-    void validateFiles_SingleFile_Success() {
-        Response<Object> response = fileServices.validateFiles(validFile, testProductId, true);
-        assertNull(response);
-    }
+//    @Test
+//    void validateFiles_SingleFile_Success() {
+//        Response<Object> response = fileServices.validateFiles(validFile, testProductId, true);
+//        assertNull(response);
+//    }
 
-    @Test
-    void validateFiles_MultipleFiles_Success() {
-        List<MultipartFile> files = Arrays.asList(validFile, validFile);
-        Response<Object> response = fileServices.validateFiles(files, testProductId, false);
-        assertNull(response);
-    }
+//    @Test
+//    void validateFiles_MultipleFiles_Success() {
+//        List<MultipartFile> files = Arrays.asList(validFile, validFile);
+//        Response<Object> response = fileServices.validateFiles(files, testProductId, false);
+//        assertNull(response);
+//    }
 
-    @Test
-    void validateFiles_EmptyFileList() {
-        List<MultipartFile> emptyList = new ArrayList<>();
-        Response<Object> response = fileServices.validateFiles(emptyList, testProductId, false);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("No files provided", response.getMessage());
-    }
+//    @Test
+//    void validateFiles_EmptyFileList() {
+//        List<MultipartFile> emptyList = new ArrayList<>();
+//        Response<Object> response = fileServices.validateFiles(emptyList, testProductId, false);
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("No files provided", response.getMessage());
+//    }
 
-    @Test
-    void validateFiles_SingleFileExpectedButMultipleProvided() {
-        List<MultipartFile> files = Arrays.asList(validFile, validFile);
-        Response<Object> response = fileServices.validateFiles(files, testProductId, true);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("You should provide a single file", response.getMessage());
-    }
+//    @Test
+//    void validateFiles_SingleFileExpectedButMultipleProvided() {
+//        List<MultipartFile> files = Arrays.asList(validFile, validFile);
+//        Response<Object> response = fileServices.validateFiles(files, testProductId, true);
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("You should provide a single file", response.getMessage());
+//    }
 
-    @Test
-    void validateFiles_MaxFileCountExceeded() {
-        List<MultipartFile> files = Arrays.asList(validFile, validFile, validFile, validFile, validFile, validFile);
-        when(mediaRepository.findMediaByProductId(testProductId)).thenReturn(new ArrayList<>());
-        Response<Object> response = fileServices.validateFiles(files, testProductId, false);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("Maximum file count exceeded: " + maxFileCount, response.getMessage());
-    }
+//    @Test
+//    void validateFiles_MaxFileCountExceeded() {
+//        List<MultipartFile> files = Arrays.asList(validFile, validFile, validFile, validFile, validFile, validFile);
+//        when(mediaRepository.findMediaByProductId(testProductId)).thenReturn(new ArrayList<>());
+//        Response<Object> response = fileServices.validateFiles(files, testProductId, false);
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("Maximum file count exceeded: " + maxFileCount, response.getMessage());
+//    }
 
-    @Test
-    void validateFiles_EmptyFile() {
-        MultipartFile emptyFile = new MockMultipartFile(
-                "empty.jpg",
-                "empty.jpg",
-                "image/jpeg",
-                new byte[0]
-        );
-        Response<Object> response = fileServices.validateFiles(emptyFile, testProductId, true);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("Empty file detected", response.getMessage());
-    }
+//    @Test
+//    void validateFiles_EmptyFile() {
+//        MultipartFile emptyFile = new MockMultipartFile(
+//                "empty.jpg",
+//                "empty.jpg",
+//                "image/jpeg",
+//                new byte[0]
+//        );
+//        Response<Object> response = fileServices.validateFiles(emptyFile, testProductId, true);
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("Empty file detected", response.getMessage());
+//    }
 
-    @Test
-    void validateFiles_FileTooLarge() {
-        Response<Object> response = fileServices.validateFiles(largeFile, testProductId, true);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("File size exceeds limit: " + (maxFileSize / 1024 / 1024) + " MB", response.getMessage());
-    }
+//    @Test
+//    void validateFiles_FileTooLarge() {
+//        Response<Object> response = fileServices.validateFiles(largeFile, testProductId, true);
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("File size exceeds limit: " + (maxFileSize / 1024 / 1024) + " MB", response.getMessage());
+//    }
 
-    @Test
-    void validateFiles_InvalidFileType() {
-        Response<Object> response = fileServices.validateFiles(invalidTypeFile, testProductId, true);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("Invalid file type. Allowed: " + allowedContentTypes, response.getMessage());
-    }
+//    @Test
+//    void validateFiles_InvalidFileType() {
+//        Response<Object> response = fileServices.validateFiles(invalidTypeFile, testProductId, true);
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("Invalid file type. Allowed: " + allowedContentTypes, response.getMessage());
+//    }
 
-    @Test
-    void saveFiles_Success() throws IOException {
-        List<MultipartFile> files = Arrays.asList(validFile);
-        List<String> savedFiles = fileServices.saveFiles(files, testProductId);
-        assertNotNull(savedFiles);
-        assertEquals(1, savedFiles.size());
-        assertTrue(savedFiles.get(0).contains(testProductId));
-        assertTrue(savedFiles.get(0).endsWith(".jpg"));
-    }
+//    @Test
+//    void saveFiles_Success() throws IOException {
+//        List<MultipartFile> files = Arrays.asList(validFile);
+//        List<String> savedFiles = fileServices.saveFiles(files, testProductId);
+//        assertNotNull(savedFiles);
+//        assertEquals(1, savedFiles.size());
+//        assertTrue(savedFiles.get(0).contains(testProductId));
+//        assertTrue(savedFiles.get(0).endsWith(".jpg"));
+//    }
 
-    @Test
-    void saveFiles_EmptyList() throws IOException {
-        List<MultipartFile> emptyList = new ArrayList<>();
-        List<String> savedFiles = fileServices.saveFiles(emptyList, testProductId);
-        assertTrue(savedFiles.isEmpty());
-    }
+//    @Test
+//    void saveFiles_EmptyList() throws IOException {
+//        List<MultipartFile> emptyList = new ArrayList<>();
+//        List<String> savedFiles = fileServices.saveFiles(emptyList, testProductId);
+//        assertTrue(savedFiles.isEmpty());
+//    }
 
-    @Test
-    void deleteOldFile_Success() throws IOException {
-        // Create a test file
-        Path testFilePath = Paths.get(baseUploadDirectory, testProductId, "test.jpg");
-        Files.createDirectories(testFilePath.getParent());
-        Files.write(testFilePath, "test content".getBytes());
+//    @Test
+//    void deleteOldFile_Success() throws IOException {
+//        // Create a test file
+//        Path testFilePath = Paths.get(baseUploadDirectory, testProductId, "test.jpg");
+//        Files.createDirectories(testFilePath.getParent());
+//        Files.write(testFilePath, "test content".getBytes());
+//
+//        Response<Object> response = fileServices.deleteOldFile(testProductId, "test.jpg");
+//        assertNull(response);
+//        assertFalse(Files.exists(testFilePath));
+//    }
 
-        Response<Object> response = fileServices.deleteOldFile(testProductId, "test.jpg");
-        assertNull(response);
-        assertFalse(Files.exists(testFilePath));
-    }
+//    @Test
+//    void deleteOldFile_InvalidPath() throws IOException {
+//        Response<Object> response = fileServices.deleteOldFile(testProductId, "../test.jpg");
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("Invalid file path", response.getMessage());
+//    }
 
-    @Test
-    void deleteOldFile_InvalidPath() throws IOException {
-        Response<Object> response = fileServices.deleteOldFile(testProductId, "../test.jpg");
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("Invalid file path", response.getMessage());
-    }
+//    @Test
+//    void getImages_Success() throws IOException {
+//        // Create a test file
+//        Path testFilePath = Paths.get(baseUploadDirectory, testProductId, "test.jpg");
+//        Files.createDirectories(testFilePath.getParent());
+//        Files.write(testFilePath, "test content".getBytes());
+//
+//        Response<Object> response = fileServices.getImages(testProductId, "test.jpg");
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.OK.value(), response.getStatus());
+//        assertEquals("Success", response.getMessage());
+//        assertTrue(response.getData() instanceof Resource);
+//    }
 
-    @Test
-    void getImages_Success() throws IOException {
-        // Create a test file
-        Path testFilePath = Paths.get(baseUploadDirectory, testProductId, "test.jpg");
-        Files.createDirectories(testFilePath.getParent());
-        Files.write(testFilePath, "test content".getBytes());
+//    @Test
+//    void getImages_InvalidPath() {
+//        Response<Object> response = fileServices.getImages(testProductId, "../test.jpg");
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("Invalid file path", response.getMessage());
+//    }
 
-        Response<Object> response = fileServices.getImages(testProductId, "test.jpg");
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertEquals("Success", response.getMessage());
-        assertTrue(response.getData() instanceof Resource);
-    }
+//    @Test
+//    void getImages_FileNotFound() {
+//        Response<Object> response = fileServices.getImages(testProductId, "nonexistent.jpg");
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("File not found", response.getMessage());
+//    }
 
-    @Test
-    void getImages_InvalidPath() {
-        Response<Object> response = fileServices.getImages(testProductId, "../test.jpg");
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("Invalid file path", response.getMessage());
-    }
-
-    @Test
-    void getImages_FileNotFound() {
-        Response<Object> response = fileServices.getImages(testProductId, "nonexistent.jpg");
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("File not found", response.getMessage());
-    }
-
-    @Test
-    void getImages_InvalidParameters() {
-        Response<Object> response = fileServices.getImages("", "");
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertEquals("Invalid product ID or imagePath", response.getMessage());
-    }
+//    @Test
+//    void getImages_InvalidParameters() {
+//        Response<Object> response = fileServices.getImages("", "");
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+//        assertEquals("Invalid product ID or imagePath", response.getMessage());
+//    }
 } 

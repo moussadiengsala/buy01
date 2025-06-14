@@ -43,16 +43,16 @@
                             placeholder="Enter product name" />
                     </div>
                     <div *ngIf="nameControl?.invalid && (nameControl?.dirty || !nameControl?.untouched)" class="mt-1">
-                        <small *ngIf="nameControl?.errors?.['required']" class="text-red-500 flex items-center gap-1">
+                        <small *ngIf="nameControl?.errors?.['required']" class="p-error text-red-500 flex items-center gap-1">
                             <i class="pi pi-exclamation-circle"></i> Name is required
                         </small>
-                        <small *ngIf="nameControl?.errors?.['minlength']" class="text-red-500 flex items-center gap-1">
+                        <small *ngIf="nameControl?.errors?.['minlength']" class="p-error text-red-500 flex items-center gap-1">
                             <i class="pi pi-exclamation-circle"></i> Name must be at least 2 characters
                         </small>
-                        <small *ngIf="nameControl?.errors?.['maxlength']" class="text-red-500 flex items-center gap-1">
+                        <small *ngIf="nameControl?.errors?.['maxlength']" class="p-error text-red-500 flex items-center gap-1">
                             <i class="pi pi-exclamation-circle"></i> Name cannot exceed 20 characters
                         </small>
-                        <small *ngIf="nameControl?.errors?.['pattern']" class="text-red-500 flex items-center gap-1">
+                        <small *ngIf="nameControl?.errors?.['pattern']" class="p-error text-red-500 flex items-center gap-1">
                             <i class="pi pi-exclamation-circle"></i> Name is invalid
                         </small>
                     </div>

@@ -5,7 +5,7 @@ import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {TokenService} from "../token/token.service";
 import {MediaService} from "../media/media.service";
 import {map} from "rxjs/operators";
-import {UserService} from "../user/users.service";
+import {UserService} from "../user/user.service";
 
 @Injectable({
   providedIn: 'root'

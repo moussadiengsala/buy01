@@ -15,7 +15,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { Router, RouterLink } from '@angular/router';
 import {Role} from "../../../types";
 import {AlertComponent} from "../../../components/alert/alert.component";
-import {AuthService} from "../../../services/auth/auth-service.service";
+import {AuthService} from "../../../services/auth/auth.service";
 import {AlertService} from "../../../services/alert/alert.service";
 import {ToastModule} from "primeng/toast";
 

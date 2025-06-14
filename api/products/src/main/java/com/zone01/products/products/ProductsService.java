@@ -9,6 +9,7 @@ import com.zone01.products.model.Response;
 import com.zone01.products.model.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
+
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,8 +49,8 @@ public class ProductsService {
     public Products createProduct(CreateProductDTO product, HttpServletRequest request) {
         UserDTO currentUser = AccessValidation.getCurrentUser(request);
 
-        String escapedName = StringEscapeUtils.escapeHtml4(product.getName().toLowerCase());
-        String escapedDescription = StringEscapeUtils.escapeHtml4(product.getDescription().toLowerCase());
+        String escapedName = StringEscapeUtils.escapeHtml4(product.getName().toLowerCase()).replace("'", "&#39;");
+        String escapedDescription = StringEscapeUtils.escapeHtml4(product.getDescription().toLowerCase()).replace("'", "&#39;");
 
         Products newProduct = Products
                 .builder()

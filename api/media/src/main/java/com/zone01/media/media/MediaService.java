@@ -35,16 +35,16 @@ public class MediaService {
         return mediaRepository.findMediaByProductId(id);
     }
 
-    private Response<Object> authorization(HttpServletRequest request, String productId) {
+    public Response<Object> authorization(HttpServletRequest request, String productId) {
         Response<Object> productValidationResponse = productServices.getProductByID(productId, request);
-        if (productValidationResponse.getData() == null) {
+        if (productValidationResponse != null && productValidationResponse.getData() == null) {
             return productValidationResponse;
         }
 
         return null;
     }
 
-    private Response<Object> authorizationWhenDeleteAndUpdate(HttpServletRequest request, String mediaId) {
+    public Response<Object> authorizationWhenDeleteAndUpdate(HttpServletRequest request, String mediaId) {
         Optional<Media> existingMedia = mediaRepository.findById(mediaId);
         if (existingMedia.isEmpty()) {
             return Response.<Object>builder()
@@ -72,13 +72,14 @@ public class MediaService {
             HttpServletRequest request
     ) {
         try {
-            Response<Object> authorizationResponse = authorization(request, productId);
-            if (authorizationResponse != null) {return authorizationResponse;}
 
             Response<Object> mediaValidationResponse = fileServices.validateFiles(files, productId, false);
             if (mediaValidationResponse != null) {
                 return mediaValidationResponse;
             }
+
+            Response<Object> authorizationResponse = authorization(request, productId);
+            if (authorizationResponse != null) {return authorizationResponse;}
 
             // Validate and save each file
             List<String> savedFiles = fileServices.saveFiles(files, productId);
@@ -171,7 +172,13 @@ public class MediaService {
 
     public Response<Object> deleteMediaByProductIds(List<String> productIds) {
         try {
-            // Use the correct repository method for list-based lookup
+            if (productIds == null || productIds.isEmpty()) {
+                return Response.builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .data(null)
+                        .message("No product IDs provided")
+                        .build();
+            }
             List<Media> mediaToDelete = mediaRepository.findMediaByProductIdIn(productIds);
             if (mediaToDelete.isEmpty()) {
                 return Response.<Object>builder()
