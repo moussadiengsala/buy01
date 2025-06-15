@@ -1,9 +1,6 @@
 package com.zone01.users.config;
 
-import com.zone01.users.model.ExceptionPattern;
 import com.zone01.users.model.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,101 +10,162 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 
 @RestControllerAdvice
 public class AppExceptionsHandler {
-    private static final Logger logger = LoggerFactory.getLogger(AppExceptionsHandler.class);
+    private static final Map<HttpStatus, Pattern> EXCEPTION_PATTERNS = createPatternMap();
+    private static Map<HttpStatus, Pattern> createPatternMap() {
+        Map<HttpStatus, Pattern> patterns = new ConcurrentHashMap<>();
 
-    private static final List<ExceptionPattern> EXCEPTION_PATTERNS = new ArrayList<>() {{
-        // 400 BAD REQUEST
-        add(new ExceptionPattern(
-                Pattern.compile(".*(Invalid|Illegal|Constraint|Validation|BadRequest|TypeMismatch|Bind|Missing(Parameter|ServletRequestParameter|RequestHeader)|Parse|Format|MethodArgumentNotValid|HttpMessageNotReadable|RequestBodyMissing|JsonMapping|JsonParse|FieldError).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.BAD_REQUEST
-        ));
+        // 400 Bad Request - Client input validation errors
+        patterns.put(HttpStatus.BAD_REQUEST,
+                Pattern.compile(String.join("|",
+                        ".*(?:Invalid|Illegal|Constraint|Validation|BadRequest|TypeMismatch|Bind).*Exception",
+                        ".*(?:Missing(?:Parameter|ServletRequestParameter|RequestHeader)).*Exception",
+                        ".*(?:Parse|Format|MethodArgumentNotValid|HttpMessageNotReadable).*Exception",
+                        ".*(?:RequestBodyMissing|JsonMapping|JsonParse|FieldError).*Exception",
+                        ".*(?:ConstraintViolation|ValidationFailure|InvalidInput|MalformedRequest).*Exception",
+                        ".*(?:DeserializationException|SerializationException|ConversionException).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 401 UNAUTHORIZED
-        add(new ExceptionPattern(
-                Pattern.compile(".*(Authentication|Credential|Jwt|Token|Unauthorized|InvalidCredentials|Login|Session|InvalidToken|ExpiredToken|AccessDenied|AuthenticationFailure|AuthorizationFailure).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.UNAUTHORIZED
-        ));
+        // 401 Unauthorized - Authentication failures
+        patterns.put(HttpStatus.UNAUTHORIZED,
+                Pattern.compile(String.join("|",
+                        ".*(?:Authentication|Credential|Jwt|Token|Unauthorized).*Exception",
+                        ".*(?:InvalidCredentials|Login|Session|InvalidToken|ExpiredToken).*Exception",
+                        ".*(?:AuthenticationFailure|UnauthenticatedException|LoginRequired).*Exception",
+                        ".*(?:TokenExpiredException|InvalidSessionException|CredentialExpired).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 403 FORBIDDEN
-        add(new ExceptionPattern(
-                Pattern.compile(".*(AccessDenied|Authorization|Forbidden|Security|Locked|Disabled|Permission|Insufficient|Unauthorized|InvalidCredentials|TokenExpired|SessionExpired|AccessViolation|InvalidToken|InvalidAccess|SecurityViolation|PrivilegeViolation|ForbiddenAccess|AccessRestriction).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.FORBIDDEN
-        ));
+        // 403 Forbidden - Authorization failures
+        patterns.put(HttpStatus.FORBIDDEN,
+                Pattern.compile(String.join("|",
+                        ".*(?:AccessDenied|Authorization|Forbidden|Security|Permission).*Exception",
+                        ".*(?:Locked|Disabled|Insufficient|AccessViolation|SecurityViolation).*Exception",
+                        ".*(?:PrivilegeViolation|ForbiddenAccess|AccessRestriction|InsufficientPrivileges).*Exception",
+                        ".*(?:ResourceAccessDenied|OperationNotPermitted|UnauthorizedOperation).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 404 NOT FOUND
-        add(new ExceptionPattern(
-                Pattern.compile(".*(NotFound|NoResourceFound|NoSuchElement|MissingResource|Unknown|ResourceUnavailable|EntityNotFound|HttpClientErrorException|ResourceNotAvailable|NoHandlerFound|ItemNotFound|RecordNotFound|ObjectNotFound|DocumentNotFound|FileNotFound|PathNotFound|DataNotFound|KeyNotFound|ValueNotFound).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.NOT_FOUND));
+        // 404 Not Found - Resource not found errors
+        patterns.put(HttpStatus.NOT_FOUND,
+                Pattern.compile(String.join("|",
+                        ".*(?:NotFound|NoResourceFound|NoSuchElement|MissingResource|Unknown).*Exception",
+                        ".*(?:ResourceUnavailable|EntityNotFound|HttpClientErrorException).*Exception",
+                        ".*(?:ResourceNotAvailable|NoHandlerFound|ItemNotFound|RecordNotFound).*Exception",
+                        ".*(?:ObjectNotFound|DocumentNotFound|FileNotFound|PathNotFound).*Exception",
+                        ".*(?:DataNotFound|KeyNotFound|ValueNotFound|EndpointNotFound).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 405 METHOD NOT ALLOWED
-        add(new ExceptionPattern(
-                Pattern.compile(".*(MethodNotSupported|InvalidMethod|HttpRequestMethod).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.METHOD_NOT_ALLOWED));
+        // 405 Method Not Allowed
+        patterns.put(HttpStatus.METHOD_NOT_ALLOWED,
+                Pattern.compile(String.join("|",
+                        ".*(?:MethodNotSupported|InvalidMethod|HttpRequestMethod).*Exception",
+                        ".*(?:MethodNotAllowed|UnsupportedHttpMethod|InvalidHttpMethod).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 406 NOT ACCEPTABLE
-        add(new ExceptionPattern(
-                Pattern.compile(".*(NotAcceptable|MediaType.*Accept|ContentNegotiation).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.NOT_ACCEPTABLE
-        ));
+        // 406 Not Acceptable
+        patterns.put(HttpStatus.NOT_ACCEPTABLE,
+                Pattern.compile(String.join("|",
+                        ".*(?:NotAcceptable|MediaType.*Accept|ContentNegotiation).*Exception",
+                        ".*(?:AcceptHeaderMismatch|UnsupportedAcceptType).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 408 REQUEST TIMEOUT
-        add(new ExceptionPattern(
-                Pattern.compile(".*(Timeout|TimedOut|ConnectionTimedOut).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.REQUEST_TIMEOUT
-        ));
+        // 408 Request Timeout
+        patterns.put(HttpStatus.REQUEST_TIMEOUT,
+                Pattern.compile(String.join("|",
+                        ".*(?:Timeout|TimedOut|ConnectionTimedOut|RequestTimeout).*Exception",
+                        ".*(?:SocketTimeout|ReadTimeout|ConnectTimeout|ResponseTimeout).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 409 CONFLICT
-        add(new ExceptionPattern(
-                Pattern.compile(".*(Conflict|Duplicate|DataIntegrity|OptimisticLocking|Pessimistic|Version|Concurrent|StaleState).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.CONFLICT
-        ));
+        // 409 Conflict - Data integrity and concurrency issues
+        patterns.put(HttpStatus.CONFLICT,
+                Pattern.compile(String.join("|",
+                        ".*(?:Conflict|Duplicate|DataIntegrity|OptimisticLocking|Pessimistic).*Exception",
+                        ".*(?:Version|Concurrent|StaleState|ResourceConflict|StateConflict).*Exception",
+                        ".*(?:DuplicateKey|UniqueConstraint|ConcurrentModification).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 413 PAYLOAD TOO LARGE
-        add(new ExceptionPattern(
-                Pattern.compile(".*(SizeExceeded|TooLarge|MaxUploadSize|FileSizeLimitExceeded).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.PAYLOAD_TOO_LARGE
-        ));
+        // 413 Payload Too Large
+        patterns.put(HttpStatus.PAYLOAD_TOO_LARGE,
+                Pattern.compile(String.join("|",
+                        ".*(?:SizeExceeded|TooLarge|MaxUploadSize|FileSizeLimitExceeded).*Exception",
+                        ".*(?:PayloadTooLarge|RequestTooLarge|ContentLengthExceeded).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 415 UNSUPPORTED MEDIA TYPE
-        add(new ExceptionPattern(
-                Pattern.compile(".*(UnsupportedMediaType|MediaTypeNotSupported|MimeType).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.UNSUPPORTED_MEDIA_TYPE
-        ));
+        // 415 Unsupported Media Type
+        patterns.put(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                Pattern.compile(String.join("|",
+                        ".*(?:UnsupportedMediaType|MediaTypeNotSupported|MimeType).*Exception",
+                        ".*(?:ContentTypeNotSupported|InvalidContentType|UnknownMediaType).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 422 UNPROCESSABLE ENTITY
-        add(new ExceptionPattern(
-                Pattern.compile(".*(Unprocessable|ValidationFailed|Invalid.*Content|DataIntegrityViolation).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.UNPROCESSABLE_ENTITY
-        ));
+        // 422 Unprocessable Entity - Semantic validation errors
+        patterns.put(HttpStatus.UNPROCESSABLE_ENTITY,
+                Pattern.compile(String.join("|",
+                        ".*(?:Unprocessable|ValidationFailed|Invalid.*Content).*Exception",
+                        ".*(?:DataIntegrityViolation|BusinessRuleViolation|SemanticError).*Exception",
+                        ".*(?:ProcessingException|UnprocessableContent|InvalidBusinessLogic).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
-        // 429 TOO MANY REQUESTS
-        add(new ExceptionPattern(
-                Pattern.compile(".*(TooMany|RateLimit|Throttling|RequestLimit|Excessive).*Exception",
-                        Pattern.CASE_INSENSITIVE),
-                HttpStatus.TOO_MANY_REQUESTS
-        ));
-    }};
+        // 429 Too Many Requests
+        patterns.put(HttpStatus.TOO_MANY_REQUESTS,
+                Pattern.compile(String.join("|",
+                        ".*(?:TooMany|RateLimit|Throttling|RequestLimit|Excessive).*Exception",
+                        ".*(?:QuotaExceeded|RateLimitExceeded|ThrottledException).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
 
+        // 500 Internal Server Error patterns
+        patterns.put(HttpStatus.INTERNAL_SERVER_ERROR,
+                Pattern.compile(String.join("|",
+                        ".*(?:Internal|Server|System|Runtime|Unexpected|Fatal).*Exception",
+                        ".*(?:DatabaseException|ConnectionException|ConfigurationException).*Exception",
+                        ".*(?:ServiceUnavailable|ProcessingFailure|SystemFailure).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
+
+        // 502 Bad Gateway
+        patterns.put(HttpStatus.BAD_GATEWAY,
+                Pattern.compile(String.join("|",
+                        ".*(?:BadGateway|Gateway|Proxy|Upstream|Backend).*Exception",
+                        ".*(?:RemoteServiceException|ExternalServiceException).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
+
+        // 503 Service Unavailable
+        patterns.put(HttpStatus.SERVICE_UNAVAILABLE,
+                Pattern.compile(String.join("|",
+                        ".*(?:ServiceUnavailable|Unavailable|CircuitBreaker|LoadBalancer).*Exception",
+                        ".*(?:OverloadException|CapacityExceeded|MaintenanceMode).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
+
+        // 504 Gateway Timeout
+        patterns.put(HttpStatus.GATEWAY_TIMEOUT,
+                Pattern.compile(String.join("|",
+                        ".*(?:GatewayTimeout|RemoteTimeout|BackendTimeout).*Exception",
+                        ".*(?:UpstreamTimeout|ProxyTimeout|ExternalTimeout).*Exception"
+                ), Pattern.CASE_INSENSITIVE)
+        );
+
+        return patterns;
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response<Map<String, String>>> handleValidationException(MethodArgumentNotValidException ex){
@@ -150,15 +208,14 @@ public class AppExceptionsHandler {
     protected HttpStatus resolveStatus(Exception ex) {
         String exceptionName = ex.getClass().getSimpleName();
 
-        // First check for @ResponseStatus annotation
         ResponseStatus responseStatus = AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class);
         if (responseStatus != null) {
             return responseStatus.value();
         }
 
-        for (ExceptionPattern pattern : EXCEPTION_PATTERNS) {
-            if (pattern.pattern().matcher(exceptionName).matches()) {
-                return pattern.status();
+        for (Map.Entry<HttpStatus, Pattern> e : EXCEPTION_PATTERNS.entrySet()) {
+            if (e.getValue().matcher(exceptionName).matches()) {
+                return e.getKey();
             }
         }
 

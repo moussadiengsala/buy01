@@ -37,19 +37,8 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public AuditorAware<Integer> auditorAware() {
-//        return new ApplicationAuditAware();
-//    }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-//    @Bean
-//    public AccessDeniedHandler accessDeniedHandler() {
-//        return new ResponseAccessDenied();
-//    }
-
 }

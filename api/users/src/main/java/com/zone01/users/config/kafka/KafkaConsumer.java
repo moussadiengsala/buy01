@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
@@ -22,7 +21,6 @@ public class KafkaConsumer {
     private String bootstrapServers;
     private static final String PRODUCTS_RESPONSE = "product-response-to-user";
     private static final String GROUP_ID = "user-to-product";
-
 
     public Map<String, Object> consumerConfig() {
         Map<String, Object> properties = new HashMap<>();
