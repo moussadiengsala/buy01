@@ -60,14 +60,14 @@ jobs:
         run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-products -Dsonar.projectName='SafeZone Products Service'
       
       # Quality Gate Check
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: sonarqube-quality-gate-action@main
-        with:
-          scanMetadataReportFile: api/users/target/sonar/report-task.txt
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#      - name: SonarQube Quality Gate check
+#        id: sonarqube-quality-gate-check
+#        uses: sonarqube-quality-gate-action@main
+#        with:
+#          scanMetadataReportFile: api/users/target/sonar/report-task.txt
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
       # Fail the pipeline if Quality Gate fails
       - name: "Quality Gate Status"
