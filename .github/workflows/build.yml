@@ -42,14 +42,14 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-users -Dsonar.projectName='SafeZone Users Service'
+        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='SafeZone'
       
       - name: Media Service Build and analyze
         working-directory: api/media  # Adjust path as needed
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-media -Dsonar.projectName='SafeZone Media Service'
+        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='SafeZone'
       
       # Add more services as needed
       - name: Products Service Build and analyze
@@ -57,7 +57,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-products -Dsonar.projectName='SafeZone Products Service'
+        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='SafeZone'
       
       # Quality Gate Check
 #      - name: SonarQube Quality Gate check
