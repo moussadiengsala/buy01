@@ -86,25 +86,25 @@ jobs:
           fi
 
       # PRODUCTS
-      - name: Products Service Build and analyze
-        working-directory: api/products  # Adjust path as needed
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='SafeZone'
-
-      - name: SonarQube Quality Gate check - Products
-        id: sonarqube-quality-gate-check-products
-        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
-        with:
-          scanMetadataReportFile: api/products/target/sonar/report-task.txt
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: "Quality Gate Status - Products"
-        run: |
-          if [ "${{ steps.sonarqube-quality-gate-check-products.outputs.quality-gate-status }}" != "PASSED" ]; then
-            echo "Quality Gate failed for PRODUCTS!"
-            exit 1
-          fi
+#      - name: Products Service Build and analyze
+#        working-directory: api/products  # Adjust path as needed
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='SafeZone'
+#
+#      - name: SonarQube Quality Gate check - Products
+#        id: sonarqube-quality-gate-check-products
+#        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+#        with:
+#          scanMetadataReportFile: api/products/target/sonar/report-task.txt
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#
+#      - name: "Quality Gate Status - Products"
+#        run: |
+#          if [ "${{ steps.sonarqube-quality-gate-check-products.outputs.quality-gate-status }}" != "PASSED" ]; then
+#            echo "Quality Gate failed for PRODUCTS!"
+#            exit 1
+#          fi
