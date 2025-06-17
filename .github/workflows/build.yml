@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - main
-
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -13,40 +15,64 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'
+      
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      
       - name: User Service Build and analyze
         working-directory: api/users
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='safe-zone'
-      - name: Medis Service Build and analyze
-        working-directory: api/media
+        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-users -Dsonar.projectName='SafeZone Users Service'
+      
+      - name: Media Service Build and analyze
+        working-directory: api/media  # Adjust path as needed
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='safe-zone'
-      - name: Product Service Build and analyze
-        working-directory: api/products
+        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-media -Dsonar.projectName='SafeZone Media Service'
+      
+      # Add more services as needed
+      - name: Products Service Build and analyze
+        working-directory: api/products  # Adjust path as needed
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone -Dsonar.projectName='safe-zone'
-        
+        run: mvn -B verify -Dmaven.test.failure.ignore=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=safe-zone-products -Dsonar.projectName='SafeZone Products Service'
+      
+      # Quality Gate Check
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarqube-quality-gate-action@master
+        with:
+          scanMetadataReportFile: api/users/target/sonar/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
+      # Fail the pipeline if Quality Gate fails
+      - name: "Quality Gate Status"
+        run: |
+          if [ "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" != "PASSED" ]; then
+            echo "Quality Gate failed!"
+            exit 1
+          fi
