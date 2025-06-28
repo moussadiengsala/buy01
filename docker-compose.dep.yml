@@ -8,7 +8,7 @@
       volumes:
         - data:/data/db
       environment:
-        - MONGO_INITDB_ROOT_USERNAME=rootuser
+        - MONGO_INITDB_ROOT_USERNAME=user
         - MONGO_INITDB_ROOT_PASSWORD=password
         - MONGO_INITDB_DATABASE=buy01
       networks:

@@ -5,11 +5,20 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/api/media/pom.xml" />
-        <option value="$PROJECT_DIR$/api/users/pom.xml" />
-        <option value="$PROJECT_DIR$/api/gateways/pom.xml" />
-        <option value="$PROJECT_DIR$/api/products/pom.xml" />
-        <option value="$PROJECT_DIR$/api/registery/pom.xml" />
+        <option value="$PROJECT_DIR$/api/user/pom.xml" />
+        <option value="$PROJECT_DIR$/api/gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/api/product/pom.xml" />
+        <option value="$PROJECT_DIR$/api/registry/pom.xml" />
+        <option value="$PROJECT_DIR$/api/config/pom.xml" />
+        <option value="$PROJECT_DIR$/api/order/pom.xml" />
+        <option value="$PROJECT_DIR$/api/auth/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/api/auth/pom.xml" />
+        <option value="$PROJECT_DIR$/api/config/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17 (2)" project-jdk-type="JavaSDK">
