@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="HttpClientEndpointsTabState">
-    <option
-            name="requestToText"
-            value="&lt;CachedHttpClientTabRequests&gt;&#10;  &lt;entry key=&quot;5db57fd1c4776ddf305f697d78c24701136e6047&quot; value=&quot;###&amp;#10;POST https://localhost:8082/api/v1/users/auth/login&amp;#10;Content-Type: application/json&amp;#10;&amp;#10;{&amp;#10;  &amp;quot;email&amp;quot;: &amp;quot;m3@gmai.com&amp;quot;,&amp;#10;  &amp;quot;password&amp;quot;: &amp;quot;@1Paddnnnf&amp;quot;&amp;#10;}&quot; /&gt;&#10;  &lt;entry key=&quot;17db591fc0a45cd2cae478ce9e6a5601a137d50c&quot; value=&quot;###&amp;#10;POST http://localhost:8083/api/v1/users/auth/register&quot; /&gt;&#10;  &lt;entry key=&quot;d71c09aedff2d0b6db7fe96259472abe1b57435d&quot; value=&quot;###&amp;#10;DELETE http://localhost:8084/api/v1/products/{{id}}&quot; /&gt;&#10;&lt;/CachedHttpClientTabRequests&gt;" />
-  </component>
-</project>

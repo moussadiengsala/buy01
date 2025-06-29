@@ -6,6 +6,7 @@ import com.zone01.users.model.Response;
 import com.zone01.users.config.jwt.JwtService;
 import com.zone01.users.config.jwt.JwtValidationResponse;
 import com.zone01.users.dto.UserDTO;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,13 +17,14 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationKafkaListener {
@@ -44,12 +46,14 @@ public class AuthenticationKafkaListener {
     }
 
     // Function to extract and clean authorization header
-    private final Function<Object, String> extractAuthHeader = value ->
-            Optional.ofNullable(objectMapper.convertValue(value, String.class))
-                    .map(header -> header.startsWith("\"") && header.endsWith("\"")
-                            ? header.substring(1, header.length() - 1).trim()
-                            : header.trim())
-                    .orElse(null);
+    private String extractAuthHeader(Object value) {
+        return  Optional.ofNullable(objectMapper.convertValue(value, String.class))
+                .map(header -> header.startsWith("\"") && header.endsWith("\"")
+                        ? header.substring(1, header.length() - 1).trim()
+                        : header.trim())
+                .orElse(null);
+    }
+
 
     // Function to extract correlation ID
     private final Function<ConsumerRecord<String, Object>, byte[]> extractCorrelationId = record ->
@@ -66,7 +70,7 @@ public class AuthenticationKafkaListener {
             Response.unauthorized("Error processing authentication request");
 
     // Main authentication processor
-    private final AuthProcessor authProcessor = authHeader -> {
+    private Response<UserDTO> authProcessor(String authHeader) {
         try {
             JwtValidationResponse jwtValidationResponse = jwtService.validateJwt(authHeader);
 
@@ -89,7 +93,7 @@ public class AuthenticationKafkaListener {
     };
 
     // Response sender implementation
-    private final ResponseSender responseSender = (response, correlationId, topic) -> {
+    private void responseSender(Response<Object> response, byte[] correlationId, String topic) {
         Message<Response<Object>> message = MessageBuilder
                 .withPayload(response)
                 .setHeader(KafkaHeaders.TOPIC, topic)
@@ -104,10 +108,10 @@ public class AuthenticationKafkaListener {
         return record -> {
             log.info("Received authentication request from topic: {}, key: {}", record.topic(), record.key());
 
-            String authHeader = extractAuthHeader.apply(record.value());
+            String authHeader = extractAuthHeader(record.value());
             byte[] correlationId = extractCorrelationId.apply(record);
-            Response<Object> response = Response.mapper(authProcessor.process(authHeader));
-            responseSender.send(response, correlationId, responseTopic);
+            Response<Object> response = Response.mapper(authProcessor(authHeader));
+            responseSender(response, correlationId, responseTopic);
         };
     }
 
