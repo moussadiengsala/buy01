@@ -2,7 +2,6 @@ package com.zone01.users.user;
 
 import com.zone01.users.dto.UserDTO;
 import com.zone01.users.model.Role;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

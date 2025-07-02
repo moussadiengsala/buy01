@@ -1,0 +1,55 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+  application:
+    name: gateways
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+              - "https://front-end:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+      routes:
+        - id: users
+          uri: http://users:8083
+          predicates:
+            - Path=/api/v1/users/**
+        - id: products
+          uri: http://products:8084
+          predicates:
+            - Path=/api/v1/products/**
+        - id: media
+          uri: http://media:8085
+          predicates:
+            - Path=/api/v1/media/**
+server:
+  port: 8082
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: password
+    key-store-type: PKCS12
+    key-alias: gateway
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://registery:8761/eureka/
+
+logging:
+  level:
+    org.springframework.boot.ssl: DEBUG
+    org.springframework.web.cors: DEBUG
+    org.springframework.web.reactive.cors: DEBUG

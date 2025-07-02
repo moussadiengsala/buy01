@@ -6,10 +6,6 @@ import {
   ConnectedOverlayScrollHandler
 } from "./chunk-5G7WYC4N.js";
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-43HUUDWT.js";
-import {
   zindexutils
 } from "./chunk-2ZXM7VXU.js";
 import {
@@ -21,6 +17,10 @@ import {
 import {
   Ripple
 } from "./chunk-PLIBMG3Y.js";
+import {
+  Badge,
+  BadgeModule
+} from "./chunk-43HUUDWT.js";
 import {
   BaseComponent
 } from "./chunk-TRB73R6E.js";
@@ -127,8 +127,8 @@ import {
   ɵɵtextInterpolate,
   ɵɵviewQuery
 } from "./chunk-HH4NLXCO.js";
-import "./chunk-5OPE3T2R.js";
 import "./chunk-4N4GOYJH.js";
+import "./chunk-5OPE3T2R.js";
 import "./chunk-FHTVLBLO.js";
 import "./chunk-WDMUDEB6.js";
 

@@ -6,11 +6,13 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from "@primeng/themes/aura"
 import {Mypreset} from "../mypreset";
+import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: JWT_OPTIONS, useValue: {} },
+    JwtHelperService,
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
     provideClientHydration(),

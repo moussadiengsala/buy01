@@ -2,9 +2,9 @@ package com.zone01.users.user;
 
 import com.zone01.users.dto.*;
 import com.zone01.users.model.*;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,13 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/user")
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -48,13 +45,15 @@ public class UserController {
     public ResponseEntity<Response<AuthenticationResponse>> createUser(
             @Valid @ModelAttribute UserRegistrationDTO user
     ) {
+        log.info("======== Creating user with email: {} ========", user.getEmail());
         Response<AuthenticationResponse> response = userService.createUser(user);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Response<UserDTO>> authenticate(@Valid @RequestBody UserLoginDTO user) {
-        Response<UserDTO> response = userService.authenticate(user);
+    public ResponseEntity<Response<AuthenticationResponse>> authenticate(@Valid @RequestBody UserLoginDTO user) {
+        log.info("======== Login user with email: {} ========", user.getEmail());
+        Response<AuthenticationResponse> response = userService.authenticate(user);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

@@ -3,14 +3,14 @@ spring:
     activate:
       on-profile: local
   application:
-    name: users
+    name: user
   kafka:
     bootstrap-servers: localhost:9092
   data:
     mongodb:
       auto-index-creation: true
       authentication-database: admin
-      username: rootuser
+      username: user
       password: password
       database: buy01
       port: 27017
@@ -20,7 +20,7 @@ application:
   security:
     jwt:
       key-id: users-service-key
-      issuer: http://users
+      issuer: http://user
 #      expiration: 3600
 #      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       expiration: 86400000 # a day
@@ -33,7 +33,7 @@ server:
 media:
   upload:
     base:
-      dir: '${user.dir}/api/users/src/main/resources/uploads'
+      dir: '${user.dir}/api/user/src/main/resources/uploads'
     max:
       file:
         size: 2097152  # 2MB in bytes

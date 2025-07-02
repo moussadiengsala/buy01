@@ -1,6 +1,7 @@
 package com.zone01.users.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zone01.users.model.JwtValidationResponse;
 import com.zone01.users.model.Response;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,8 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        log.info("doFilterInternal");
-        if (request.getServletPath().contains("/api/v1/users/auth") || request.getServletPath().contains("/api/v1/users/avatar")) {
+        log.info("======== Filtering Request with url: {}, method: {} ========", request.getServletPath(), request.getMethod());
+        if (request.getServletPath().contains("/api/v1/user/auth") || request.getServletPath().contains("/api/v1/user/avatar")) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -6,12 +6,13 @@ import {TokenService} from "../token/token.service";
 import {MediaService} from "../media/media.service";
 import {map} from "rxjs/operators";
 import {UserService} from "../user/user.service";
+import {environment} from "../../environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly baseUrl = 'https://localhost:8082/api/v1/products';
+  private readonly baseUrl = environment.apiUrl + 'product';
 
   constructor(
       private http: HttpClient,

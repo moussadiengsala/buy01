@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,15 +41,17 @@ public class UserService {
     }
 
     public Response<AuthenticationResponse> createUser(UserRegistrationDTO dto) {
-        log.info("Creating user.");
-        userRepository.findUserByEmail(dto.getEmail())
-                .orElseThrow(()  -> new RessourceAlreadyUsedException("Email already in use."));
+        Optional<User> existingUser = userRepository.findUserByEmail(dto.getEmail());
+        if (existingUser.isPresent()) return Response.badRequest("Email is already used.");
 
         try {
-            String avatar = this.helperUserService.processAvatar(dto.getAvatar()).orElse(null);
-            User user = dto.toUser(passwordEncoder, avatar);
-            User createdUser = userRepository.save(user);
+            if (dto.getAvatar() != null && !dto.getAvatar().isEmpty() && dto.getRole() == Role.CLIENT)
+                return Response.badRequest("Only sellers can upload an avatar.");
 
+            String avatar = this.helperUserService.processAvatar(dto.getAvatar()).orElse(null);
+            User createdUser = userRepository.save(dto.toUser(passwordEncoder, avatar));
+
+            log.info("====== User with name: {}, email: {} has been created ======", createdUser.getName(), createdUser.getEmail());
             return Response.created(
                     AuthenticationResponse.builder()
                             .accessToken(jwtService.generateToken(createdUser))
@@ -57,6 +60,7 @@ public class UserService {
                     "user has been created successfully."
             );
         } catch (Exception e) {
+            log.error("====== Error creating user {} ======", e.getMessage());
             return Response.badRequest(e.getMessage());
         }
 
@@ -66,7 +70,7 @@ public class UserService {
         return fileServices.getAvatar(filename);
     }
 
-    public Response<UserDTO> authenticate(UserLoginDTO loginRequest) {
+    public Response<AuthenticationResponse> authenticate(UserLoginDTO loginRequest) {
         User user = userRepository.findUserByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("Email is not found"));
 
@@ -77,7 +81,12 @@ public class UserService {
                 )
         );
 
-        return Response.ok(user.toUserDTO(), "user has been authenticated successfully.");
+        return Response.ok(
+                AuthenticationResponse.builder()
+                        .accessToken(jwtService.generateToken(user))
+                        .refreshToken("")
+                        .build(),
+                "user has been authenticated successfully.");
     }
 
     public Response<UserDTO> updateUser(String userId, UpdateUserDTO dto) {

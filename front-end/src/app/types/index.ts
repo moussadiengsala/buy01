@@ -19,6 +19,16 @@ export type Tokens = {
     refreshToken: string
 }
 
+export type TokenPayload = {
+    exp: number,
+    iat: number,
+    iss: string,
+    sub: string,
+    user: User
+}
+
+
+
 export type ApiResponse<T>  = {
     status: number | null,
     message: string,

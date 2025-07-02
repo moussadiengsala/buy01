@@ -35,8 +35,7 @@ public class FileServices {
     }
 
     public void validateFile(MultipartFile file) throws  IOException {
-        if (file == null || file.isEmpty())
-            throw new IOException("No files provided");
+        if (file == null || file.isEmpty()) return;
 
         if (file.getSize() > maxFileSize)
             throw new IOException("File size exceeds limit: " + formatSize(maxFileSize));

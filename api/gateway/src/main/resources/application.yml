@@ -1,93 +1,59 @@
 
 spring:
-  application:
-    name: gateway
-
-  cloud:
-    gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:4200"
-              - http://localhost:**
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-      routes:
-
-        - id: user-service
-          uri: http://localhost:9001
-          predicates:
-            - Path=/api/v1/user/**
-          filter:
-            - name: CircuitBreaker
-              arg:
-                name: userServiceCB
-
-        - id: product-service
-          uri: http://localhost:9002
-          predicates:
-            - Path=/api/v1/product/**
-          filter:
-            - name: CircuitBreaker
-              arg:
-                name: productServiceCB
-
-        - id: media-service
-          uri: http://localhost:9003
-          predicates:
-            - Path=/api/v1/media/**
-          filter:
-            - name: CircuitBreaker
-              arg:
-                name: mediaServiceCB
-
-        - id: order-service
-          uri: http:://localhost:9004
-          predicates:
-            - Path=/api/v1/order/**
-          filter:
-            - name: CircuitBreaker
-              arg:
-                name: orderServiceCB
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
 
 
-resilience4j:
-  circuitbreaker:
-    instances:
-      authServiceCB:
-        failureRateThreshold: 50
-        slidingWindowSize: 10
-        waitDurationInOpenState: 10s
-      userServiceCB:
-        failureRateThreshold: 50
-        slidingWindowSize: 10
-        waitDurationInOpenState: 10s
-      productServiceCB:
-        failureRateThreshold: 50
-        slidingWindowSize: 10
-        waitDurationInOpenState: 10s
-      mediaServiceCB:
-        failureRateThreshold: 50
-        slidingWindowSize: 10
-        waitDurationInOpenState: 10s
-      orderServiceCB:
-        failureRateThreshold: 50
-        slidingWindowSize: 10
-        waitDurationInOpenState: 10s
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-
-server:
-  port: 9000
+#spring:
+#  application:
+#    name: gateways
+#  cloud:
+#    gateway:
+#      globalcors:
+#        cors-configurations:
+#          '[/**]':
+#            allowedOrigins:
+#              - "http://localhost:4200"
+##              - "https://localhost:4200"
+##              - "localhost:4200"
+#            allowedMethods:
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#              - OPTIONS
+#            allowedHeaders:
+#              - "*"
+#            allowCredentials: true
+#
+#      routes:
+#        - id: users
+#          uri: http://localhost:8083
+#          predicates:
+#            - Path=/api/v1/users/**
+#        - id: products
+#          uri: http://localhost:8084
+#          predicates:
+#            - Path=/api/v1/products/**
+#        - id: media
+#          uri: http://localhost:8085
+#          predicates:
+#            - Path=/api/v1/media/**
+#server:
+#  port: 8082
+#  ssl:
+#    key-store: classpath:keystore.p12
+#    key-store-password: password
+#    key-store-type: PKCS12
+#    key-alias: gateway
+#
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka/
+#
+#logging:
+#  level:
+#    org.springframework.boot.ssl: DEBUG
+#    org.springframework.web.cors: DEBUG
+#    org.springframework.web.reactive.cors: DEBUG

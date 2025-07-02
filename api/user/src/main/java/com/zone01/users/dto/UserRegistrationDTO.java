@@ -27,6 +27,8 @@ public class UserRegistrationDTO {
     )
     private String password;
 
+    private Role role;
+
     private MultipartFile avatar;
 
     public User toUser(PasswordEncoder passwordEncoder, String avatar) {
@@ -34,7 +36,7 @@ public class UserRegistrationDTO {
                 .name(this.getName())
                 .email(this.getEmail())
                 .password(passwordEncoder.encode(this.getPassword()))
-                .role(Role.CLIENT)
+                .role(this.getRole())
                 .avatar(avatar)
                 .build();
     }

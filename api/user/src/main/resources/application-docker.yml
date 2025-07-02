@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: docker
   application:
-    name: users
+    name: user
   kafka:
     bootstrap-servers: kafka:9093
   data:
