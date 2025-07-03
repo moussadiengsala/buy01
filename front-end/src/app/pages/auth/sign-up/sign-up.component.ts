@@ -18,6 +18,7 @@ import {AlertComponent} from "../../../components/alert/alert.component";
 import {AuthService} from "../../../services/auth/auth.service";
 import {AlertService} from "../../../services/alert/alert.service";
 import {ToastModule} from "primeng/toast";
+import {FileData, FileService} from "../../../services/file-service/file-service.service";
 
 
 @Component({
@@ -53,16 +54,18 @@ export class SignUpComponent implements OnInit {
     });
 
     loading: boolean = false;
-    avatarPreview: string | ArrayBuffer | null = null;
-    avatarFileName: string | null = null;
-    avatarFile: File | null = null;
+    currentFile: FileData | null = null;
 
     constructor(
         private authService: AuthService,
         private router: Router,
         private messageService: MessageService,
-        private alertService: AlertService) {
+        private alertService: AlertService,
+        private fileService: FileService) {
         this.alertService.clear()
+        this.fileService.fileData$.subscribe(fileData => {
+            this.currentFile = fileData;
+        });
     }
 
     ngOnInit(): void {}
@@ -79,7 +82,9 @@ export class SignUpComponent implements OnInit {
         const formValue = this.signUpForm.value;
 
         const formData = new FormData();
-        if (formValue.avatar) formData.append('avatar', formValue.avatar as File, (formValue.avatar as File).name);
+        if (this.currentFile
+            && this.currentFile.file
+            && this.currentFile.fileName) formData.append('avatar', this.currentFile.file, this.currentFile.fileName);
         formData.append('name', formValue.name || '');
         formData.append('email', formValue.email || '');
         formData.append('password', formValue.password || '');
@@ -102,45 +107,20 @@ export class SignUpComponent implements OnInit {
         });
     }
 
-    onFileSelected(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            
-            // Validate file type
-            if (!file.type.match(/image\/(jpeg|png|gif)$/)) {
-                alert('Please select a valid image file (JPEG, PNG, or GIF)');
-                return;
-            }
-            
-            // Validate file size (10MB max)
-            if (file.size > 10 * 1024 * 1024) {
-                alert('File size must be less than 10MB');
-                return;
-            }
+    async onFileChange(event: Event) {
+        const result = await this.fileService.onFileSelected(event, {
+            maxSize: 5 * 1024 * 1024, // 5MB
+            allowedTypes: ['image/jpeg', 'image/png']
+        });
 
-            this.avatarFile = file;
-            this.avatarFileName = file.name;
-            
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e: ProgressEvent<FileReader>) => {
-                this.avatarPreview = e.target?.result as string;
-            };
-            reader.readAsDataURL(file);
+        if (!result.isValid) {
+            console.error('File validation failed:', result.errors);
         }
     }
 
-    removeAvatar(): void {
-        this.avatarFile = null;
-        this.avatarPreview = null;
-        this.avatarFileName = null;
-        
-        // Reset the file input
-        const fileInput = document.getElementById('avatar') as HTMLInputElement;
-        if (fileInput) {
-            fileInput.value = '';
-        }
+    removeFile() {
+        this.fileService.removeFile();
+        this.fileService.resetFileInput('avatar');
     }
 
     // Getter methods for form controls to simplify template validation

@@ -11,7 +11,7 @@ import {AuthService} from "../auth/auth.service";
   providedIn: 'root'
 })
 export class UserService {
-  private API_URL = environment.apiUrl + "users";
+  private API_URL = environment.apiUrl + "user";
 
   constructor(
       private http: HttpClient,
@@ -71,7 +71,7 @@ export class UserService {
         .pipe(
             map(response => {
               // If the user deleted themselves, log them out
-              if (userId === this.tokenService.parse()?.id) {
+              if (userId === this.tokenService.parse()?.user.id) {
                 this.authService.logout();
               }
               return response;

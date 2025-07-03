@@ -8,6 +8,7 @@ import { UserPayload } from '../../../types';
 import { CartService } from "../../../services/utils/cart.service";
 import { AuthService } from "../../../services/auth/auth.service";
 import {filter} from "rxjs/operators";
+import {environment} from "../../../environment";
 
 @Component({
   selector: 'app-navbar',
@@ -40,8 +41,9 @@ export class NavbarComponent {
       this.cartCount = cartItems.length;
     });
 
-    this.authService.userState$.subscribe((user) => {
-      this.user = user;
+    this.authService.userState$.subscribe((u) => {
+      console.log("gggg", u);
+      this.user = u;
     });
   }
 
@@ -78,4 +80,6 @@ export class NavbarComponent {
     this.authService.logout();
     this.toggleMenu(event);
   }
+
+  protected readonly environment = environment;
 }

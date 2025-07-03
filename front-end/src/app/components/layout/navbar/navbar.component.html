@@ -124,7 +124,7 @@
           [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
           shape="circle" />
         <p-avatar *ngIf="user.avatar"
-          image="https://localhost:8082/api/v1/users/avatar/{{user.avatar}}"
+          image="{{environment.apiUrl}}user/avatar/{{user.avatar}}"
           styleClass="mr-2"
           [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
           shape="circle" />

@@ -1,0 +1,5 @@
+export CONFIG_SERVICE_PASSWORD=password
+export USER_SERVICE_PASSWORD=password
+export PRODUCT_SERVICE_PASSWORD=password
+export MEDIA_SERVICE_PASSWORD=password
+export MONGODB_PASSWORD=password
