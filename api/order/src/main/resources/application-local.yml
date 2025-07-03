@@ -1,0 +1,24 @@
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  application:
+    name: order
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+
+  data:
+    mongodb:
+      authentication-database: admin
+      username: user
+      password: password
+      database: buy01
+      port: 27017
+      host: localhost
+      auto-index-creation: true
+
+server:
+  port: 9004
