@@ -36,4 +36,4 @@ media:
       types: image/jpeg,image/png,image/webp
 
 server:
-  port: 8085
+  port: 9003

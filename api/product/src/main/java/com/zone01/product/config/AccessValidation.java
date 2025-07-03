@@ -52,6 +52,7 @@ public class AccessValidation extends OncePerRequestFilter {
         }
 
         try {
+            log.info("====== Sending the authorization header to the user service ======");
             ProducerRecord<String, String> record =
                     new ProducerRecord<>(REQUEST_TOPIC, request.getHeader("Authorization"));
             record.headers().add("X-Correlation-PRODUCT", UUID.randomUUID().toString().getBytes());
@@ -63,14 +64,18 @@ public class AccessValidation extends OncePerRequestFilter {
 
             // Wait for response
             Response<?> userResponse = replyFuture.get(REPLY_TIMEOUT_SECONDS, TimeUnit.SECONDS).value();
+            log.info("====== Receiving the response from user service ======");
             if (userResponse == null) {
+                log.error("======== The user service returned a null response ======");
                 setErrorResponse(response, HttpStatus.BAD_REQUEST.value(), null, "Having trouble to validate the token.");
                 return;
             } else if (userResponse.getData() == null || userResponse.getStatus() != 200) {
+                log.error("======== Failed to check the authorization header from kafka: {} ======", userResponse);
                 setErrorResponse(response, userResponse.getStatus(), null, userResponse.getMessage());
                 return;
             }
 
+            log.info("====== The authorization has been check by user service successfully ======");
             UserDTO user = jacksonObjectMapper.convertValue(userResponse.getData(), UserDTO.class);
             if (user.getRole() != Role.SELLER) {
                 setErrorResponse(response, HttpStatus.UNAUTHORIZED.value(), null, "Only user with role SELLER can perform this operation.");
@@ -80,8 +85,8 @@ public class AccessValidation extends OncePerRequestFilter {
 
         } catch (Exception e) {
             String errorMessage = e.getMessage();
-            System.out.println(errorMessage);
             String jsonPart = extractJsonFromErrorMessage(errorMessage);
+            log.error("====== Something went wrong while checking the authorization header from kafka: {} ======", jsonPart);
 
             if (jsonPart != null) {
                 try {

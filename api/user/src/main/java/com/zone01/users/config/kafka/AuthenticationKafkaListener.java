@@ -30,18 +30,6 @@ public class AuthenticationKafkaListener {
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
 
-    // Functional interface for authentication processing
-    @FunctionalInterface
-    public interface AuthProcessor {
-        Response<UserDTO> process(String authHeader);
-    }
-
-    // Functional interface for response sending
-    @FunctionalInterface
-    public interface ResponseSender {
-        void send(Response<Object> response, byte[] correlationId, String topic);
-    }
-
     // Function to extract and clean authorization header
     private String extractAuthHeader(Object value) {
         return  Optional.ofNullable(objectMapper.convertValue(value, String.class))
@@ -58,10 +46,6 @@ public class AuthenticationKafkaListener {
                     .map(header -> header.value())
                     .orElse(null);
 
-    // Function to create successful response
-//    private final Function<UserDTO, Response<Object>> createSuccessResponse = userDTO ->
-//            buildResponse("Authentication successful", HttpStatus.OK, userDTO);
-
     // Supplier for error response
     private final Supplier<Response<UserDTO>> createErrorResponse = () ->
             Response.unauthorized("Error processing authentication request");
@@ -69,12 +53,14 @@ public class AuthenticationKafkaListener {
     // Main authentication processor
     private Response<UserDTO> authProcessor(String authHeader) {
         try {
+            log.info("====== Checking the authentication header from kafka ========");
             JwtValidationResponse jwtValidationResponse = jwtService.validateJwt(authHeader);
-
             if (jwtValidationResponse.hasError()) {
+                log.error("====== Failed checking the authentication header from kafka: {} ========", jwtValidationResponse.response().getMessage());
                 return Response.mapper(jwtValidationResponse.response());
             }
 
+            log.info("====== Successfully checking the authentication header from kafka ========");
             return Optional.of(jwtValidationResponse.userDetails())
                     .filter(User.class::isInstance)
                     .map(User.class::cast)
@@ -103,12 +89,13 @@ public class AuthenticationKafkaListener {
     // Generic request handler using functional approach
     private final Consumer<ConsumerRecord<String, Object>> createRequestHandler(String responseTopic) {
         return record -> {
-            log.info("Received authentication request from topic: {}, key: {}", record.topic(), record.key());
+            log.info("====== Received authentication request from topic: {}, key: {} ======", record.topic(), record.key());
 
             String authHeader = extractAuthHeader(record.value());
             byte[] correlationId = extractCorrelationId.apply(record);
-            Response<Object> response = Response.mapper(authProcessor(authHeader));
-            responseSender(response, correlationId, responseTopic);
+            responseSender(
+                    Response.ok(authProcessor(authHeader).getData())
+                    , correlationId, responseTopic);
         };
     }
 
@@ -117,7 +104,7 @@ public class AuthenticationKafkaListener {
             groupId = "auth-group-product",
             containerFactory = "authKafkaListenerContainerFactory"
     )
-    public void handleAuthRequestSubscriptions(ConsumerRecord<String, Object> record) {
+    public void handleAuthRequestProduct(ConsumerRecord<String, Object> record) {
         createRequestHandler("auth-response-product").accept(record);
     }
 
@@ -126,7 +113,7 @@ public class AuthenticationKafkaListener {
             groupId = "auth-group-media",
             containerFactory = "authKafkaListenerContainerFactory"
     )
-    public void handleAuthRequestMembers(ConsumerRecord<String, Object> record) {
+    public void handleAuthRequestMedia(ConsumerRecord<String, Object> record) {
         createRequestHandler("auth-response-media").accept(record);
     }
 
@@ -135,7 +122,7 @@ public class AuthenticationKafkaListener {
             groupId = "auth-group-order",
             containerFactory = "authKafkaListenerContainerFactory"
     )
-    public void handleAuthRequestPayments(ConsumerRecord<String, Object> record) {
+    public void handleAuthRequestOrder(ConsumerRecord<String, Object> record) {
         createRequestHandler("auth-response-order").accept(record);
     }
 }

@@ -43,10 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         JwtValidationResponse jwtValidationResponse = jwtService.validateJwt(authHeader);
         if (jwtValidationResponse.hasError()) {
+            log.error("====== Failed checking authorization header: {} ========", jwtValidationResponse.response().getMessage());
             setErrorResponse(response, jwtValidationResponse.response());
             return;
         }
 
+        log.info("======== Successfully Check the authentication header ========");
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 jwtValidationResponse.userDetails(),
                 null,
