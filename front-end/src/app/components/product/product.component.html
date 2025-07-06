@@ -33,9 +33,9 @@
         <div class="mt-4 px-3 space-y-2">
             <div class="flex justify-between">
                 <h3 class="text-lg font-normal text-gray-900 capitalize">{{ product.product.name }}</h3>
-                <p-button (onClick)="toggleCart()" [disabled]="product.product.quantity === 0">
-                    <i *ngIf="!isInCart" class="pi pi-plus-circle"></i>
-                    <i *ngIf="isInCart" class="pi pi-minus-circle"></i>
+                <p-button (click)="addCart($event)">
+                    <i *ngIf="isProductInCart()" class="pi pi-shopping-cart text-xl"></i>
+                    <i *ngIf="isProductInCart()" class="pi pi-delete"></i>
                 </p-button>
             </div>
             <app-text-preview limit="100" text="{{product.product.description}}" textClass="text-gray-500 inline-block" buttonClass="text-blue-500 text-sm ml-1"></app-text-preview>

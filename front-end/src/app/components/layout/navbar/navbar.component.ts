@@ -5,15 +5,16 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { UserPayload } from '../../../types';
-import { CartService } from "../../../services/utils/cart.service";
+import { CartService } from "../../../services/cart/cart.service";
 import { AuthService } from "../../../services/auth/auth.service";
 import {filter} from "rxjs/operators";
 import {environment} from "../../../environment";
+import {CartComponent} from "../../cart/cart.component";
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, ButtonModule, RouterLink, RouterLinkActive, AvatarModule, BadgeModule],
+  imports: [CommonModule, ButtonModule, RouterLink, RouterLinkActive, AvatarModule, BadgeModule, CartComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -26,7 +27,7 @@ export class NavbarComponent {
 
   constructor(
       private router: Router,
-      private cartService: CartService,
+      // private cartService: CartService,
       private authService: AuthService) {
     this.router.events
         .pipe(filter(event => event instanceof NavigationEnd))
@@ -37,12 +38,11 @@ export class NavbarComponent {
   }
 
   ngOnInit(): void {
-    this.cartService.cart$.subscribe((cartItems) => {
-      this.cartCount = cartItems.length;
-    });
+    // this.cartService.cart$.subscribe((cartItems) => {
+    //   // this.cartCount = cartItems.length;
+    // });
 
     this.authService.userState$.subscribe((u) => {
-      console.log("gggg", u);
       this.user = u;
     });
   }

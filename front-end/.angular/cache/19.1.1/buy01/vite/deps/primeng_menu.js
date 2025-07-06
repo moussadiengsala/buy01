@@ -1,7 +1,14 @@
 import {
+  Badge,
+  BadgeModule
+} from "./chunk-43HUUDWT.js";
+import {
   Tooltip,
   TooltipModule
-} from "./chunk-WLHKT5KB.js";
+} from "./chunk-RFUANQ5T.js";
+import {
+  ConnectedOverlayScrollHandler
+} from "./chunk-5G7WYC4N.js";
 import {
   zindexutils
 } from "./chunk-2ZXM7VXU.js";
@@ -12,21 +19,15 @@ import {
   trigger
 } from "./chunk-RV4YVARO.js";
 import {
-  ConnectedOverlayScrollHandler
-} from "./chunk-5G7WYC4N.js";
-import {
   Ripple
-} from "./chunk-FCC5EPD5.js";
-import {
-  Badge,
-  BadgeModule
-} from "./chunk-22QMKDQG.js";
+} from "./chunk-PLIBMG3Y.js";
 import {
   BaseComponent
-} from "./chunk-PJ4SLVR6.js";
+} from "./chunk-TRB73R6E.js";
 import {
   BaseStyle
-} from "./chunk-J22CIEQX.js";
+} from "./chunk-22E5IVB5.js";
+import "./chunk-CWYBPNCF.js";
 import {
   OverlayService,
   PrimeTemplate,
@@ -39,9 +40,8 @@ import {
   isTouchDevice,
   relativePosition,
   uuid
-} from "./chunk-MHSCDS5X.js";
-import "./chunk-TZIJKBMI.js";
-import "./chunk-YAPJLE7E.js";
+} from "./chunk-ES46DI74.js";
+import "./chunk-NJ25EVEJ.js";
 import {
   RouterLink,
   RouterLinkActive,
@@ -127,8 +127,8 @@ import {
   ɵɵtextInterpolate,
   ɵɵviewQuery
 } from "./chunk-HH4NLXCO.js";
-import "./chunk-5OPE3T2R.js";
 import "./chunk-4N4GOYJH.js";
+import "./chunk-5OPE3T2R.js";
 import "./chunk-FHTVLBLO.js";
 import "./chunk-WDMUDEB6.js";
 

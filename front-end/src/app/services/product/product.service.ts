@@ -32,7 +32,7 @@ export class ProductService {
   // Get all products with pagination
   getAllProducts(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedResponse<Product>>> {
     return this.http.get<ApiResponse<PaginatedResponse<Product>>>(
-        `${this.baseUrl}/?page=${page}&size=${size}`,
+        `${this.baseUrl}?page=${page}&size=${size}`,
         { headers: { 'Content-Type': 'application/json' }}
     );
   }
