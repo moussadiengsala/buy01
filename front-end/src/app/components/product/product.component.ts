@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { ProductMedia} from "../../types";
-import {CartService} from "../../services/utils/cart.service";
+import {CartService} from "../../services/cart/cart.service";
 import {CardModule} from "primeng/card";
 import {MediaService} from "../../services/media/media.service";
 import {TooltipModule} from "primeng/tooltip";
@@ -17,27 +17,21 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
 })
 export class ProductComponent {
   @Input({required: true}) product!: ProductMedia;
-  isInCart = false;
 
-  constructor(private cartService: CartService, private mediaService: MediaService) {}
-
-  ngOnInit(): void {
-    this.isInCart = this.cartService.isInCart(this.product.product.id);
-  }
+  constructor(public cartService: CartService, private mediaService: MediaService) {}
 
   getMedia(productId: string, imagePath: string): string | null {
     return this.mediaService.getMedia(productId, imagePath)
   }
 
-  // Toggle add/remove product from the cart
-  toggleCart(): void {
-    if (this.isInCart) {
-      this.cartService.removeFromCart(this.product.product.id);
-    } else {
-      this.cartService.addToCart(this.product.product);
-    }
+  addCart(event: Event) {
+      event.stopPropagation()
+      this.cartService.addToCart(this.product)
+      this.cartService.toggleCart(event);
+  }
 
-    // Update the isInCart state after the action
-    this.isInCart = this.cartService.isInCart(this.product.product.id);
+  isProductInCart(): boolean {
+      // return this.cartService.isProductInCart(this.product.product.id);
+      return false;
   }
 }

@@ -100,7 +100,7 @@
                                            name="avatar" 
                                            type="file" 
                                            class="sr-only"
-                                           (change)="onFileSelected($event)">
+                                           (change)="onFileChange($event)">
                                 </label>
                                 <p class="pl-1">or drag and drop</p>
                             </div>
@@ -111,14 +111,14 @@
                     </div>
                     
                     <!-- Profile Picture Preview -->
-                    <div *ngIf="avatarPreview" class="mt-4 flex flex-col items-center">
+                    <div *ngIf="currentFile" class="mt-4 flex flex-col items-center">
                         <div class="relative w-32 h-32 overflow-hidden border-2 border-indigo-200">
-                            <img [src]="avatarPreview" alt="Profile Preview" class="w-full h-full object-cover">
-                            <button (click)="removeAvatar()" class="absolute top-1 right-1 bg-white/80 hover:bg-white p-1 shadow-md transition-all duration-300">
+                            <img [src]="currentFile.preview" alt="Profile Preview" class="w-full h-full object-cover">
+                            <button (click)="removeFile()" class="absolute top-1 right-1 bg-white/80 hover:bg-white p-1 shadow-md transition-all duration-300">
                                 <i class="pi pi-times text-gray-600"></i>
                             </button>
                         </div>
-                        <p class="mt-2 text-sm text-gray-500">{{ avatarFileName }}</p>
+                        <p class="mt-2 text-sm text-gray-500">{{ currentFile.fileName }}</p>
                     </div>
                 </div>
             </div>

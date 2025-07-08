@@ -18,7 +18,7 @@ import {ToastModule} from "primeng/toast";
 @Component({
     selector: 'app-sign-in',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive, CardModule, MessagesModule, ButtonModule, InputGroupModule, InputGroupAddonModule, PasswordModule, AlertComponent, ToastModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, CardModule, MessagesModule, ButtonModule, InputGroupModule, InputGroupAddonModule, PasswordModule, AlertComponent, ToastModule],
     templateUrl: './sign-in.component.html',
     styleUrl: './sign-in.component.css',
     providers: [MessageService]

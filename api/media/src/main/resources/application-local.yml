@@ -15,7 +15,7 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      username: rootuser
+      username: user
       password: password
       database: buy01
       port: 27017
@@ -36,4 +36,4 @@ media:
       types: image/jpeg,image/png,image/webp
 
 server:
-  port: 8085
+  port: 9003

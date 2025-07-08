@@ -3,12 +3,13 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {TokenService} from "../token/token.service";
 import {Observable} from "rxjs";
 import {ApiResponse, Media, PaginatedResponse, Product} from "../../types";
+import {environment} from "../../environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MediaService {
-  private readonly baseUrl = 'https://localhost:8082/api/v1/media';
+  private readonly baseUrl = environment.apiUrl + 'media';
 
   constructor(private http: HttpClient, private tokenService: TokenService) {}
 

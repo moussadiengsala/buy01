@@ -3,7 +3,8 @@ import {
   PrimeNG,
   ThemeProvider,
   providePrimeNG
-} from "./chunk-22E5IVB5.js";
+} from "./chunk-MUX2NSTK.js";
+import "./chunk-74RIFCAN.js";
 import "./chunk-CWYBPNCF.js";
 import "./chunk-ES46DI74.js";
 import "./chunk-NJ25EVEJ.js";

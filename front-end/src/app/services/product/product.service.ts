@@ -6,12 +6,13 @@ import {TokenService} from "../token/token.service";
 import {MediaService} from "../media/media.service";
 import {map} from "rxjs/operators";
 import {UserService} from "../user/user.service";
+import {environment} from "../../environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly baseUrl = 'https://localhost:8082/api/v1/products';
+  private readonly baseUrl = environment.apiUrl + 'product';
 
   constructor(
       private http: HttpClient,
@@ -31,7 +32,7 @@ export class ProductService {
   // Get all products with pagination
   getAllProducts(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedResponse<Product>>> {
     return this.http.get<ApiResponse<PaginatedResponse<Product>>>(
-        `${this.baseUrl}/?page=${page}&size=${size}`,
+        `${this.baseUrl}?page=${page}&size=${size}`,
         { headers: { 'Content-Type': 'application/json' }}
     );
   }

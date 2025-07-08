@@ -10,6 +10,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MediaManagementComponent } from './pages/media-management/media-management.component';
 import {UserProfileComponent} from "./pages/user-profile/user-profile.component";
+import {CartComponent} from "./pages/cart/cart.component";
+import {CheckoutComponent} from "./pages/checkout/checkout.component";
 
 export const routes: Routes = [
     {
@@ -30,6 +32,16 @@ export const routes: Routes = [
       path: 'media-management', 
       component: MediaManagementComponent,
       canActivate: [AuthGuard] 
+    },
+    {
+        path: "checkout",
+        component: CheckoutComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: 'cart',
+        component: CartComponent,
+        canActivate: [AuthGuard]
     },
     {
       path: 'auth/sign-in', 
