@@ -36,7 +36,7 @@ public class OrderController {
     @PostMapping("/checkout/integrated")
     String integratedCheckout(@RequestBody CheckoutRequestDTO requestDTO) throws StripeException {
 
-        Stripe.apiKey = "sk_test_51Qoq2iA0ESShc8j9M2q6RFhfIjoRkJQi0Y4ihwlkx3H7jApJAnPSlfXQIWT7PCVt1tK8HYH4vLV87I7QL3fdOWZK005fdSHG6F";
+        Stripe.apiKey = "";
 
         // Start by finding existing customer or creating a new one if needed
         Customer customer = CustomerUtil.findOrCreateCustomer(requestDTO.getCustomerEmail(), requestDTO.getCustomerName());
