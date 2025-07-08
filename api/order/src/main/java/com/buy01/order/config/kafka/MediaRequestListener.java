@@ -1,9 +1,9 @@
 // AuthenticationKafkaListener.java
 package com.buy01.order.config.kafka;
 
-import com.zone01.product.model.Response;
-import com.zone01.product.product.Products;
-import com.zone01.product.product.ProductsService;
+import com.buy01.order.order.Order;
+import com.buy01.order.order.OrderService;
+import com.buy01.order.model.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -28,7 +28,7 @@ public class MediaRequestListener {
     private static final String PRODUCT_RESPONSE = "product-response-to-media";
     private static final String GROUP_ID = "media-to-product";
 
-    private final ProductsService productsService;
+    private final OrderService orderService;
 
     @KafkaListener(topics = MEDIA_REQUEST, groupId = GROUP_ID)
     public void handleAuthRequest(ConsumerRecord<String, Object> record) {
@@ -42,22 +42,22 @@ public class MediaRequestListener {
         byte[] correlationId = record.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value();
 
         try {
-            Optional<Products> productsOptional = productsService.getProductById(productId);
-            if (productsOptional.isEmpty()) {
-                sendResponse(Response.<Object>builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("the product is not found.")
-                        .data(null)
-                        .build(), correlationId);
-                return;
-            }
-
-            Products product = productsOptional.get();
-            sendResponse(Response.<Object>builder()
-                    .status(HttpStatus.OK.value())
-                    .message("success")
-                    .data(product)
-                    .build(), correlationId);
+//            Optional<Order> productsOptional = productsService.getProductById(productId);
+//            if (productsOptional.isEmpty()) {
+//                sendResponse(Response.<Object>builder()
+//                        .status(HttpStatus.NOT_FOUND.value())
+//                        .message("the product is not found.")
+//                        .data(null)
+//                        .build(), correlationId);
+//                return;
+//            }
+//
+//            Products product = productsOptional.get();
+//            sendResponse(Response.<Object>builder()
+//                    .status(HttpStatus.OK.value())
+//                    .message("success")
+//                    .data(product)
+//                    .build(), correlationId);
         } catch (Exception e) {
             sendResponse(Response.<Object>builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

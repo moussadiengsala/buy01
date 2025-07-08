@@ -19,7 +19,7 @@ import java.util.function.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
-public class Response<T> extends Serializable {
+public class Response<T> {
     private int status;
     private T data;
     private String message;

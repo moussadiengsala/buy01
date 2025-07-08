@@ -1,6 +1,6 @@
 package com.buy01.order.config;
 
-import com.zone01.product.model.Response;
+import com.buy01.order.model.Response;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,9 +1,9 @@
 package com.buy01.order.config;
 
+import com.buy01.order.model.Response;
+import com.buy01.order.model.Role;
+import com.buy01.order.model.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.product.dto.UserDTO;
-import com.zone01.product.model.Response;
-import com.zone01.product.model.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class AccessValidation extends OncePerRequestFilter {
 
     private final ReplyingKafkaTemplate<String, String, Response<?>> replyingAuthKafkaTemplate;
     private static final long REPLY_TIMEOUT_SECONDS = 30;
-    private static final String REQUEST_TOPIC = "auth-request-product";
+    private static final String REQUEST_TOPIC = "auth-request-order";
 
     @Override
     protected void doFilterInternal(
@@ -44,17 +44,12 @@ public class AccessValidation extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         log.info("====== Filtering request | url: {} | method: {} ======", request.getServletPath(), request.getMethod());
-        if ("GET".equals(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         try {
             log.info("====== Sending the authorization header to the user service ======");
             ProducerRecord<String, String> record =
                     new ProducerRecord<>(REQUEST_TOPIC, request.getHeader("Authorization"));
-            record.headers().add("X-Correlation-PRODUCT", UUID.randomUUID().toString().getBytes());
-            record.headers().add("X-Correlation-Source", "product".getBytes());
+            record.headers().add("X-Correlation-Order", UUID.randomUUID().toString().getBytes());
+            record.headers().add("X-Correlation-Source", "order".getBytes());
 
             // Send and receive the response
             RequestReplyFuture<String, String, Response<?>> replyFuture =

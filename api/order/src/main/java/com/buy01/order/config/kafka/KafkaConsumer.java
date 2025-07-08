@@ -1,6 +1,6 @@
 package com.buy01.order.config.kafka;
 
-import com.zone01.product.model.Response;
+import com.buy01.order.model.Response;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,9 +35,9 @@ public class KafkaConsumer {
 
         // JsonDeserializer-specific configurations
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.zone01.*");
-        properties.put(JsonDeserializer.TYPE_MAPPINGS, "response:com.zone01.product.model.Response");
+        properties.put(JsonDeserializer.TYPE_MAPPINGS, "response:com.buy01.order.model.Response");
         properties.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.zone01.product.model.Response");
+        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.buy01.order.model.Response");
 
         return properties;
     }
@@ -47,7 +47,7 @@ public class KafkaConsumer {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
-                new JsonDeserializer<>(Response.class).trustedPackages("com.zone01.*")
+                new JsonDeserializer<>(Response.class).trustedPackages("com.buy01.*")
         );
     }
 
@@ -63,8 +63,8 @@ public class KafkaConsumer {
     public ConcurrentMessageListenerContainer<String, Response<?>> repliesAuthContainer(
             ConcurrentKafkaListenerContainerFactory<String, Response<?>> factory) {
         ConcurrentMessageListenerContainer<String, Response<?>> container =
-                factory.createContainer("auth-response-product");
-        container.getContainerProperties().setGroupId("auth-group-product");
+                factory.createContainer("auth-response-order");
+        container.getContainerProperties().setGroupId("auth-group-order");
         container.getContainerProperties().setMissingTopicsFatal(false);
         return container;
     }

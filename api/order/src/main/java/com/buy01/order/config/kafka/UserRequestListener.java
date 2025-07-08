@@ -1,8 +1,8 @@
 // AuthenticationKafkaListener.java
 package com.buy01.order.config.kafka;
 
-import com.zone01.product.model.Response;
-import com.zone01.product.product.ProductsService;
+import com.buy01.order.order.OrderService;
+import com.buy01.order.model.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -24,7 +24,7 @@ public class UserRequestListener {
     private static final String PRODUCT_RESPONSE = "product-response-to-user";
     private static final String USER_REQUEST = "user-request-to-product";
     private static final String GROUP_ID = "user-to-product";
-    private final ProductsService productsService;
+    private final OrderService orderService;
 
     @KafkaListener(topics = USER_REQUEST, groupId = GROUP_ID)
     public void handleAuthRequest(ConsumerRecord<String, String> record) {
@@ -37,8 +37,8 @@ public class UserRequestListener {
         byte[] correlationId = record.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value();
 
         try {
-            Response<Object> deleteResponse = productsService.deleteProductsByUserId(userId);
-            sendResponse(deleteResponse, correlationId);
+//            Response<Object> deleteResponse = productsService.deleteProductsByUserId(userId);
+//            sendResponse(deleteResponse, correlationId);
         } catch (Exception e) {
             sendResponse(Response.<Object>builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

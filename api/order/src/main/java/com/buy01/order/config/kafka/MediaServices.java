@@ -1,7 +1,7 @@
 package com.buy01.order.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zone01.product.model.Response;
+import com.buy01.order.model.Response;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;

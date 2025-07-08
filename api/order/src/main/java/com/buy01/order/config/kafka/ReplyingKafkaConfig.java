@@ -1,7 +1,7 @@
 package com.buy01.order.config.kafka;
 
 
-import com.zone01.product.model.Response;
+import com.buy01.order.model.Response;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.ProducerFactory;

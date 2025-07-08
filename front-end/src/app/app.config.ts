@@ -9,6 +9,7 @@ import { providePrimeNG } from 'primeng/config';
 import {Mypreset} from "../mypreset";
 import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 import { ConfirmationService, MessageService } from "primeng/api";
+import {provideNgxStripe} from "ngx-stripe";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     ConfirmationService,
     MessageService,
+    provideNgxStripe(),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
