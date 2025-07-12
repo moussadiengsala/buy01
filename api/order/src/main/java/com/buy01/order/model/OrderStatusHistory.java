@@ -13,7 +13,6 @@ import java.util.Date;
 @Builder
 public class OrderStatusHistory {
     private OrderStatus status;
+    private PaymentStatus paymentStatus;
     private Date timestamp;
-    private String updatedBy;
-    private String reason;
 }

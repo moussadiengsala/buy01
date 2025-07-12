@@ -28,14 +28,14 @@ import {
   PrimeTemplate,
   SharedModule
 } from "./chunk-3UWASTOW.js";
-import "./chunk-74KF2TMX.js";
-import "./chunk-252YNDN6.js";
 import {
   animate,
   style,
   transition,
   trigger
 } from "./chunk-JBP64WB7.js";
+import "./chunk-74KF2TMX.js";
+import "./chunk-252YNDN6.js";
 import {
   CommonModule,
   NgClass,

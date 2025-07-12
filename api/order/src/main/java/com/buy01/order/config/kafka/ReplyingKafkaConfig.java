@@ -24,11 +24,11 @@ public class ReplyingKafkaConfig {
     }
 
     @Bean
-    public ReplyingKafkaTemplate<String, Object, Response<?>> replyingMediaKafkaTemplate(
+    public ReplyingKafkaTemplate<String, Object, Response<?>> replyingProductKafkaTemplate(
             ProducerFactory<String, Object> producerFactory,
-            ConcurrentMessageListenerContainer<String, Response<?>> repliesMediaContainer) {
+            ConcurrentMessageListenerContainer<String, Response<?>> repliesProductContainer) {
         ReplyingKafkaTemplate<String, Object, Response<?>> replyingTemplate =
-                new ReplyingKafkaTemplate<>(producerFactory, repliesMediaContainer);
+                new ReplyingKafkaTemplate<>(producerFactory, repliesProductContainer);
         replyingTemplate.setDefaultReplyTimeout(Duration.ofSeconds(5));
         return replyingTemplate;
     }

@@ -37,17 +37,17 @@ import {
   relativePosition,
   removeClass
 } from "./chunk-3UWASTOW.js";
-import "./chunk-74KF2TMX.js";
-import "./chunk-252YNDN6.js";
-import {
-  NG_VALUE_ACCESSOR
-} from "./chunk-KPQPPR2O.js";
 import {
   animate,
   style,
   transition,
   trigger
 } from "./chunk-JBP64WB7.js";
+import "./chunk-74KF2TMX.js";
+import "./chunk-252YNDN6.js";
+import {
+  NG_VALUE_ACCESSOR
+} from "./chunk-KPQPPR2O.js";
 import {
   CommonModule,
   NgClass,

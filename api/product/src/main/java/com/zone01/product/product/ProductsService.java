@@ -39,6 +39,10 @@ public class ProductsService {
         return productsRepository.findById(id);
     }
 
+    public List<Products> getProductById(List<String> id) {
+        return productsRepository.findByIdIn(id);
+    }
+
     public Page<Products> getProductByUserId(String id, int page, int size) {
         return productsRepository.findProductsByUserID(id, PageRequest.of(page, size));
     }

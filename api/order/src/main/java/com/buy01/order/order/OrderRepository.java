@@ -1,10 +1,20 @@
 package com.buy01.order.order;
 
+import com.buy01.order.model.PaymentStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface OrderRepository extends MongoRepository<Order, String> {
+
+    List<Order> findByUserIdOrderByCreatedAtDesc(String userId);
+    List<Order> findByUserIdAndPaymentStatusOrderByCreatedAtDesc(String userId, PaymentStatus paymentStatus);
+    Optional<Order> findByStripePaymentIntentId(String paymentIntentId);
+    List<Order> findByPaymentStatusAndCreatedAtBefore(PaymentStatus paymentStatus, Date createdBefore);
 
     // Basic queries
 //    List<Order> findByUserId(String userId);

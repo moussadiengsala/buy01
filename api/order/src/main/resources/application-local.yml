@@ -20,5 +20,11 @@ spring:
       host: localhost
       auto-index-creation: true
 
+stripe:
+  api:
+    key: ''
+  webhook:
+    secret: ""
+
 server:
   port: 9004

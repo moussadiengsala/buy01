@@ -31,9 +31,9 @@ import {
   addClass,
   removeClass
 } from "./chunk-3UWASTOW.js";
+import "./chunk-JBP64WB7.js";
 import "./chunk-74KF2TMX.js";
 import "./chunk-252YNDN6.js";
-import "./chunk-JBP64WB7.js";
 import {
   DomSanitizer
 } from "./chunk-GUXEC7F7.js";

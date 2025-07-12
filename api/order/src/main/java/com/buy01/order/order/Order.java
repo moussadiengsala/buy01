@@ -4,10 +4,7 @@ package com.buy01.order.order;
 import com.buy01.order.model.OrderStatus;
 import com.buy01.order.model.OrderStatusHistory;
 import com.buy01.order.model.PaymentStatus;
-import com.buy01.order.model.ShippingAddress;
-import com.buy01.order.model.dto.BillingAddressDTO;
-import com.buy01.order.model.dto.CreateOrderDTO;
-import com.buy01.order.model.dto.OrderItem;
+import com.buy01.order.model.dto.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +14,11 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -28,8 +28,6 @@ import java.util.List;
 public class Order {
     @Id
     private String id;
-//    private Double price;
-//    private Integer quantity;
 
     @Builder.Default
     private OrderStatus status = OrderStatus.PENDING;
@@ -49,19 +47,20 @@ public class Order {
     private String stripeClientSecret; // store client secret for frontend
 
     @Field("total_amount")
-    private Double totalAmount;
+    private Double totalAmount; // 💵 Le montant total à payer (subtotal + shipping + tax)
+    private double subtotal;   // 🧾 Le total des articles (hors frais et taxes)
+
+    public static final double shipping = 100;   // 🚚 Les frais de livraison
+    public static final double tax = 10;        // 🏛️ Les taxes (TVA, etc.)
 
     @Field("currency")
     @Builder.Default
-    private String currency = "USD";
+    public static final String currency = "usd";
 
     @Field("user_id")
     @Indexed
     private String userId;
 
-//    @Field("product_id")
-//    @Indexed
-//    private String productId;
 
     @Builder.Default
     private Date createdAt = new Date();
@@ -70,17 +69,39 @@ public class Order {
     private Date completedAt;
 
     private List<OrderStatusHistory> statusHistory;
-    private ShippingAddress shippingAddress;
+    private ShippingAddressDTO shippingAddress;
     private BillingAddressDTO billingAddress;
     private List<OrderItem> orderItems; // Support multiple items per order
 
-    public Double getTotalAmount() {
-        return totalAmount != null ? totalAmount : 0.0;
+    public static OrderBuilder buildOrderFromCheckout(List<ProductDTO> productDTOList, CheckoutItemDTO[] checkoutItemDTOList) {
+        Map<String, CheckoutItemDTO> checkoutMap = Arrays.stream(checkoutItemDTOList)
+                .collect(Collectors.toMap(CheckoutItemDTO::getId, item -> item));
+
+        final double[] subtotal = {0};
+
+        List<OrderItem> orderItems = productDTOList.stream().map(product -> {
+            CheckoutItemDTO item = checkoutMap.get(product.getId());
+            int quantity = item != null ? item.getQuantity() : 0;
+            double itemTotal = product.getPrice() * quantity;
+            subtotal[0] += itemTotal;
+
+            return OrderItem.builder()
+                    .productId(product.getId())
+                    .productName(product.getName())
+                    .unitPrice(product.getPrice())
+                    .quantity(quantity)
+                    .totalPrice(itemTotal)
+                    .build();
+        }).collect(Collectors.toList());
+
+        double totalAmount = subtotal[0] + Order.shipping + Order.tax;
+
+        return Order.builder()
+                .subtotal(subtotal[0])
+                .totalAmount(totalAmount)
+                .orderItems(orderItems);
     }
 
-//    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = new Date();
-    }
+
 
 }
