@@ -61,12 +61,22 @@ public class Order {
     @Indexed
     private String userId;
 
+    @Field("stripe_refund_id")
+    private String stripeRefundId;
+
+    @Field("refund_amount")
+    private Double refundAmount;
+
+    @Field("refund_reason")
+    private String refundReason; // Reason for refund
+
 
     @Builder.Default
     private Date createdAt = new Date();
     private Date updatedAt;
     private Date cancelledAt;
     private Date completedAt;
+    private Date refundedAt;
 
     private List<OrderStatusHistory> statusHistory;
     private ShippingAddressDTO shippingAddress;

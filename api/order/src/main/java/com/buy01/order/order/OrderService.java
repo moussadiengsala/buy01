@@ -1,26 +1,30 @@
 package com.buy01.order.order;
 
+import com.buy01.order.config.AccessValidation;
+import com.buy01.order.model.OrderStatus;
+import com.buy01.order.model.OrderStatusHistory;
 import com.buy01.order.model.PaymentStatus;
 import com.buy01.order.model.Response;
-import com.buy01.order.model.dto.CreateOrderDTO;
+import com.buy01.order.model.dto.CancelOrderRequestDTO;
+import com.buy01.order.model.dto.UserDTO;
+import com.buy01.order.service.RefundService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Predicate;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-
-    public Response<Order> createOrder(CreateOrderDTO orderDTO, HttpServletRequest request) {
-        // Your existing createOrder implementation
-        return null;
-    }
+    private final RefundService  refundService;
 
     public Response<Order> getOrderById(String orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
@@ -55,6 +59,207 @@ public class OrderService {
                 .message("Incomplete orders retrieved successfully")
                 .data(incompleteOrders)
                 .build();
+    }
+
+    /**
+     * Cancel an order
+     */
+    public Response<Order> cancelOrder(CancelOrderRequestDTO dto, HttpServletRequest request) {
+        UserDTO currentUser = AccessValidation.getCurrentUser(request);
+
+        Optional<Order> orderOpt = orderRepository.findById(dto.getOrderId());
+        if (orderOpt.isEmpty()) {
+            return Response.notFound("Order not found");
+        }
+
+        Order order = orderOpt.get();
+
+        // Validate user ownership
+        if (!order.getUserId().equals(currentUser.getId())) {
+            return Response.forbidden("You can only cancel your own orders");
+        }
+
+        // Check if order can be cancelled
+        if (order.getStatus() == OrderStatus.DELIVERED) {
+            return Response.badRequest("Delivered orders cannot be cancelled");
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            return Response.badRequest("Order is already cancelled");
+        }
+
+        // If payment is completed, process refund
+        if (order.getPaymentStatus() == PaymentStatus.COMPLETED) {
+            return refundService.processFullRefund(dto, order, currentUser.getId());
+        }
+
+        // For incomplete payments, just cancel the order
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setPaymentStatus(PaymentStatus.CANCELLED);
+        order.setCancelledAt(new Date());
+
+        // Add status history
+        OrderStatusHistory statusHistory = OrderStatusHistory.builder()
+                .status(OrderStatus.CANCELLED)
+                .paymentStatus(PaymentStatus.CANCELLED)
+                .timestamp(new Date())
+                .build();
+
+        List<OrderStatusHistory> historyList = order.getStatusHistory() != null
+                ? new ArrayList<>(order.getStatusHistory())
+                : new ArrayList<>();
+        historyList.add(statusHistory);
+        order.setStatusHistory(historyList);
+
+        Order savedOrder = orderRepository.save(order);
+        return Response.ok(savedOrder, "Order cancelled successfully");
+    }
+
+
+    /**
+     * Delete an order (soft delete)
+     */
+    public Response<String> deleteOrder(String orderId, HttpServletRequest request) {
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return Response.notFound("Order not found");
+        }
+
+        Order order = orderOpt.get();
+        UserDTO currentUser = AccessValidation.getCurrentUser(request);
+        if (!order.getUserId().equals(currentUser.getId())) return Response.forbidden("You can only delete your own orders");
+
+        // Only allow deletion of cancelled or failed orders
+        if (order.getStatus() != OrderStatus.CANCELLED &&
+                order.getPaymentStatus() != PaymentStatus.FAILED) {
+            return Response.badRequest("Only cancelled or failed orders can be deleted");
+        }
+
+        orderRepository.delete(order);
+        return Response.ok("Order deleted successfully");
+    }
+
+    /**
+     * Search orders with filters
+     */
+    public Response<List<Order>> searchOrders(String userId, String keyword,
+                                              OrderStatus status, PaymentStatus paymentStatus,
+                                              Date startDate, Date endDate) {
+
+        List<Order> orders = orderRepository.findOrdersWithFilters(
+                userId, keyword, status, paymentStatus, startDate, endDate);
+
+        return Response.ok(orders, "Orders retrieved successfully");
+    }
+
+    public Response<List<Order>> getUserOrdersPaginated(String userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+
+        return Response.ok(orderPage.getContent(), "Orders retrieved successfully");
+    }
+
+    /**
+     * Get seller orders with pagination
+     */
+    public Response<List<Order>> getSellerOrdersPaginated(String sellerId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orderPage = orderRepository.findBySellerIdOrderByCreatedAtDesc(sellerId, pageable);
+
+        return Response.ok(orderPage.getContent(), "Seller orders retrieved successfully");
+    }
+
+    public Response<List<Order>> getRefundableOrders(String userId) {
+        List<Order> refundableOrders = orderRepository.findRefundableOrdersByUserId(userId);
+        return Response.ok(refundableOrders, "Refundable orders retrieved successfully");
+    }
+
+    /**
+     * Get orders that can be cancelled
+     */
+    public Response<List<Order>> getCancellableOrders(String userId) {
+        List<Order> cancellableOrders = orderRepository.findCancellableOrdersByUserId(userId);
+        return Response.ok(cancellableOrders, "Cancellable orders retrieved successfully");
+    }
+
+    /**
+     * Update order status (for sellers)
+     */
+    public Response<Order> updateOrderStatus(String orderId, String sellerId,
+                                             OrderStatus newStatus) {
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return Response.notFound("Order not found");
+        }
+
+        Order order = orderOpt.get();
+
+        // Validate seller ownership
+        if (!order.getSellerId().equals(sellerId)) {
+            return Response.forbidden("You can only update your own orders");
+        }
+
+        // Update status
+        order.setStatus(newStatus);
+        order.setUpdatedAt(new Date());
+
+        if (newStatus == OrderStatus.DELIVERED) {
+            order.setCompletedAt(new Date());
+        }
+
+        // Add status history
+        OrderStatusHistory statusHistory = OrderStatusHistory.builder()
+                .status(newStatus)
+                .paymentStatus(order.getPaymentStatus())
+                .timestamp(new Date())
+                .build();
+
+        List<OrderStatusHistory> historyList = order.getStatusHistory() != null
+                ? new ArrayList<>(order.getStatusHistory())
+                : new ArrayList<>();
+        historyList.add(statusHistory);
+        order.setStatusHistory(historyList);
+
+        Order savedOrder = orderRepository.save(order);
+        return Response.ok(savedOrder, "Order status updated successfully");
+    }
+
+    /**
+     * Get order statistics for user profile
+     */
+    public Response<Map<String, Object>> getUserOrderStats(String userId) {
+        List<Order> userOrders = orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalOrders", userOrders.size());
+        stats.put("totalSpent", userOrders.stream()
+                .filter(order -> order.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .mapToDouble(Order::getTotalAmount)
+                .sum());
+        stats.put("completedOrders", userOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.DELIVERED)
+                .count());
+
+        return Response.ok(stats, "User order statistics retrieved");
+    }
+
+    /**
+     * Get order statistics for seller profile
+     */
+    public Response<Map<String, Object>> getSellerOrderStats(String sellerId) {
+        List<Order> sellerOrders = orderRepository.findBySellerIdOrderByCreatedAtDesc(sellerId);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalOrders", sellerOrders.size());
+        stats.put("totalEarnings", sellerOrders.stream()
+                .filter(order -> order.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .mapToDouble(Order::getTotalAmount)
+                .sum());
+        stats.put("pendingOrders", sellerOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.PENDING)
+                .count());
+
+        return Response.ok(stats, "Seller order statistics retrieved");
     }
 }
 
