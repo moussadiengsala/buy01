@@ -27,12 +27,12 @@ public class OrderController {
     private final CheckoutService checkoutService;
 
     @PostMapping("/checkout/integrated")
-    public ResponseEntity<CheckoutResponse> integratedCheckout(
+    public ResponseEntity<Response<Order>> integratedCheckout(
             @RequestBody CheckoutRequestDTO requestDTO,
             HttpServletRequest request) throws StripeException {
-
-        CheckoutResponse response = checkoutService.createIncompleteOrder(requestDTO, request);
-        return ResponseEntity.ok(response);
+        System.out.println("Request: " + requestDTO);
+        Response<Order> response = checkoutService.createIncompleteOrder(requestDTO, request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/confirm")

@@ -53,6 +53,9 @@ public class Order {
     public static final double shipping = 100;   // 🚚 Les frais de livraison
     public static final double tax = 10;        // 🏛️ Les taxes (TVA, etc.)
 
+    private String email;
+    private String phone;
+
     @Field("currency")
     @Builder.Default
     public static final String currency = "usd";
@@ -68,7 +71,7 @@ public class Order {
     private Double refundAmount;
 
     @Field("refund_reason")
-    private String refundReason; // Reason for refund
+    private String refundReason;
 
 
     @Builder.Default

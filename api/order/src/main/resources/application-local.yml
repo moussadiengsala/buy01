@@ -22,7 +22,7 @@ spring:
 
 stripe:
   api:
-    key: ''
+    key: 'sk_test_51Qoq2iA0ESShc8j9M2q6RFhfIjoRkJQi0Y4ihwlkx3H7jApJAnPSlfXQIWT7PCVt1tK8HYH4vLV87I7QL3fdOWZK005fdSHG6F'
   webhook:
     secret: ""
 
