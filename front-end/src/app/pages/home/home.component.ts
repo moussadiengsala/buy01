@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Product } from '../../types';
 import { CommonModule } from '@angular/common';
 import {RouterLink, RouterLinkActive} from "@angular/router";
 

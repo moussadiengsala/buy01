@@ -1,0 +1,43 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  application:
+    name: user
+  kafka:
+    bootstrap-servers: localhost:9092
+  data:
+    mongodb:
+      auto-index-creation: true
+      authentication-database: admin
+      username: user
+      password: password
+      database: buy01
+      port: 27017
+      host: localhost
+
+application:
+  security:
+    jwt:
+      key-id: users-service-key
+      issuer: http://user
+#      expiration: 3600
+#      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
+
+server:
+  port: 9001
+
+media:
+  upload:
+    base:
+      dir: '${user.dir}/api/user/src/main/resources/uploads'
+    max:
+      file:
+        size: 2097152  # 2MB in bytes
+  allowed:
+    content:
+      types: image/jpeg,image/png,image/webp
+
