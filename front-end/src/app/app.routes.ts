@@ -12,6 +12,7 @@ import { MediaManagementComponent } from './pages/media-management/media-managem
 import {UserProfileComponent} from "./pages/user-profile/user-profile.component";
 import {CartComponent} from "./pages/cart/cart.component";
 import {CheckoutComponent} from "./pages/checkout/checkout.component";
+import {OrderComponent} from "./pages/order/order.component";
 
 export const routes: Routes = [
     {
@@ -36,6 +37,11 @@ export const routes: Routes = [
     {
         path: "checkout",
         component: CheckoutComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: "order",
+        component: OrderComponent,
         canActivate: [AuthGuard]
     },
     {

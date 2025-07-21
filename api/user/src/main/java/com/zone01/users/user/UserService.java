@@ -89,7 +89,7 @@ public class UserService {
                 "user has been authenticated successfully.");
     }
 
-    public Response<UserDTO> updateUser(String userId, UpdateUserDTO dto) {
+    public Response<AuthenticationResponse> updateUser(String userId, UpdateUserDTO dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User is not found"));
 
@@ -104,7 +104,13 @@ public class UserService {
 
         try {
             helperUserService.updateProcessAvatar(user, dto);
-            return Response.ok(userRepository.save(user).toUserDTO(), "user has been updated successfully.");
+            userRepository.save(user);
+            return Response.ok(
+                    AuthenticationResponse.builder()
+                            .accessToken(jwtService.generateToken(user))
+                            .refreshToken("")
+                            .build(),
+                    "user has been updated successfully.");
         } catch (Exception e) {
             return Response.badRequest(e.getMessage());
         }

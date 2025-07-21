@@ -70,10 +70,6 @@ public class AccessValidation extends OncePerRequestFilter {
 
             log.info("====== The authorization has been check by user service successfully ======");
             UserDTO user = jacksonObjectMapper.convertValue(userResponse.getData(), UserDTO.class);
-            if (user.getRole() != Role.SELLER) {
-                setErrorResponse(response, HttpStatus.UNAUTHORIZED.value(), null, "Only user with role SELLER can perform this operation.");
-                return;
-            }
             request.setAttribute(USER, user);
 
         } catch (Exception e) {

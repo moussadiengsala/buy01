@@ -32,10 +32,6 @@ public class Order {
     @Builder.Default
     private OrderStatus status = OrderStatus.PENDING;
 
-    @Field("seller_id")
-    @Indexed
-    private String sellerId;
-
     @Field("payment_status")
     @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.INCOMPLETE;
@@ -50,15 +46,15 @@ public class Order {
     private Double totalAmount; // 💵 Le montant total à payer (subtotal + shipping + tax)
     private double subtotal;   // 🧾 Le total des articles (hors frais et taxes)
 
-    public static final double shipping = 100;   // 🚚 Les frais de livraison
-    public static final double tax = 10;        // 🏛️ Les taxes (TVA, etc.)
+    public final double shipping = 100;   // 🚚 Les frais de livraison
+    public final double tax = 10;        // 🏛️ Les taxes (TVA, etc.)
 
     private String email;
     private String phone;
 
     @Field("currency")
     @Builder.Default
-    public static final String currency = "usd";
+    public final String currency = "usd";
 
     @Field("user_id")
     @Indexed
@@ -67,11 +63,8 @@ public class Order {
     @Field("stripe_refund_id")
     private String stripeRefundId;
 
-    @Field("refund_amount")
-    private Double refundAmount;
-
-    @Field("refund_reason")
-    private String refundReason;
+    @Field("cancel_reason")
+    private String cancelReason;
 
 
     @Builder.Default
@@ -79,12 +72,11 @@ public class Order {
     private Date updatedAt;
     private Date cancelledAt;
     private Date completedAt;
-    private Date refundedAt;
 
     private List<OrderStatusHistory> statusHistory;
     private ShippingAddressDTO shippingAddress;
     private BillingAddressDTO billingAddress;
-    private List<OrderItem> orderItems; // Support multiple items per order
+    private List<OrderItem> orderItems;
 
     public static OrderBuilder buildOrderFromCheckout(List<ProductDTO> productDTOList, CheckoutItemDTO[] checkoutItemDTOList) {
         Map<String, CheckoutItemDTO> checkoutMap = Arrays.stream(checkoutItemDTOList)
@@ -104,10 +96,11 @@ public class Order {
                     .unitPrice(product.getPrice())
                     .quantity(quantity)
                     .totalPrice(itemTotal)
+                    .sellerId(product.getUserID())
                     .build();
         }).collect(Collectors.toList());
 
-        double totalAmount = subtotal[0] + Order.shipping + Order.tax;
+        double totalAmount = subtotal[0] + 100 + 10;
 
         return Order.builder()
                 .subtotal(subtotal[0])

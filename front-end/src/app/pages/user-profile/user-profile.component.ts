@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subject, takeUntil, BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Observable, Subject, takeUntil, BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, finalize } from 'rxjs';
 
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -23,13 +23,31 @@ import { PaginatorModule } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ChipModule } from 'primeng/chip';
 import { DividerModule } from 'primeng/divider';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { BadgeModule } from 'primeng/badge';
+import { TimelineModule } from 'primeng/timeline';
+import { RippleModule } from 'primeng/ripple';
+import { TooltipModule } from 'primeng/tooltip';
 
-import { User, UserPayload, Order, OrderStatus, PaymentStatus  } from '../../types';
-import { InputSwitch } from "primeng/inputswitch";
+import {
+    User,
+    UserPayload,
+    Order,
+    OrderStatus,
+    PaymentStatus,
+    Role,
+    PaginatedResponse,
+    UserStatisticsDTO, SellerStatisticsDTO, ApiResponse
+} from '../../types';
 import { OrderService } from "../../services/order/order.service";
 import { AuthService } from "../../services/auth/auth.service";
-import { Router } from '@angular/router';
-import {OrderSearchParams, OrderStats} from "../../services/order/order.service"
+import {Router, RouterLink, RouterLinkActive} from '@angular/router';
+import { OrderSearchParams } from "../../services/order/order.service";
+import { environment } from "../../environment";
+import {Message} from "primeng/message";
+import { UserService } from '../../services/user/user.service';
+import {FileData, FileService} from "../../services/file-service/file-service.service";
 
 @Component({
     selector: 'app-profile',
@@ -57,7 +75,14 @@ import {OrderSearchParams, OrderStats} from "../../services/order/order.service"
         SkeletonModule,
         ChipModule,
         DividerModule,
-        InputSwitch
+        InputSwitchModule,
+        ProgressSpinnerModule,
+        BadgeModule,
+        TimelineModule,
+        RippleModule,
+        TooltipModule,
+        RouterLink,
+        RouterLinkActive
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './user-profile.component.html',
@@ -69,39 +94,46 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     user$: Observable<UserPayload>;
     user: UserPayload | null = null;
-    profileForm: FormGroup;
     editProfileForm: FormGroup;
     searchForm: FormGroup;
+    passwordForm: FormGroup;
+    Role = Role;
 
     // Dialog states
     showEditDialog = false;
     showAvatarDialog = false;
     showOrderDialog = false;
     showStatsDialog = false;
+    showPasswordDialog = false;
+    showOrderTrackingDialog = false;
     selectedOrder: Order | null = null;
     selectedAvatar: string | null = null;
+    orderTrackingInfo: any = null;
 
     // Orders and filtering
     orders: Order[] = [];
     filteredOrders: Order[] = [];
     loading = false;
+    statsLoading = false;
+    ordersLoading = false;
 
     // Pagination
     currentPage = 0;
     pageSize = 10;
     totalOrders = 0;
+    totalPages = 0;
 
     // Statistics
-    userStats: OrderStats | null = null;
+    userStats: UserStatisticsDTO | SellerStatisticsDTO | null = null;
     chartData: any = {};
     chartOptions: any = {};
+
+    currentFile: FileData | null = null;
 
     // Filter options
     statusOptions = [
         { label: 'All Statuses', value: null },
         { label: 'Pending', value: OrderStatus.PENDING },
-        { label: 'Processing', value: OrderStatus.PROCESSING },
-        { label: 'Shipped', value: OrderStatus.SHIPPED },
         { label: 'Delivered', value: OrderStatus.DELIVERED },
         { label: 'Cancelled', value: OrderStatus.CANCELLED }
     ];
@@ -109,10 +141,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     paymentStatusOptions = [
         { label: 'All Payment Status', value: null },
         { label: 'Pending', value: PaymentStatus.PENDING },
-        { label: 'Paid', value: PaymentStatus.COMPLETED },
+        { label: 'Completed', value: PaymentStatus.COMPLETED },
         { label: 'Failed', value: PaymentStatus.FAILED },
         { label: 'Refunded', value: PaymentStatus.REFUNDED }
     ];
+
 
     constructor(
         private fb: FormBuilder,
@@ -120,19 +153,24 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private orderService: OrderService,
         private authService: AuthService,
-        private router: Router
+        public router: Router,
+        private userService: UserService,
+        private fileService: FileService,
     ) {
         this.user$ = this.authService.userState$;
-        this.profileForm = this.createProfileForm();
         this.editProfileForm = this.createEditProfileForm();
         this.searchForm = this.createSearchForm();
+        this.passwordForm = this.createPasswordForm();
         this.initializeChartData();
+        this.fileService.fileData$.subscribe(fileData => {
+            this.currentFile = fileData;
+        });
     }
 
     ngOnInit(): void {
         this.loadUserData();
         this.setupSearch();
-        this.loadUserStatistics();
+        this.loadStatistics();
     }
 
     ngOnDestroy(): void {
@@ -140,21 +178,27 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    private createProfileForm(): FormGroup {
-        return this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(2)]],
-            email: ['', [Validators.required, Validators.email]],
-            emailNotifications: [true],
-            marketingEmails: [false],
-            smsNotifications: [false]
-        });
-    }
-
     private createEditProfileForm(): FormGroup {
         return this.fb.group({
             name: ['', [Validators.required, Validators.minLength(2)]],
-            email: ['', [Validators.required, Validators.email]]
+            email: ['', [Validators.required, Validators.email]],
         });
+    }
+
+    async onFileChange(event: Event) {
+        const result = await this.fileService.onFileSelected(event, {
+            maxSize: 5 * 1024 * 1024, // 5MB
+            allowedTypes: ['image/jpeg', 'image/png']
+        });
+
+        if (!result.isValid) {
+            console.error('File validation failed:', result.errors);
+        }
+    }
+
+    removeFile() {
+        this.fileService.removeFile();
+        this.fileService.resetFileInput('avatar');
     }
 
     private createSearchForm(): FormGroup {
@@ -167,8 +211,27 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         });
     }
 
+    private createPasswordForm(): FormGroup {
+        return this.fb.group({
+            currentPassword: ['', [Validators.required]],
+            newPassword: ['', [Validators.required, Validators.minLength(8)]],
+            confirmPassword: ['', [Validators.required]]
+        }, { validators: this.passwordMatchValidator });
+    }
+
+    private passwordMatchValidator(form: FormGroup) {
+        const newPassword = form.get('newPassword');
+        const confirmPassword = form.get('confirmPassword');
+
+        if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
+            confirmPassword.setErrors({ mismatch: true });
+            return { mismatch: true };
+        }
+
+        return null;
+    }
+
     private setupSearch(): void {
-        // Combine search form changes with search subject
         combineLatest([
             this.searchForm.valueChanges,
             this.searchSubject.asObservable()
@@ -181,7 +244,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             this.searchOrders();
         });
 
-        // Initial search
         this.searchOrders();
     }
 
@@ -190,41 +252,252 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(user => {
                 this.user = user;
-                this.profileForm.patchValue({
-                    name: user.name,
-                    email: user.email
-                });
+                if (user) {
+                    this.editProfileForm.patchValue({
+                        name: user.name || '',
+                        email: user.email || '',
+                    });
 
-                this.editProfileForm.patchValue({
-                    name: user.name,
-                    email: user.email
-                });
+                    this.searchOrders();
+                }
+            });
+    }
 
-                // Load orders when user is available
-                this.searchOrders();
+    private loadStatistics(): void {
+        if (!this.user) return;
+
+        this.statsLoading = true;
+        if (this.user.role == Role.SELLER) {
+            this.loadSellerStatistics();
+        } else {
+            this.loadUserStatistics();
+        }
+    }
+
+    private loadSellerStatistics(): void {
+        this.orderService.getSellerOrderStats()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => this.statsLoading = false)
+            )
+            .subscribe({
+                next: (stats) => {
+                    this.userStats = stats;
+                    this.updateChartData(stats);
+                },
+                error: (error) => {
+                    console.error('Error loading seller statistics:', error);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Statistics Error',
+                        detail: 'Unable to load order statistics'
+                    });
+                }
             });
     }
 
     private loadUserStatistics(): void {
-        if (!this.user) return;
-
-        this.orderService.getUserOrderStats(this.user.id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(stats => {
-                this.userStats = stats;
-                this.updateChartData(stats);
+        this.orderService.getUserOrderStats()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => this.statsLoading = false)
+            )
+            .subscribe({
+                next: (stats) => {
+                    this.userStats = stats;
+                    this.updateChartData(stats);
+                },
+                error: (error) => {
+                    console.error('Error loading user statistics:', error);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Statistics Error',
+                        detail: 'Unable to load order statistics'
+                    });
+                }
             });
     }
 
-    private updateChartData(stats: OrderStats): void {
-        // Monthly spending chart
+    private updateChartData(stats: UserStatisticsDTO | SellerStatisticsDTO): void {
+        try {
+            // Type guards to determine if it's UserStatisticsDTO or SellerStatisticsDTO
+            const isUserStats = this.isUserStatistics(stats);
+
+            let labels: string[] = [];
+            let primaryData: number[] = [];
+            let orderData: number[] = [];
+            let primaryLabel = '';
+
+            if (isUserStats) {
+                // Handle UserStatisticsDTO
+                const userStats = stats as UserStatisticsDTO;
+
+                // Safely extract chart data
+                const monthlySpending = userStats.monthlySpendingChart || {};
+                const monthlyOrders = userStats.monthlyOrderChart || {};
+
+                labels = Object.keys(monthlySpending).sort();
+                primaryData = labels.map(month => monthlySpending[month] || 0);
+                orderData = labels.map(month => monthlyOrders[month] || 0);
+                primaryLabel = 'Monthly Spending';
+
+                // If no chart data available, create default structure
+                if (labels.length === 0) {
+                    const currentDate = new Date();
+                    for (let i = 5; i >= 0; i--) {
+                        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        labels.push(monthKey);
+                        primaryData.push(0);
+                        orderData.push(0);
+                    }
+                }
+            } else {
+                // Handle SellerStatisticsDTO
+                const sellerStats = stats as SellerStatisticsDTO;
+
+                // Safely extract chart data
+                const monthlyRevenue = sellerStats.monthlyRevenueChart || {};
+                const monthlyOrders = sellerStats.monthlyOrderChart || {};
+
+                labels = Object.keys(monthlyRevenue).sort();
+                primaryData = labels.map(month => monthlyRevenue[month] || 0);
+                orderData = labels.map(month => monthlyOrders[month] || 0);
+                primaryLabel = 'Monthly Revenue';
+
+                // If no chart data available, create default structure
+                if (labels.length === 0) {
+                    const currentDate = new Date();
+                    for (let i = 5; i >= 0; i--) {
+                        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        labels.push(monthKey);
+                        primaryData.push(0);
+                        orderData.push(0);
+                    }
+                }
+            }
+
+            // Format labels for better display (e.g., "2024-01" -> "Jan 2024")
+            const formattedLabels = labels.map(label => {
+                try {
+                    const [year, month] = label.split('-');
+                    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                } catch {
+                    return label; // fallback to original label if parsing fails
+                }
+            });
+
+            this.chartData = {
+                labels: formattedLabels,
+                datasets: [
+                    {
+                        label: primaryLabel,
+                        data: primaryData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Orders',
+                        data: orderData,
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            };
+
+            this.chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: primaryLabel
+                        },
+                        ticks: {
+                            callback: (value: any) => '$' + Number(value).toFixed(2)
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Number of Orders'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        ticks: {
+                            callback: (value: any) => Number(value).toString()
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top' as const
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context: any) => {
+                                const label = context.dataset.label || '';
+                                const value = context.parsed.y;
+
+                                if (label.includes('Spending') || label.includes('Revenue')) {
+                                    return `${label}: $${Number(value).toFixed(2)}`;
+                                }
+                                return `${label}: ${Number(value)}`;
+                            }
+                        }
+                    }
+                }
+            };
+        } catch (error) {
+            console.error('Error updating chart data:', error);
+            this.initializeEmptyChartData();
+        }
+    }
+
+    public isUserStatistics(stats: UserStatisticsDTO | SellerStatisticsDTO): stats is UserStatisticsDTO {
+        return 'monthlySpendingChart' in stats && 'totalSpent' in stats;
+    }
+
+    private initializeChartData(): void {
+        this.initializeEmptyChartData();
+    }
+
+    private initializeEmptyChartData(): void {
         this.chartData = {
-            labels: "",// stats.monthlyStats.map(stat => stat.month),
+            labels: [],
             datasets: [{
-                label: 'Monthly Spending',
-                data: null,//stats.monthlyStats.map(stat => stat.revenue),
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                label: 'No Data Available',
+                data: [],
+                backgroundColor: 'rgba(128, 128, 128, 0.6)',
+                borderColor: 'rgba(128, 128, 128, 1)',
                 borderWidth: 1
             }]
         };
@@ -232,46 +505,70 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: (value: any) => '$' + value.toFixed(2)
-                    }
-                }
-            },
             plugins: {
                 legend: {
-                    position: 'top'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: (context: any) => {
-                            return context.dataset.label + ': $' + context.parsed.y.toFixed(2);
-                        }
-                    }
+                    position: 'top' as const
                 }
             }
         };
     }
 
-    private initializeChartData(): void {
-        this.chartData = {
-            labels: [],
-            datasets: [{
-                label: 'Monthly Spending',
-                data: [],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        };
+    // Helper methods for statistics display
+    getTotalMetric(): number {
+        if (!this.userStats) return 0;
+
+        if (this.isUserStatistics(this.userStats)) {
+            return this.userStats.totalSpent || 0;
+        } else {
+            return this.userStats.totalRevenue || 0;
+        }
     }
 
+    getTotalMetricLabel(): string {
+        if (!this.userStats) return 'Total';
+
+        if (this.isUserStatistics(this.userStats)) {
+            return 'Total Spent';
+        } else {
+            return 'Total Revenue';
+        }
+    }
+
+    getMonthlyMetric(): number {
+        if (!this.userStats) return 0;
+
+        if (this.isUserStatistics(this.userStats)) {
+            return this.userStats.monthlySpending || 0;
+        } else {
+            return this.userStats.monthlyRevenue || 0;
+        }
+    }
+
+    getMonthlyMetricLabel(): string {
+        if (!this.userStats) return 'Monthly';
+
+        if (this.isUserStatistics(this.userStats)) {
+            return 'Monthly Spending';
+        } else {
+            return 'Monthly Revenue';
+        }
+    }
+
+    getCompletionRate(): number {
+        if (!this.userStats) return 0;
+
+        const totalOrders = this.userStats.totalOrders || 0;
+        const completedOrders = this.userStats.completedOrders || 0;
+
+        if (totalOrders === 0) return 0;
+        return (completedOrders / totalOrders) * 100;
+    }
+
+    // Rest of the methods remain the same...
     public searchOrders(): void {
         if (!this.user) return;
 
-        this.loading = true;
+        this.ordersLoading = true;
         const formValue = this.searchForm.value;
         const searchTerm = this.searchSubject.value;
 
@@ -289,12 +586,25 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.orderService.searchOrders(searchParams)
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.loading = false)
+                finalize(() => this.ordersLoading = false)
             )
-            .subscribe(orders => {
-                this.orders = orders;
-                this.filteredOrders = orders;
-                this.totalOrders = orders.length;
+            .subscribe({
+                next: (response: ApiResponse<PaginatedResponse<Order>>) => {
+                    this.orders = response.data.content;
+                    this.filteredOrders = response.data.content;
+                    this.totalOrders = response.data.page.totalElements;
+                    this.totalPages = response.data.page.totalPages;
+                },
+                error: (error) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Search Error',
+                        detail: 'Unable to load orders'
+                    });
+                    this.orders = [];
+                    this.filteredOrders = [];
+                    this.totalOrders = 0;
+                }
             });
     }
 
@@ -317,8 +627,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     getOrderStatusSeverity(status: OrderStatus): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
         const severities: { [key: string]: 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' } = {
             [OrderStatus.DELIVERED]: 'success',
-            [OrderStatus.SHIPPED]: 'info',
-            [OrderStatus.PROCESSING]: 'warn',
             [OrderStatus.PENDING]: 'secondary',
             [OrderStatus.CANCELLED]: 'danger'
         };
@@ -326,7 +634,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         return severities[status] || 'secondary';
     }
 
-    getPaymentStatusSeverity(status: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
+    getPaymentStatusSeverity(status: PaymentStatus): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
         const severities: { [key: string]: 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' } = {
             [PaymentStatus.COMPLETED]: 'success',
             [PaymentStatus.PENDING]: 'warn',
@@ -344,7 +652,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     reorderOrder(order: Order): void {
         this.confirmationService.confirm({
-            message: `Do you want to reorder ${order.id}?`,
+            message: `Do you want to reorder items from order #${order.id}?`,
             header: 'Confirm Reorder',
             icon: 'pi pi-shopping-cart',
             accept: () => {
@@ -357,7 +665,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
                                 summary: 'Reorder Successful',
                                 detail: 'Items have been added to your cart. Redirecting to checkout...'
                             });
-                            // Redirect to checkout
                             setTimeout(() => this.router.navigate(['/checkout']), 1500);
                         },
                         error: (error) => {
@@ -374,7 +681,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     cancelOrder(order: Order): void {
         this.confirmationService.confirm({
-            message: `Are you sure you want to cancel order ${order.id}?`,
+            message: `Are you sure you want to cancel order #${order.id}?`,
             header: 'Confirm Cancellation',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
@@ -390,9 +697,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Order Cancelled',
-                                detail: `Order ${order.id} has been cancelled successfully.`
+                                detail: `Order #${order.id} has been cancelled successfully.`
                             });
-                            // Refresh orders
                             this.searchOrders();
                         },
                         error: (error) => {
@@ -409,7 +715,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     deleteOrder(order: Order): void {
         this.confirmationService.confirm({
-            message: `Are you sure you want to delete order ${order.id}? This action cannot be undone.`,
+            message: `Are you sure you want to delete order #${order.id}? This action cannot be undone.`,
             header: 'Confirm Deletion',
             icon: 'pi pi-trash',
             acceptButtonStyleClass: 'p-button-danger',
@@ -421,9 +727,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Order Deleted',
-                                detail: `Order ${order.id} has been deleted successfully.`
+                                detail: `Order #${order.id} has been deleted successfully.`
                             });
-                            // Refresh orders
                             this.searchOrders();
                         },
                         error: (error) => {
@@ -431,57 +736,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
                                 severity: 'error',
                                 summary: 'Deletion Failed',
                                 detail: 'Unable to delete order. Please try again.'
-                            });
-                        }
-                    });
-            }
-        });
-    }
-
-    trackOrder(order: Order): void {
-        this.orderService.trackOrder(order.id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (trackingInfo) => {
-                    // Show tracking information in a dialog or navigate to tracking page
-                    this.messageService.add({
-                        severity: 'info',
-                        summary: 'Tracking Information',
-                        detail: `Tracking ID: ${trackingInfo.trackingId || 'Not available yet'}`
-                    });
-                },
-                error: (error) => {
-                    this.messageService.add({
-                        severity: 'warn',
-                        summary: 'Tracking Unavailable',
-                        detail: 'Tracking information is not available for this order yet.'
-                    });
-                }
-            });
-    }
-
-    requestRefund(order: Order): void {
-        this.confirmationService.confirm({
-            message: `Request a refund for order ${order.id}?`,
-            header: 'Request Refund',
-            icon: 'pi pi-money-bill',
-            accept: () => {
-                this.orderService.requestRefund(order.id, 'Customer requested refund')
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe({
-                        next: (updatedOrder) => {
-                            this.messageService.add({
-                                severity: 'success',
-                                summary: 'Refund Requested',
-                                detail: 'Your refund request has been submitted and will be processed within 3-5 business days.'
-                            });
-                            this.searchOrders();
-                        },
-                        error: (error) => {
-                            this.messageService.add({
-                                severity: 'error',
-                                summary: 'Refund Request Failed',
-                                detail: 'Unable to process refund request. Please contact support.'
                             });
                         }
                     });
@@ -517,73 +771,257 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.showStatsDialog = true;
     }
 
-    updateProfile(): void {
-        if (this.profileForm.valid) {
-            const formData = this.profileForm.value;
-            // Implement profile update logic
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Profile Updated',
-                detail: 'Your profile has been updated successfully.'
-            });
-        }
-    }
-
-    saveProfile(): void {
+    saveEditProfile(): void {
+        if (!this.user) return;
         if (this.editProfileForm.valid) {
             const formData = this.editProfileForm.value;
-            // Implement profile save logic
+            let updatePayload: FormData = new FormData();
+            updatePayload.append('name', formData.name);
+            updatePayload.append('email', formData.email);
+
+            this.userService.updateUser(this.user.id, updatePayload)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (updatedUser) => {
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Profile Updated',
+                            detail: 'Your profile has been updated successfully.'
+                        });
+                    },
+                    error: (error) => {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Update Failed',
+                            detail: 'Unable to update profile. Please try again.'
+                        });
+                    }
+                });
+        } else {
+            this.markFormGroupTouched(this.editProfileForm);
             this.messageService.add({
-                severity: 'success',
-                summary: 'Profile Saved',
-                detail: 'Your profile changes have been saved.'
+                severity: 'warn',
+                summary: 'Form Invalid',
+                detail: 'Please fill in all required fields correctly.'
             });
-            this.showEditDialog = false;
         }
     }
 
-    onAvatarSelect(event: any): void {
-        const file = event.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.selectedAvatar = e.target?.result as string;
-            };
-            reader.readAsDataURL(file);
+    changePassword(): void {
+        if (this.passwordForm.valid) {
+            const formData = this.passwordForm.value;
+
+            let passwordChangeRequest: FormData = new FormData();
+            passwordChangeRequest.append('prev_password', formData.currentPassword);
+            passwordChangeRequest.append('new_password', formData.newPassword);
+
+            if (!this.user) return
+            this.userService.updateUser(this.user.id, passwordChangeRequest)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Password Changed',
+                            detail: 'Your password has been changed successfully.'
+                        });
+                        // this.showPasswordDialog = false;
+                        this.passwordForm.reset();
+                    },
+                    error: (error) => {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Password Change Failed',
+                            detail: error.error?.message || 'Unable to change password. Please try again.'
+                        });
+                    }
+                });
+        } else {
+            this.markFormGroupTouched(this.passwordForm);
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Form Invalid',
+                detail: 'Please fill in all required fields correctly.'
+            });
         }
     }
 
     uploadAvatar(): void {
-        if (this.selectedAvatar) {
-            // Implement avatar upload logic
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Avatar Updated',
-                detail: 'Your avatar has been updated successfully.'
+        if (!this.user) return;
+
+        const formData = new FormData();
+        if (this.currentFile && this.currentFile.file
+            && this.currentFile.fileName) formData.append('avatar', this.currentFile.file, this.currentFile.fileName);
+
+        this.userService.updateUser(this.user.id, formData)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response) => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Avatar Updated',
+                        detail: 'Your profile picture has been updated successfully.'
+                    });
+                    // this.loadUserData(); // Refresh user data
+                },
+                error: (error) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Upload Failed',
+                        detail: 'Unable to upload avatar. Please try again.'
+                    });
+                }
             });
-            this.showAvatarDialog = false;
-            this.selectedAvatar = null;
-        }
+
+    }
+
+    exportOrderHistory(): void {
+        if (!this.user) return;
+
+        const searchParams: OrderSearchParams = {
+            userId: this.user.id
+        };
+
+        this.orderService.exportOrders(searchParams)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (blob) => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `order-history-${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Export Complete',
+                        detail: 'Your order history has been exported successfully.'
+                    });
+                },
+                error: (error) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Export Failed',
+                        detail: 'Unable to export order history. Please try again.'
+                    });
+                }
+            });
     }
 
     deleteAccount(): void {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete your account? This action cannot be undone.',
-            header: 'Confirm Account Deletion',
+            message: 'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+            header: 'Delete Account',
             icon: 'pi pi-exclamation-triangle',
             acceptButtonStyleClass: 'p-button-danger',
+            rejectButtonStyleClass: 'p-button-secondary',
             accept: () => {
-                // Implement account deletion logic
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Account Deletion',
-                    detail: 'Your account deletion request has been submitted.'
-                });
+                if (!this.user) return;
+                this.userService.deleteUser(this.user.id)
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe({
+                        next: () => {
+                            this.messageService.add({
+                                severity: 'success',
+                                summary: 'Account Deleted',
+                                detail: 'Your account has been deleted successfully.'
+                            });
+
+                            // Logout and redirect to home
+                            setTimeout(() => {
+                                this.authService.logout();
+                                this.router.navigate(['/']);
+                            }, 2000);
+                        },
+                        error: (error) => {
+                            this.messageService.add({
+                                severity: 'error',
+                                summary: 'Deletion Failed',
+                                detail: 'Unable to delete account. Please contact support.'
+                            });
+                        }
+                    });
             }
         });
     }
 
     // Utility methods
+    private markFormGroupTouched(formGroup: FormGroup): void {
+        Object.keys(formGroup.controls).forEach(key => {
+            const control = formGroup.get(key);
+            control?.markAsTouched();
+
+            if (control instanceof FormGroup) {
+                this.markFormGroupTouched(control);
+            }
+        });
+    }
+
+    isFieldInvalid(form: FormGroup, fieldName: string): boolean {
+        const field = form.get(fieldName);
+        return !!(field && field.invalid && (field.dirty || field.touched));
+    }
+
+    getFieldError(form: FormGroup, fieldName: string): string {
+        const field = form.get(fieldName);
+        if (field && field.errors && (field.dirty || field.touched)) {
+            if (field.errors['required']) {
+                return `${fieldName} is required`;
+            }
+            if (field.errors['email']) {
+                return 'Please enter a valid email address';
+            }
+            if (field.errors['minlength']) {
+                return `${fieldName} must be at least ${field.errors['minlength'].requiredLength} characters`;
+            }
+            if (field.errors['pattern']) {
+                return `${fieldName} format is invalid`;
+            }
+            if (field.errors['mismatch']) {
+                return 'Passwords do not match';
+            }
+        }
+        return '';
+    }
+
+    // Avatar selection options
+    getAvatarOptions(): string[] {
+        return [
+            '/assets/avatars/avatar-1.png',
+            '/assets/avatars/avatar-2.png',
+            '/assets/avatars/avatar-3.png',
+            '/assets/avatars/avatar-4.png',
+            '/assets/avatars/avatar-5.png',
+            '/assets/avatars/avatar-6.png',
+            '/assets/avatars/avatar-7.png',
+            '/assets/avatars/avatar-8.png'
+        ];
+    }
+
+    getUserInitials(): string {
+        if (!this.user?.name) return 'U';
+
+        const names = this.user.name.split(' ');
+        if (names.length >= 2) {
+            return (names[0][0] + names[1][0]).toUpperCase();
+        }
+        return names[0][0].toUpperCase();
+    }
+
+    // Order action helpers
+    canCancelOrder(order: Order): boolean {
+        const cancellableStatuses = [OrderStatus.PENDING];
+        return cancellableStatuses.includes(order.status);
+    }
+
+    canReorder(order: Order): boolean {
+        return order.status !== OrderStatus.CANCELLED;
+    }
+
+    // Format helpers
     formatCurrency(amount: number): string {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -591,286 +1029,108 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         }).format(amount);
     }
 
-    formatDate(date: Date): string {
-        return new Date(date).toLocaleDateString('en-US', {
+    formatDate(date: Date | string): string {
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
     }
 
-    canCancelOrder(order: Order): boolean {
-        return order.orderStatus === OrderStatus.PENDING || order.orderStatus === OrderStatus.PROCESSING;
+    formatDateTime(date: Date | string): string {
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
-    canRequestRefund(order: Order): boolean {
-        return order.orderStatus === OrderStatus.DELIVERED && order.paymentStatus === PaymentStatus.COMPLETED;
+    // Dialog control methods
+    closeOrderDialog(): void {
+        this.showOrderDialog = false;
+        this.selectedOrder = null;
     }
 
-    canTrackOrder(order: Order): boolean {
-        return order.orderStatus === OrderStatus.SHIPPED || order.orderStatus === OrderStatus.DELIVERED;
+    closeEditDialog(): void {
+        this.showEditDialog = false;
+        this.editProfileForm.reset();
     }
+
+    closePasswordDialog(): void {
+        this.showPasswordDialog = false;
+        this.passwordForm.reset();
+    }
+
+    closeAvatarDialog(): void {
+        this.showAvatarDialog = false;
+        this.selectedAvatar = null;
+    }
+
+    closeStatsDialog(): void {
+        this.showStatsDialog = false;
+    }
+
+    closeOrderTrackingDialog(): void {
+        this.showOrderTrackingDialog = false;
+        this.orderTrackingInfo = null;
+    }
+
+    getTimelineEvents(): any[] {
+        if (!this.userStats) return [];
+
+        const events = [];
+
+        // Add first purchase/last purchase events
+        if (this.isUserStatistics(this.userStats)) {
+            if (this.userStats.firstPurchaseDate) {
+                events.push({
+                    title: 'First Purchase',
+                    description: 'Your first order on our platform',
+                    date: this.userStats.firstPurchaseDate
+                });
+            }
+
+            if (this.userStats.lastPurchaseDate) {
+                events.push({
+                    title: 'Last Purchase',
+                    description: 'Your most recent order',
+                    date: this.userStats.lastPurchaseDate
+                });
+            }
+        } else {
+            if (this.userStats.firstOrderDate) {
+                events.push({
+                    title: 'First Order',
+                    description: 'First order received as a seller',
+                    date: this.userStats.firstOrderDate
+                });
+            }
+
+            if (this.userStats.lastOrderDate) {
+                events.push({
+                    title: 'Last Order',
+                    description: 'Most recent order received',
+                    date: this.userStats.lastOrderDate
+                });
+            }
+        }
+
+        // // Add account creation date
+        // if (this.user?.createdAt) {
+        //     events.push({
+        //         title: 'Account Created',
+        //         description: 'You joined our platform',
+        //         date: this.user.createdAt
+        //     });
+        // }
+
+        // Sort events by date
+        return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+
+    protected readonly environment = environment;
 }
-
-// Add this to handle finalize import
-import { finalize } from 'rxjs/operators';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-// import {Observable, Subject, takeUntil} from 'rxjs';
-//
-// import { CardModule } from 'primeng/card';
-// import { ButtonModule } from 'primeng/button';
-// import { InputTextModule } from 'primeng/inputtext';
-// import { TabViewModule } from 'primeng/tabview';
-// import { TableModule } from 'primeng/table';
-// import { TagModule } from 'primeng/tag';
-// import { ProgressBarModule } from 'primeng/progressbar';
-// import { ChartModule } from 'primeng/chart';
-// import { AvatarModule } from 'primeng/avatar';
-// import { FileUploadModule } from 'primeng/fileupload';
-// import { ToastModule } from 'primeng/toast';
-// import { ConfirmDialogModule } from 'primeng/confirmdialog';
-// import { DialogModule } from 'primeng/dialog';
-// import { MessageService, ConfirmationService } from 'primeng/api';
-//
-// import { User, UserPayload } from '../../types';
-// import {InputSwitch} from "primeng/inputswitch";
-// import {OrderService} from "../../services/order/order.service";
-// import {AuthService} from "../../services/auth/auth.service";
-//
-// @Component({
-//     selector: 'app-profile',
-//     standalone: true,
-//     imports: [
-//         CommonModule,
-//         FormsModule,
-//         ReactiveFormsModule,
-//         CardModule,
-//         ButtonModule,
-//         InputTextModule,
-//         TabViewModule,
-//         TableModule,
-//         TagModule,
-//         ProgressBarModule,
-//         ChartModule,
-//         AvatarModule,
-//         FileUploadModule,
-//         ToastModule,
-//         ConfirmDialogModule,
-//         DialogModule,
-//         InputSwitch
-//     ],
-//     providers: [MessageService, ConfirmationService],
-//     templateUrl: './user-profile.component.html',
-//     styleUrl: './user-profile.component.css'
-// })
-// export class UserProfileComponent implements OnInit, OnDestroy {
-//     private destroy$ = new Subject<void>();
-//
-//     user$: Observable<UserPayload>;
-//     profileForm: FormGroup;
-//     editProfileForm: FormGroup;
-//
-//     showEditDialog = false;
-//     showAvatarDialog = false;
-//     showOrderDialog = false;
-//     selectedOrder: Order | null = null;
-//     selectedAvatar: string | null = null;
-//
-//     orders: Order[] = [];
-//
-//     constructor(
-//         private fb: FormBuilder,
-//         private messageService: MessageService,
-//         private confirmationService: ConfirmationService,
-//         private orderService: OrderService,
-//         private authService: AuthService,
-//     ) {
-//         this.user$ = this.authService.userState$;
-//         this.profileForm = this.createProfileForm();
-//         this.editProfileForm = this.createEditProfileForm();
-//         this.initializeChartData();
-//     }
-//
-//     ngOnInit(): void {
-//         this.loadUserData();
-//         this.loadOrders();
-//         this.loadStatistics();
-//     }
-//
-//     ngOnDestroy(): void {
-//         this.destroy$.next();
-//         this.destroy$.complete();
-//     }
-//
-//     private createProfileForm(): FormGroup {
-//         return this.fb.group({
-//             name: ['', [Validators.required, Validators.minLength(2)]],
-//             email: ['', [Validators.required, Validators.email]],
-//             emailNotifications: [true],
-//             marketingEmails: [false],
-//             smsNotifications: [false]
-//         });
-//     }
-//
-//     private createEditProfileForm(): FormGroup {
-//         return this.fb.group({
-//             name: ['', [Validators.required, Validators.minLength(2)]],
-//             email: ['', [Validators.required, Validators.email]]
-//         });
-//     }
-//
-//     private loadUserData(): void {
-//         this.user$
-//             .pipe(takeUntil(this.destroy$))
-//             .subscribe(user => {
-//                 this.profileForm.patchValue({
-//                     name: user.name,
-//                     email: user.email
-//                 });
-//
-//                 this.editProfileForm.patchValue({
-//                     name: user.name,
-//                     email: user.email
-//                 });
-//             })
-//     }
-//
-//     public loadOrders(): void {
-//         this.user$.pipe(takeUntil(this.destroy$))
-//             .subscribe(user => {
-//                 this.orderService.getOrders(user.id).subscribe(orders => this.orders = orders)
-//             })
-//     }
-//
-//     getOrderStatusSeverity(
-//         status: string
-//     ): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
-//         const severities: { [key: string]: 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' } = {
-//             delivered: 'success',
-//             shipped: 'info',
-//             processing: 'warn',       // use 'warn' instead of 'warning' to match allowed type
-//             pending: 'secondary',
-//             cancelled: 'danger'
-//         };
-//
-//         return severities[status] || 'secondary';
-//     }
-//
-//
-//     applyFilter(event: any): void {
-//         const filterValue = (event.target as HTMLInputElement).value;
-//         // Implement filtering logic
-//         console.log('Filtering orders:', filterValue);
-//     }
-//
-//     viewOrder(order: Order): void {
-//         this.selectedOrder = order;
-//         this.showOrderDialog = true;
-//     }
-//
-//     cancelOrder(order: Order): void {
-//         this.confirmationService.confirm({
-//             message: `Are you sure you want to cancel order ${order.id}?`,
-//             header: 'Confirm Cancellation',
-//             icon: 'pi pi-exclamation-triangle',
-//             accept: () => {
-//                 // Implement order cancellation logic
-//                 this.messageService.add({
-//                     severity: 'success',
-//                     summary: 'Order Cancelled',
-//                     detail: `Order ${order.id} has been cancelled successfully.`
-//                 });
-//             }
-//         });
-//     }
-//
-//     updateProfile(): void {
-//         if (this.profileForm.valid) {
-//             const formData = this.profileForm.value;
-//             // Implement profile update logic
-//             this.messageService.add({
-//                 severity: 'success',
-//                 summary: 'Profile Updated',
-//                 detail: 'Your profile has been updated successfully.'
-//             });
-//         }
-//     }
-//
-//     saveProfile(): void {
-//         if (this.editProfileForm.valid) {
-//             const formData = this.editProfileForm.value;
-//             // Implement profile save logic
-//             this.messageService.add({
-//                 severity: 'success',
-//                 summary: 'Profile Saved',
-//                 detail: 'Your profile changes have been saved.'
-//             });
-//             this.showEditDialog = false;
-//         }
-//     }
-//
-//     onAvatarSelect(event: any): void {
-//         const file = event.files[0];
-//         if (file) {
-//             const reader = new FileReader();
-//             reader.onload = (e) => {
-//                 this.selectedAvatar = e.target?.result as string;
-//             };
-//             reader.readAsDataURL(file);
-//         }
-//     }
-//
-//     uploadAvatar(): void {
-//         if (this.selectedAvatar) {
-//             // Implement avatar upload logic
-//             this.messageService.add({
-//                 severity: 'success',
-//                 summary: 'Avatar Updated',
-//                 detail: 'Your avatar has been updated successfully.'
-//             });
-//             this.showAvatarDialog = false;
-//             this.selectedAvatar = null;
-//         }
-//     }
-//
-//     deleteAccount(): void {
-//         this.confirmationService.confirm({
-//             message: 'Are you sure you want to delete your account? This action cannot be undone.',
-//             header: 'Confirm Account Deletion',
-//             icon: 'pi pi-exclamation-triangle',
-//             acceptButtonStyleClass: 'p-button-danger',
-//             accept: () => {
-//                 // Implement account deletion logic
-//                 this.messageService.add({
-//                     severity: 'warn',
-//                     summary: 'Account Deletion',
-//                     detail: 'Your account deletion request has been submitted.'
-//                 });
-//             }
-//         });
-//     }
-// }

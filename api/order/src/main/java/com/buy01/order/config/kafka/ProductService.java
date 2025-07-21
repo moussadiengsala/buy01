@@ -45,7 +45,7 @@ public class ProductService {
             // Wait for response
             Response<?> productResponse = replyFuture.get(REPLY_TIMEOUT_SECONDS, TimeUnit.SECONDS).value();
             log.info("Response Coming from product service: ====== {} ======", productResponse);
-
+            System.out.println(productResponse);
             if (productResponse.getStatus() != 200 && productResponse.getStatus() != 404) {
                 return Response.build(null, productResponse.getMessage(), HttpStatus.valueOf(productResponse.getStatus()));
             }

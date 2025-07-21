@@ -59,11 +59,11 @@ public class UserController {
 
     @PreAuthorize("#id == authentication.principal.id")
     @PutMapping("/{id}")
-    public ResponseEntity<Response<UserDTO>> updateUser(
+    public ResponseEntity<Response<AuthenticationResponse>> updateUser(
             @PathVariable String id,
             @Valid @ModelAttribute UpdateUserDTO updateUserDTO
             ) {
-        Response<UserDTO> updatedUser = userService.updateUser(id, updateUserDTO);
+        Response<AuthenticationResponse> updatedUser = userService.updateUser(id, updateUserDTO);
         return ResponseEntity.status(updatedUser.getStatus()).body(updatedUser);
     }
 

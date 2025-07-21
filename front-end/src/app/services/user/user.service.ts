@@ -49,7 +49,6 @@ export class UserService {
         .pipe(
             map(response => {
               const body = response.body;
-              console.log(body);
               if (body?.data && HttpStatusCode.Ok === body.status) {
                 // Let the AuthService handle token storage and user state updates
                 this.authService.updateUserState(body.data);

@@ -17,19 +17,25 @@ import java.util.Optional;
 public interface OrderRepository extends MongoRepository<Order, String> {
 
     List<Order> findByUserIdOrderByCreatedAtDesc(String userId);
-    List<Order> findByUserIdAndPaymentStatusOrderByCreatedAtDesc(String userId, PaymentStatus paymentStatus);
+    Page<Order> findByUserIdAndPaymentStatusOrderByCreatedAtDesc(String userId, PaymentStatus paymentStatus, Pageable pageable);
     Optional<Order> findByStripePaymentIntentId(String paymentIntentId);
     List<Order> findByPaymentStatusAndCreatedAtBefore(PaymentStatus paymentStatus, Date createdBefore);
 
-    /**
-     * Find orders by seller ID
-     */
-    List<Order> findBySellerIdOrderByCreatedAtDesc(String sellerId);
+//    /**
+//     * Find orders by seller ID
+//     */
+//    List<Order> findBySellerIdOrderByCreatedAtDesc(String sellerId);
+//
+//    /**
+//     * Find orders by seller ID with pagination
+//     */
+//    Page<Order> findBySellerIdOrderByCreatedAtDesc(String sellerId, Pageable pageable);
 
-    /**
-     * Find orders by seller ID with pagination
-     */
-    Page<Order> findBySellerIdOrderByCreatedAtDesc(String sellerId, Pageable pageable);
+    @Query("{ 'orderItems.sellerId': ?0 }")
+    Page<Order> findBySellerId(String sellerId, Pageable pageable);
+
+    @Query("{ 'orderItems.sellerId': ?0 }")
+    List<Order> findBySellerId(String sellerId);
 
     /**
      * Find orders by user ID with pagination
@@ -51,50 +57,50 @@ public interface OrderRepository extends MongoRepository<Order, String> {
      */
     List<Order> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, OrderStatus status);
 
-    /**
-     * Find orders by seller ID and status
-     */
-    List<Order> findBySellerIdAndStatusOrderByCreatedAtDesc(String sellerId, OrderStatus status);
+//    /**
+//     * Find orders by seller ID and status
+//     */
+//    List<Order> findBySellerIdAndStatusOrderByCreatedAtDesc(String sellerId, OrderStatus status);
 
-    /**
-     * Find orders by date range
-     */
-    List<Order> findByCreatedAtBetweenOrderByCreatedAtDesc(Date startDate, Date endDate);
+//    /**
+//     * Find orders by date range
+//     */
+//    List<Order> findByCreatedAtBetweenOrderByCreatedAtDesc(Date startDate, Date endDate);
 
     /**
      * Find orders by user ID and date range
      */
     List<Order> findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(String userId, Date startDate, Date endDate);
 
-    /**
-     * Find orders by seller ID and date range
-     */
-    List<Order> findBySellerIdAndCreatedAtBetweenOrderByCreatedAtDesc(String sellerId, Date startDate, Date endDate);
+//    /**
+//     * Find orders by seller ID and date range
+//     */
+//    List<Order> findBySellerIdAndCreatedAtBetweenOrderByCreatedAtDesc(String sellerId, Date startDate, Date endDate);
 
     /**
      * Count orders by user ID
      */
     long countByUserId(String userId);
 
-    /**
-     * Count orders by seller ID
-     */
-    long countBySellerId(String sellerId);
+//    /**
+//     * Count orders by seller ID
+//     */
+//    long countBySellerId(String sellerId);
 
     /**
      * Count orders by user ID and status
      */
     long countByUserIdAndStatus(String userId, OrderStatus status);
 
-    /**
-     * Count orders by seller ID and status
-     */
-    long countBySellerIdAndStatus(String sellerId, OrderStatus status);
-
-    /**
-     * Find orders by seller ID and payment status completed
-     */
-    List<Order> findBySellerIdAndPaymentStatusOrderByCreatedAtDesc(String sellerId, PaymentStatus paymentStatus);
+//    /**
+//     * Count orders by seller ID and status
+//     */
+//    long countBySellerIdAndStatus(String sellerId, OrderStatus status);
+//
+//    /**
+//     * Find orders by seller ID and payment status completed
+//     */
+//    List<Order> findBySellerIdAndPaymentStatusOrderByCreatedAtDesc(String sellerId, PaymentStatus paymentStatus);
 
     /**
      * Complex search query for orders with multiple filters
@@ -128,13 +134,14 @@ public interface OrderRepository extends MongoRepository<Order, String> {
             "    { 'createdAt': { $lte: ?5 } } " +
             "  ] } " +
             "] }")
-    List<Order> findOrdersWithFilters(
+    Page<Order> findOrdersWithFilters(
             @Param("userId") String userId,
             @Param("keyword") String keyword,
             @Param("status") OrderStatus status,
             @Param("paymentStatus") PaymentStatus paymentStatus,
             @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate
+            @Param("endDate") Date endDate,
+            Pageable pageable
     );
 
     /**
@@ -184,10 +191,10 @@ public interface OrderRepository extends MongoRepository<Order, String> {
      */
     List<Order> findByUserIdInOrderByCreatedAtDesc(List<String> userIds);
 
-    /**
-     * Find orders by multiple seller IDs (for batch operations)
-     */
-    List<Order> findBySellerIdInOrderByCreatedAtDesc(List<String> sellerIds);
+//    /**
+//     * Find orders by multiple seller IDs (for batch operations)
+//     */
+//    List<Order> findBySellerIdInOrderByCreatedAtDesc(List<String> sellerIds);
 
     /**
      * Find orders with specific total amount range

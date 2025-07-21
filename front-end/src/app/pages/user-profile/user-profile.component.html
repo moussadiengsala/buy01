@@ -1,610 +1,650 @@
-<div class="min-h-screen bg-gray-50 py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">User Profile</h1>
-            <p class="text-gray-600 mt-2">Manage your account settings and view your orders</p>
-        </div>
+<div class="profile-container">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
 
-        <!-- Profile Summary Card -->
-        <div class="mb-6" *ngIf="user">
-            <p-card class="shadow-lg">
-                <div class="flex items-center space-x-6">
-                    <div class="relative">
-                        <p-avatar
-                                [image]="user.avatar || undefined"
-                                [label]="user.name.charAt(0)"
-                                size="xlarge"
-                                shape="circle"
-                                class="border-4 border-blue-500">
-                        </p-avatar>
-                        <button
-                                (click)="showAvatarDialog = true"
-                                class="absolute -bottom-2 -right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors">
-                            <i class="pi pi-camera text-xs"></i>
-                        </button>
-                    </div>
-
-                    <div class="flex-1">
-                        <h2 class="text-2xl font-bold text-gray-900">{{ user.name }}</h2>
-                        <p class="text-gray-600">{{ user.email }}</p>
-                        <div class="flex items-center mt-2 space-x-4">
-                            <p-chip
-                                    label="Premium Member"
-                                    icon="pi pi-star"
-                                    class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
-                            </p-chip>
-                            <span class="text-sm text-gray-500">Member since </span>
-                        </div>
-                    </div>
-
-                    <div class="text-right">
-                        <button
-                                (click)="showEditDialog = true"
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
-                            <i class="pi pi-pencil mr-2"></i>Edit Profile
-                        </button>
-                    </div>
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <p-card>
+            <div class="header-content">
+                <div class="avatar-section">
+                    <p-avatar *ngIf="!user?.avatar"
+                              icon="pi pi-user"
+                              styleClass="profile-avatar"
+                              [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
+                              shape="circle" />
+                    <p-avatar *ngIf="user?.avatar"
+                              image="{{environment.apiUrl}}user/avatar/{{user?.avatar}}"
+                              styleClass="mr-2"
+                              [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
+                              shape="circle" />
+                    <p-button
+                            icon="pi pi-camera"
+                            class="p-button-rounded p-button-secondary avatar-upload-btn"
+                            (click)="showAvatarDialog = true"
+                            pTooltip="Change Avatar">
+                    </p-button>
                 </div>
-            </p-card>
-        </div>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" *ngIf="userStats">
-            <p-card class="shadow-lg">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-blue-600">{{ userStats.totalOrders }}</div>
-                    <div class="text-gray-600 mt-1">Total Orders</div>
+                <div class="user-info">
+                    <h2>{{ user?.name || 'User' }}</h2>
+                    <p class="user-email">{{ user?.email }}</p>
+                    <p-chip
+                            [label]="user?.role || 'USER'"
+                            [styleClass]="user?.role === Role.SELLER ? 'seller-badge' : 'user-badge'">
+                    </p-chip>
                 </div>
-            </p-card>
 
-            <p-card class="shadow-lg">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-green-600">{{ formatCurrency(userStats.totalSpent) }}</div>
-                    <div class="text-gray-600 mt-1">Total Spent</div>
+                <div class="header-actions">
+                    <p-button
+                            label="Statistics"
+                            icon="pi pi-chart-line"
+                            class="p-button-outlined"
+                            (click)="showStatistics()"
+                            [loading]="statsLoading">
+                    </p-button>
                 </div>
-            </p-card>
+            </div>
+        </p-card>
+    </div>
 
-            <p-card class="shadow-lg">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-purple-600"></div>
-                    <div class="text-gray-600 mt-1">Loyalty Points</div>
-                </div>
-            </p-card>
-        </div>
-
-        <!-- Main Content Tabs -->
-        <p-tabView class="shadow-lg">
-
-            <!-- Account Settings Tab -->
-            <p-tabPanel header="Account Settings" leftIcon="pi pi-user">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                    <!-- Profile Information -->
-                    <p-card header="Profile Information">
-                        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+    <!-- Main Content Tabs -->
+    <p-tabView>
+        <!-- Profile Settings Tab -->
+        <p-tabPanel header="Profile Settings" leftIcon="pi pi-user">
+            <div class="profile-settings">
+                <div class="settings-grid">
+                    <!-- Basic Information -->
+                        <form [formGroup]="editProfileForm" (ngSubmit)="saveEditProfile()">
+                            <div class="dialog-form">
+                                <div class="form-field">
+                                    <label for="editName">First Name *</label>
                                     <input
                                             pInputText
+                                            id="editName"
                                             formControlName="name"
-                                            class="w-full"
-                                            placeholder="Enter your name">
-                                    <small class="text-red-500" *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
-                                        Name is required and must be at least 2 characters long
+                                            [class.ng-invalid]="isFieldInvalid(editProfileForm, 'name')">
+                                    <small class="error-text" *ngIf="isFieldInvalid(editProfileForm, 'name')">
+                                        {{ getFieldError(editProfileForm, 'name') }}
                                     </small>
                                 </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <div class="form-field">
+                                    <label for="editEmail">Email *</label>
                                     <input
                                             pInputText
+                                            id="editEmail"
                                             formControlName="email"
-                                            class="w-full"
-                                            placeholder="Enter your email">
-                                    <small class="text-red-500" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
-                                        Valid email is required
+                                            [class.ng-invalid]="isFieldInvalid(editProfileForm, 'email')">
+                                    <small class="error-text" *ngIf="isFieldInvalid(editProfileForm, 'email')">
+                                        {{ getFieldError(editProfileForm, 'email') }}
                                     </small>
                                 </div>
-
-                                <div class="pt-4">
-                                    <button
-                                            pButton
-                                            type="submit"
-                                            label="Update Profile"
-                                            icon="pi pi-save"
-                                            class="w-full"
-                                            [disabled]="profileForm.invalid">
-                                    </button>
-                                </div>
                             </div>
+                            <p-button
+                                    label="Save Changes"
+                                    icon="pi pi-check"
+                                    (onClick)="saveEditProfile()"
+                                    [disabled]="editProfileForm.invalid"
+                            >
+                            </p-button>
                         </form>
-                    </p-card>
 
-                    <!-- Notification Settings -->
-                    <p-card header="Notification Settings">
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <label class="text-sm font-medium text-gray-700">Email Notifications</label>
-                                    <p class="text-sm text-gray-500">Receive order updates via email</p>
-                                </div>
-                                <p-inputSwitch formControlName="emailNotifications"></p-inputSwitch>
+                </div>
+
+                <!-- Change Password -->
+                <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+                        <div class="dialog-form">
+                            <div class="form-field">
+                                <label for="currentPassword">Current Password *</label>
+                                <input
+                                        pInputText
+                                        type="password"
+                                        id="currentPassword"
+                                        formControlName="currentPassword"
+                                        [class.ng-invalid]="isFieldInvalid(passwordForm, 'currentPassword')">
+                                <small class="error-text" *ngIf="isFieldInvalid(passwordForm, 'currentPassword')">
+                                    {{ getFieldError(passwordForm, 'currentPassword') }}
+                                </small>
                             </div>
 
-                            <p-divider></p-divider>
-
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <label class="text-sm font-medium text-gray-700">Marketing Emails</label>
-                                    <p class="text-sm text-gray-500">Receive promotional offers and updates</p>
-                                </div>
-                                <p-inputSwitch formControlName="marketingEmails"></p-inputSwitch>
+                            <div class="form-field">
+                                <label for="newPassword">New Password *</label>
+                                <input
+                                        pInputText
+                                        type="password"
+                                        id="newPassword"
+                                        formControlName="newPassword"
+                                        [class.ng-invalid]="isFieldInvalid(passwordForm, 'newPassword')">
+                                <small class="error-text" *ngIf="isFieldInvalid(passwordForm, 'newPassword')">
+                                    {{ getFieldError(passwordForm, 'newPassword') }}
+                                </small>
                             </div>
 
-                            <p-divider></p-divider>
-
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <label class="text-sm font-medium text-gray-700">SMS Notifications</label>
-                                    <p class="text-sm text-gray-500">Receive order updates via SMS</p>
-                                </div>
-                                <p-inputSwitch formControlName="smsNotifications"></p-inputSwitch>
+                            <div class="form-field">
+                                <label for="confirmPassword">Confirm Password *</label>
+                                <input
+                                        pInputText
+                                        type="password"
+                                        id="confirmPassword"
+                                        formControlName="confirmPassword"
+                                        [class.ng-invalid]="isFieldInvalid(passwordForm, 'confirmPassword')">
+                                <small class="error-text" *ngIf="isFieldInvalid(passwordForm, 'confirmPassword')">
+                                    {{ getFieldError(passwordForm, 'confirmPassword') }}
+                                </small>
                             </div>
                         </div>
-                    </p-card>
-                </div>
+                        <p-button
+                                label="Change Password"
+                                icon="pi pi-check"
+                                (click)="changePassword()"
+                                [disabled]="passwordForm.invalid">
+                        </p-button>
+                    </form>
 
                 <!-- Danger Zone -->
-                <p-card header="Danger Zone" class="mt-8 border-red-200">
-                    <div class="bg-red-50 p-4 rounded-lg">
-                        <h3 class="text-lg font-medium text-red-800 mb-2">Delete Account</h3>
-                        <p class="text-red-700 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-                        <button
-                                pButton
-                                (click)="deleteAccount()"
+                <p-card header="Danger Zone" class="danger-card">
+                    <div class="danger-actions">
+                        <div class="danger-info">
+                            <h4>Delete Account</h4>
+                            <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                        </div>
+                        <p-button
                                 label="Delete Account"
                                 icon="pi pi-trash"
-                                class="p-button-danger">
-                        </button>
+                                class="p-button-danger"
+                                (click)="deleteAccount()">
+                        </p-button>
                     </div>
                 </p-card>
-            </p-tabPanel>
+            </div>
+        </p-tabPanel>
 
-            <!-- Orders Tab -->
-            <p-tabPanel header="My Orders" leftIcon="pi pi-shopping-cart">
-
-                <!-- Search and Filter Section -->
-                <div class="mb-6">
-                    <p-card>
-                        <form [formGroup]="searchForm">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Orders</label>
-                                    <input
-                                            pInputText
-                                            (input)="onSearchInput($event)"
-                                            placeholder="Search by order ID, product name..."
-                                            class="w-full">
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                    <p-dropdown
-                                            formControlName="status"
-                                            [options]="statusOptions"
-                                            optionLabel="label"
-                                            optionValue="value"
-                                            placeholder="All Statuses"
-                                            class="w-full">
-                                    </p-dropdown>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
-                                    <p-dropdown
-                                            formControlName="paymentStatus"
-                                            [options]="paymentStatusOptions"
-                                            optionLabel="label"
-                                            optionValue="value"
-                                            placeholder="All Payment Status"
-                                            class="w-full">
-                                    </p-dropdown>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-                                    <p-calendar
-                                            formControlName="startDate"
-                                            placeholder="Start Date"
-                                            class="w-full">
-                                    </p-calendar>
-                                </div>
+        <!-- Orders Tab -->
+        <p-tabPanel header="My Orders" leftIcon="pi pi-shopping-cart">
+            <div class="orders-section">
+                <!-- Search and Filter -->
+                <p-card class="search-card">
+                    <form [formGroup]="searchForm">
+                        <div class="search-grid">
+                            <div class="search-field">
+                                <label for="searchKeyword">Search Orders</label>
+                                <input
+                                        pInputText
+                                        id="searchKeyword"
+                                        placeholder="Search by order ID, product name..."
+                                        (input)="onSearchInput($event)"
+                                        class="search-input">
                             </div>
 
-                            <div class="flex justify-end space-x-2">
-                                <button
-                                        pButton
-                                        type="button"
-                                        (click)="clearFilters()"
+                            <div class="filter-field">
+                                <label for="statusFilter">Order Status</label>
+                                <p-dropdown
+                                        id="statusFilter"
+                                        formControlName="status"
+                                        [options]="statusOptions"
+                                        placeholder="All Statuses"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        [showClear]="true">
+                                </p-dropdown>
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="paymentFilter">Payment Status</label>
+                                <p-dropdown
+                                        id="paymentFilter"
+                                        formControlName="paymentStatus"
+                                        [options]="paymentStatusOptions"
+                                        placeholder="All Payment Status"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        [showClear]="true">
+                                </p-dropdown>
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="startDate">Start Date</label>
+                                <p-calendar
+                                        id="startDate"
+                                        formControlName="startDate"
+                                        [showIcon]="true"
+                                        placeholder="From date">
+                                </p-calendar>
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="endDate">End Date</label>
+                                <p-calendar
+                                        id="endDate"
+                                        formControlName="endDate"
+                                        [showIcon]="true"
+                                        placeholder="To date">
+                                </p-calendar>
+                            </div>
+
+                            <div class="action-buttons">
+                                <p-button
                                         label="Clear Filters"
-                                        icon="pi pi-refresh"
-                                        class="p-button-secondary">
-                                </button>
-                                <button
-                                        pButton
-                                        type="button"
-                                        (click)="showStatistics()"
-                                        label="View Statistics"
-                                        icon="pi pi-chart-bar"
-                                        class="p-button-info">
-                                </button>
+                                        icon="pi pi-filter-slash"
+                                        class="p-button-outlined"
+                                        (click)="clearFilters()">
+                                </p-button>
+                                <p-button
+                                        label="Export"
+                                        icon="pi pi-download"
+                                        class="p-button-outlined"
+                                        (click)="exportOrderHistory()">
+                                </p-button>
                             </div>
-                        </form>
-                    </p-card>
-                </div>
+                        </div>
+                    </form>
+                </p-card>
 
                 <!-- Orders Table -->
-                <p-card>
-                    <p-table
-                            [value]="filteredOrders"
-                            [loading]="loading"
-                            [paginator]="true"
+                <p-card class="orders-table-card">
+                    <ng-container *ngIf="!ordersLoading; else loadingSkeleton">
+                        <p-table
+                                [value]="filteredOrders"
+                                [paginator]="false"
+                                [responsive]="true"
+                                styleClass="p-datatable-gridlines">
+
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-order>
+                                <tr>
+                                    <td>
+                                        <strong>#{{ order.id }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ formatDate(order.createdAt) }}
+                                    </td>
+                                    <td>
+                                        {{ order.orderItems?.length || 0 }} item(s)
+                                    </td>
+                                    <td>
+                                        <strong>{{ formatCurrency(order.totalAmount) }}</strong>
+                                    </td>
+                                    <td>
+                                        <p-tag
+                                                [value]="order.orderStatus"
+                                                [severity]="getOrderStatusSeverity(order.orderStatus)">
+                                        </p-tag>
+                                    </td>
+                                    <td>
+                                        <p-tag
+                                                [value]="order.paymentStatus"
+                                                [severity]="getPaymentStatusSeverity(order.paymentStatus)">
+                                        </p-tag>
+                                    </td>
+                                    <td>
+                                        <div class="order-actions">
+                                            <p-button
+                                                    icon="pi pi-eye"
+                                                    class="p-button-text p-button-rounded"
+                                                    pTooltip="View Details"
+                                                    [routerLink]="['/order']"
+                                                    [queryParams]="{ id: order.id }"
+                                                    routerLinkActive="active"
+                                                    ariaCurrentWhenActive="page">
+                                            </p-button>
+
+                                            <p-button
+                                                    icon="pi pi-refresh"
+                                                    class="p-button-text p-button-rounded"
+                                                    (click)="reorderOrder(order)"
+                                                    [disabled]="!canReorder(order)"
+                                                    pTooltip="Reorder">
+                                            </p-button>
+
+                                            <p-button
+                                                    icon="pi pi-times"
+                                                    class="p-button-text p-button-rounded"
+                                                    (click)="cancelOrder(order)"
+                                                    [disabled]="!canCancelOrder(order)"
+                                                    pTooltip="Cancel Order">
+                                            </p-button>
+
+                                            <p-button
+                                                    icon="pi pi-download"
+                                                    class="p-button-text p-button-rounded"
+                                                    (click)="downloadReceipt(order)"
+                                                    pTooltip="Download Receipt">
+                                            </p-button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <div class="empty-state">
+                                            <i class="pi pi-shopping-cart" style="font-size: 3rem; color: red"></i>
+                                            <h3>No Orders Found</h3>
+                                            <p>You haven't placed any orders yet or no orders match your search criteria.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-container>
+
+                    <ng-template #loadingSkeleton>
+                        <div class="loading-skeleton">
+                            <p-skeleton height="3rem" class="mb-2" *ngFor="let item of [1,2,3,4,5]"></p-skeleton>
+                        </div>
+                    </ng-template>
+
+                    <!-- Pagination -->
+                    <p-paginator
+                            *ngIf="totalOrders > 0"
                             [rows]="pageSize"
                             [totalRecords]="totalOrders"
-                            [lazy]="true"
-                            (onLazyLoad)="onPageChange($event)"
-                            responsiveLayout="scroll">
-
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Payment</th>
-                                <th>Total</th>
-                                <th>Actions</th>
-                            </tr>
-                        </ng-template>
-
-                        <ng-template pTemplate="body" let-order>
-                            <tr>
-                                <td>
-                                    <span class="font-medium text-blue-600">#{{ order.id }}</span>
-                                </td>
-                                <td>{{ formatDate(order.createdAt) }}</td>
-                                <td>
-                                    <p-tag
-                                            [value]="getOrderStatusSeverity(order.orderStatus)"
-                                            [severity]="getOrderStatusSeverity(order.orderStatus)">
-                                    </p-tag>
-                                </td>
-                                <td>
-                                    <p-tag
-                                            [value]="order.paymentStatus"
-                                            [severity]="getPaymentStatusSeverity(order.paymentStatus)">
-                                    </p-tag>
-                                </td>
-                                <td>
-                                    <span class="font-medium">{{ formatCurrency(order.totalAmount) }}</span>
-                                </td>
-                                <td>
-                                    <div class="flex space-x-2">
-                                        <button
-                                                pButton
-                                                (click)="viewOrder(order)"
-                                                icon="pi pi-eye"
-                                                class="p-button-rounded p-button-text p-button-info"
-                                                pTooltip="View Details">
-                                        </button>
-
-                                        <button
-                                                pButton
-                                                (click)="trackOrder(order)"
-                                                icon="pi pi-map-marker"
-                                                class="p-button-rounded p-button-text p-button-success"
-                                                pTooltip="Track Order"
-                                                *ngIf="canTrackOrder(order)">
-                                        </button>
-
-                                        <button
-                                                pButton
-                                                (click)="reorderOrder(order)"
-                                                icon="pi pi-shopping-cart"
-                                                class="p-button-rounded p-button-text p-button-secondary"
-                                                pTooltip="Reorder">
-                                        </button>
-
-                                        <button
-                                                pButton
-                                                (click)="cancelOrder(order)"
-                                                icon="pi pi-times"
-                                                class="p-button-rounded p-button-text p-button-warning"
-                                                pTooltip="Cancel Order"
-                                                *ngIf="canCancelOrder(order)">
-                                        </button>
-
-                                        <button
-                                                pButton
-                                                (click)="requestRefund(order)"
-                                                icon="pi pi-money-bill"
-                                                class="p-button-rounded p-button-text p-button-info"
-                                                pTooltip="Request Refund"
-                                                *ngIf="canRequestRefund(order)">
-                                        </button>
-
-                                        <button
-                                                pButton
-                                                (click)="downloadReceipt(order)"
-                                                icon="pi pi-download"
-                                                class="p-button-rounded p-button-text p-button-secondary"
-                                                pTooltip="Download Receipt">
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="6" class="text-center py-8">
-                                    <i class="pi pi-shopping-cart text-4xl text-gray-400 mb-4"></i>
-                                    <p class="text-gray-500">No orders found</p>
-                                </td>
-                            </tr>
-                        </ng-template>
-
-                        <ng-template pTemplate="loadingbody">
-                            <tr>
-                                <td colspan="6">
-                                    <div class="flex justify-center py-8">
-                                        <p-skeleton width="100%" height="4rem"></p-skeleton>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
+                            [first]="currentPage * pageSize"
+                            (onPageChange)="onPageChange($event)"
+                            [rowsPerPageOptions]="[5, 10, 20, 50]">
+                    </p-paginator>
                 </p-card>
-            </p-tabPanel>
+            </div>
+        </p-tabPanel>
 
-            <!-- Analytics Tab -->
-            <p-tabPanel header="Analytics" leftIcon="pi pi-chart-line">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                    <!-- Monthly Spending Chart -->
-                    <p-card header="Monthly Spending">
-                        <p-chart
-                                type="bar"
-                                [data]="chartData"
-                                [options]="chartOptions"
-                                class="w-full h-80">
-                        </p-chart>
+        <!-- Statistics Tab -->
+        <p-tabPanel header="Statistics" leftIcon="pi pi-chart-bar" *ngIf="userStats">
+            <div class="statistics-section">
+                <div class="stats-grid">
+                    <!-- Key Metrics Cards -->
+                    <p-card class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon orders-icon">
+                                <i class="pi pi-shopping-cart"></i>
+                            </div>
+                            <div class="metric-info">
+                                <h3>{{ userStats?.totalOrders || 0 }}</h3>
+                                <p>Total Orders</p>
+                            </div>
+                        </div>
                     </p-card>
 
-                    <!-- Order Status Distribution -->
-                    <p-card header="Order Status Distribution">
-                        <div class="space-y-4" *ngIf="userStats">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-medium">Delivered</span>
-                                <span class="text-sm text-gray-600">{{ userStats.pendingOrders }}</span>
+                    <p-card class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon money-icon">
+                                <i class="pi pi-dollar"></i>
                             </div>
-                            <p-progressBar
-                                    [value]="(userStats.pendingOrders / userStats.totalOrders) * 100"
-                                    [showValue]="false"
-                                    class="h-2">
-                            </p-progressBar>
+                            <div class="metric-info">
+                                <h3>{{ formatCurrency(getTotalMetric()) }}</h3>
+                                <p>{{ getTotalMetricLabel() }}</p>
+                            </div>
+                        </div>
+                    </p-card>
 
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-medium">Processing</span>
-                                <span class="text-sm text-gray-600">{{ userStats.averageOrderValue }}</span>
+                    <p-card class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon monthly-icon">
+                                <i class="pi pi-calendar"></i>
                             </div>
-                            <p-progressBar
-                                    [value]="(userStats.averageOrderValue / userStats.totalOrders) * 100"
-                                    [showValue]="false"
-                                    class="h-2">
-                            </p-progressBar>
+                            <div class="metric-info">
+                                <h3>{{ formatCurrency(getMonthlyMetric()) }}</h3>
+                                <p>{{ getMonthlyMetricLabel() }}</p>
+                            </div>
+                        </div>
+                    </p-card>
 
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-medium">Pending</span>
-                                <span class="text-sm text-gray-600">{{ userStats.pendingOrders }}</span>
+                    <p-card class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon completion-icon">
+                                <i class="pi pi-check-circle"></i>
                             </div>
-                            <p-progressBar
-                                    [value]="(userStats.pendingOrders / userStats.totalOrders) * 100"
-                                    [showValue]="false"
-                                    class="h-2">
-                            </p-progressBar>
+                            <div class="metric-info">
+                                <h3>{{ getCompletionRate().toFixed(1) }}%</h3>
+                                <p>Completion Rate</p>
+                            </div>
                         </div>
                     </p-card>
                 </div>
-            </p-tabPanel>
-        </p-tabView>
-    </div>
-</div>
 
-<!-- Edit Profile Dialog -->
-<p-dialog
-        header="Edit Profile"
-        [(visible)]="showEditDialog"
-        [modal]="true"
-        [style]="{width: '30vw'}"
-        [closable]="true"
-        [responsive]="true">
-
-    <form [formGroup]="editProfileForm" (ngSubmit)="saveProfile()">
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                <input
-                        pInputText
-                        formControlName="name"
-                        class="w-full"
-                        placeholder="Enter your name">
+                <!-- Chart Section -->
+                <p-card header="Activity Overview" class="chart-card">
+                    <div class="chart-container">
+                        <p-chart
+                                type="line"
+                                [data]="chartData"
+                                [options]="chartOptions"
+                        >
+<!--                                [height]="300"-->
+                        </p-chart>
+                    </div>
+                </p-card>
             </div>
+        </p-tabPanel>
+    </p-tabView>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input
-                        pInputText
-                        formControlName="email"
-                        class="w-full"
-                        placeholder="Enter your email">
-            </div>
-        </div>
-
-        <div class="flex justify-end space-x-2 mt-6">
-            <button
-                    pButton
-                    type="button"
-                    (click)="showEditDialog = false"
-                    label="Cancel"
-                    class="p-button-secondary">
-            </button>
-            <button
-                    pButton
-                    type="submit"
-                    label="Save Changes"
-                    icon="pi pi-save"
-                    [disabled]="editProfileForm.invalid">
-            </button>
-        </div>
-    </form>
-</p-dialog>
-
-<!-- Avatar Upload Dialog -->
-<p-dialog
-        header="Update Avatar"
-        [(visible)]="showAvatarDialog"
-        [modal]="true"
-        [style]="{width: '25vw'}"
-        [closable]="true"
-        [responsive]="true">
-
-    <div class="text-center">
-        <div class="mb-4" *ngIf="selectedAvatar">
-            <img [src]="selectedAvatar" alt="Selected avatar" class="w-32 h-32 rounded-full mx-auto object-cover">
-        </div>
-
-        <p-fileUpload
-                mode="basic"
-                chooseLabel="Choose Avatar"
-                accept="image/*"
-                [maxFileSize]="1000000"
-                (onSelect)="onAvatarSelect($event)"
-                class="mb-4">
-        </p-fileUpload>
-
-        <div class="flex justify-center space-x-2">
-            <button
-                    pButton
-                    type="button"
-                    (click)="showAvatarDialog = false"
-                    label="Cancel"
-                    class="p-button-secondary">
-            </button>
-            <button
-                    pButton
-                    type="button"
-                    (click)="uploadAvatar()"
-                    label="Upload"
-                    icon="pi pi-upload"
-                    [disabled]="!selectedAvatar">
-            </button>
-        </div>
-    </div>
-</p-dialog>
-
-<!-- Order Details Dialog -->
-<p-dialog
-        header="Order Details"
-        [(visible)]="showOrderDialog"
-        [modal]="true"
-        [style]="{width: '50vw'}"
-        [closable]="true"
-        [responsive]="true">
-
-    <div *ngIf="selectedOrder" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <h4 class="font-medium text-gray-700">Order ID</h4>
-                <p class="text-blue-600">#{{ selectedOrder.id }}</p>
-            </div>
-            <div>
-                <h4 class="font-medium text-gray-700">Order Date</h4>
-                <p>{{ formatDate(selectedOrder.createdAt) }}</p>
-            </div>
-            <div>
-                <h4 class="font-medium text-gray-700">Status</h4>
-                <p-tag
-                        [value]="getOrderStatusSeverity(selectedOrder.orderStatus)"
-                        [severity]="getOrderStatusSeverity(selectedOrder.orderStatus)">
-                </p-tag>
-            </div>
-            <div>
-                <h4 class="font-medium text-gray-700">Total Amount</h4>
-                <p class="text-lg font-bold">{{ formatCurrency(selectedOrder.totalAmount) }}</p>
-            </div>
-        </div>
-
-        <p-divider></p-divider>
+    <!-- Avatar Selection Dialog -->
+    <p-dialog
+            header="Choose Avatar"
+            [(visible)]="showAvatarDialog"
+            [modal]="true"
+            [closable]="true"
+            [style]="{width: '600px'}"
+            (onHide)="closeAvatarDialog()">
 
         <div>
-            <h4 class="font-medium text-gray-700 mb-2">Order Items</h4>
-            <div class="space-y-2" *ngFor="let item of selectedOrder.orderItems">
-                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <div>
-                        <span class="font-medium">{{ item.productName }}</span>
-                        <span class="text-gray-500 ml-2">× {{ item.quantity }}</span>
+            <label class="block text-sm font-medium text-gray-700">Profile Picture</label>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div class="space-y-1 text-center">
+                    <div class="flex text-sm text-gray-600">
+                        <label for="avatar" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <span>Upload a file</span>
+                            <input id="avatar"
+                                   name="avatar"
+                                   type="file"
+                                   class="sr-only"
+                                   (change)="onFileChange($event)">
+                        </label>
+                        <p class="pl-1">or drag and drop</p>
                     </div>
-                    <span class="font-medium">{{ formatCurrency(item.unitPrice * item.quantity) }}</span>
+                    <p class="text-xs text-gray-500">
+                        PNG, JPG, GIF up to 10MB
+                    </p>
+                </div>
+            </div>
+
+            <!-- Profile Picture Preview -->
+            <div *ngIf="currentFile" class="mt-4 flex flex-col items-center">
+                <div class="relative w-32 h-32 overflow-hidden border-2 border-indigo-200">
+                    <img [src]="currentFile.preview" alt="Profile Preview" class="w-full h-full object-cover">
+                    <button (click)="removeFile()" class="absolute top-1 right-1 bg-white/80 hover:bg-white p-1 shadow-md transition-all duration-300">
+                        <i class="pi pi-times text-gray-600"></i>
+                    </button>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">{{ currentFile.fileName }}</p>
+            </div>
+            <p-button
+                    label="Save Avatar"
+                    icon="pi pi-check"
+                    [disabled]="!currentFile"
+                    (click)="uploadAvatar()">
+            </p-button>
+        </div>
+    </p-dialog>
+
+    <!-- Statistics Modal -->
+    <p-dialog
+            header="Detailed Statistics"
+            [(visible)]="showStatsDialog"
+            [modal]="true"
+            [closable]="true"
+            [style]="{width: '90vw', height: '80vh'}"
+            (onHide)="closeStatsDialog()"
+            *ngIf="userStats">
+
+        <div class="detailed-stats">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <h3>{{ userStats.totalOrders }}</h3>
+                    <p>Total Orders</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ formatCurrency(getTotalMetric()) }}</h3>
+                    <p>{{ getTotalMetricLabel() }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ formatCurrency(getMonthlyMetric()) }}</h3>
+                    <p>{{ getMonthlyMetricLabel() }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ getCompletionRate().toFixed(1) }}%</h3>
+                    <p>Completion Rate</p>
+                </div>
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="stats-content">
+                <div class="stats-charts">
+                    <p-card header="Activity Overview">
+                        <p-chart
+                                type="line"
+                                [data]="chartData"
+                                [options]="chartOptions"
+                        >
+<!--                                [height]="300"-->
+                        </p-chart>
+                    </p-card>
+                </div>
+
+                <div class="stats-details">
+                    <p-tabView>
+                        <!-- Orders Tab -->
+                        <p-tabPanel header="Orders">
+                            <div class="stats-table">
+                                <h4>Order Statistics</h4>
+                                <p-table [value]="[userStats]" responsiveLayout="scroll">
+                                    <ng-template pTemplate="body">
+                                        <tr>
+                                            <td><strong>Total Orders</strong></td>
+                                            <td>{{ userStats.totalOrders || 0 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Completed Orders</strong></td>
+                                            <td>{{ userStats.completedOrders || 0 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pending Orders</strong></td>
+                                            <td>{{ userStats.pendingOrders || 0 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Cancelled Orders</strong></td>
+                                            <td>{{ userStats.cancelledOrders || 0 }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </p-tabPanel>
+
+                        <!-- Financial Tab -->
+                        <p-tabPanel header="Financial">
+                            <div class="stats-table">
+                                <h4>Financial Statistics</h4>
+                                <p-table [value]="[userStats]" responsiveLayout="scroll">
+                                    <ng-template pTemplate="body">
+                                        <tr>
+                                            <td><strong>{{ getTotalMetricLabel() }}</strong></td>
+                                            <td>{{ formatCurrency(getTotalMetric()) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>{{ getMonthlyMetricLabel() }}</strong></td>
+                                            <td>{{ formatCurrency(getMonthlyMetric()) }}</td>
+                                        </tr>
+                                        <tr *ngIf="isUserStatistics(userStats)">
+                                            <td><strong>Average Order Value</strong></td>
+                                            <td>{{ formatCurrency(userStats.averageOrderValue || 0) }}</td>
+                                        </tr>
+                                        <tr *ngIf="!isUserStatistics(userStats)">
+                                            <td><strong>Average Order Value</strong></td>
+                                            <td>{{ formatCurrency(userStats.averageOrderValue || 0) }}</td>
+                                        </tr>
+
+<!--                                        <tr *ngIf="userStats.netRevenue !== undefined">-->
+<!--                                            <td><strong>Net Revenue</strong></td>-->
+<!--                                            <td>{{ formatCurrency(0) }}</td>-->
+<!--                                        </tr>-->
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </p-tabPanel>
+
+                        <!-- Products Tab -->
+                        <p-tabPanel header="Products">
+                            <div class="stats-table">
+                                <h4>Product Statistics</h4>
+                                <p-table [value]="[userStats]" responsiveLayout="scroll">
+                                    <ng-template pTemplate="body">
+                                        <tr *ngIf="isUserStatistics(userStats) && userStats.mostPurchasedProductName">
+                                            <td><strong>Most Purchased Product</strong></td>
+                                            <td>{{ userStats.mostPurchasedProductName }} ({{ userStats.mostPurchasedProductQuantity || 0 }} times)</td>
+                                        </tr>
+                                        <tr *ngIf="!isUserStatistics(userStats) && userStats.bestSellingProductName">
+                                            <td><strong>Best Selling Product</strong></td>
+                                            <td>{{ userStats.bestSellingProductName }} ({{ userStats.bestSellingProductQuantity || 0 }} sold)</td>
+                                        </tr>
+                                        <tr *ngIf="isUserStatistics(userStats)">
+                                            <td><strong>Total Items Purchased</strong></td>
+                                            <td>{{ userStats.totalItemsPurchased || 0 }}</td>
+                                        </tr>
+                                        <tr *ngIf="!isUserStatistics(userStats)">
+                                            <td><strong>Total Items Sold</strong></td>
+                                            <td>{{ userStats.totalItemsSold || 0 }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </p-tabPanel>
+
+                        <!-- Timeline Tab -->
+                        <p-tabPanel header="Timeline">
+                            <div class="stats-timeline">
+                                <h4>Activity Timeline</h4>
+                                <p-timeline [value]="getTimelineEvents()" align="alternate">
+                                    <ng-template pTemplate="content" let-event>
+                                        <p-card>
+                                            <div class="timeline-event">
+                                                <h5>{{ event.title }}</h5>
+                                                <p>{{ event.description }}</p>
+                                                <small>{{ formatDateTime(event.date) }}</small>
+                                            </div>
+                                        </p-card>
+                                    </ng-template>
+                                </p-timeline>
+                            </div>
+                        </p-tabPanel>
+                    </p-tabView>
                 </div>
             </div>
         </div>
-    </div>
-</p-dialog>
 
-<!-- Statistics Dialog -->
-<p-dialog
-        header="Order Statistics"
-        [(visible)]="showStatsDialog"
-        [modal]="true"
-        [style]="{width: '60vw'}"
-        [closable]="true"
-        [responsive]="true">
-
-    <div *ngIf="userStats" class="space-y-6">
-        <div class="grid grid-cols-3 gap-4">
-            <div class="text-center p-4 bg-blue-50 rounded-lg">
-                <div class="text-2xl font-bold text-blue-600">{{ userStats.totalOrders }}</div>
-                <div class="text-sm text-gray-600">Total Orders</div>
-            </div>
-            <div class="text-center p-4 bg-green-50 rounded-lg">
-                <div class="text-2xl font-bold text-green-600">{{ formatCurrency(userStats.totalSpent) }}</div>
-                <div class="text-sm text-gray-600">Total Spent</div>
-            </div>
-            <div class="text-center p-4 bg-purple-50 rounded-lg">
-                <div class="text-2xl font-bold text-purple-600">{{ formatCurrency(userStats.averageOrderValue) }}</div>
-                <div class="text-sm text-gray-600">Average Order</div>
-            </div>
-        </div>
-
-        <div>
-            <h4 class="font-medium text-gray-700 mb-4">Monthly Spending Trend</h4>
-            <p-chart
-                    type="line"
-                    [data]="chartData"
-                    [options]="chartOptions"
-                    class="w-full h-64">
-            </p-chart>
-        </div>
-    </div>
-</p-dialog>
-
-<!-- Toast Messages -->
-<p-toast></p-toast>
-
-<!-- Confirmation Dialog -->
-<p-confirmDialog></p-confirmDialog>
+        <ng-template pTemplate="footer">
+            <p-button
+                    label="Close"
+                    icon="pi pi-times"
+                    (click)="closeStatsDialog()">
+            </p-button>
+        </ng-template>
+    </p-dialog>
+</div>
 
 
 
@@ -620,607 +660,134 @@
 
 
 
+<!-- Order Details Dialog -->
+<!--    <p-dialog-->
+<!--            header="Order Details"-->
+<!--            [(visible)]="showOrderDialog"-->
+<!--            [modal]="true"-->
+<!--            [closable]="true"-->
+<!--            [style]="{width: '800px'}"-->
+<!--            (onHide)="closeOrderDialog()"-->
+<!--            *ngIf="selectedOrder">-->
 
+<!--        <div class="order-details">-->
+<!--            <div class="order-header">-->
+<!--                <div class="order-info">-->
+<!--                    <h3>Order #{{ selectedOrder.id }}</h3>-->
+<!--                    <p>Placed on {{ formatDateTime(selectedOrder.createdAt) }}</p>-->
+<!--                </div>-->
+<!--                <div class="order-status">-->
+<!--                    <p-tag-->
+<!--                            [value]="getOrderStatusSeverity(selectedOrder.orderStatus)"-->
+<!--                            [severity]="getOrderStatusSeverity(selectedOrder.orderStatus)">-->
+<!--                    </p-tag>-->
+<!--                    <p-tag-->
+<!--                            [value]="selectedOrder.paymentStatus"-->
+<!--                            [severity]="getPaymentStatusSeverity(selectedOrder.paymentStatus)">-->
+<!--                    </p-tag>-->
+<!--                </div>-->
+<!--            </div>-->
 
+<!--            <p-divider></p-divider>-->
 
-
-
-
-
-
-
-
-
-<!--<div class="w-full min-h-screen bg-gradient-to-b from-indigo-50 to-white py-8">-->
-<!--    <div class="max-w-4xl mx-auto px-4">-->
-<!--        &lt;!&ndash; Profile Header &ndash;&gt;-->
-<!--        <div class="bg-white rounded-lg shadow-sm mb-8">-->
-<!--            <div class="px-6 py-8">-->
-<!--                <div class="flex items-center space-x-6">-->
-<!--                    <div class="relative">-->
-<!--                        <p-avatar-->
-<!--                                [image]="user?.avatar || '/assets/images/default-avatar.png'"-->
-<!--                                size="xlarge"-->
-<!--                                shape="circle"-->
-<!--                                class="border-4 border-blue-500">-->
-<!--                        </p-avatar>-->
-<!--                        <button-->
-<!--                                pButton-->
-<!--                                icon="pi pi-camera"-->
-<!--                                class="absolute bottom-0 right-0 rounded-full p-2 bg-blue-500 text-white hover:bg-blue-600"-->
-<!--                                size="small"-->
-<!--                                (click)="showAvatarDialog = true">-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                    <div class="flex-1">-->
-<!--                        <h1 class="text-3xl font-bold text-gray-900">{{ user?.name }}</h1>-->
-<!--                        <p class="text-gray-600">{{ user?.email }}</p>-->
-<!--                        <div class="mt-2">-->
-<!--                            <p-tag-->
-<!--                                    [value]="user?.role ?? undefined"-->
-<!--                                    [severity]="user?.role === 'SELLER' ? 'success' : 'info'"-->
-<!--                                    class="mr-2">-->
-<!--                            </p-tag>-->
-<!--                            <span class="text-sm text-gray-500">-->
-<!--                    Member since-->
-<!--                  </span>-->
+<!--            <div class="order-items">-->
+<!--                <h4>Order Items</h4>-->
+<!--                <div class="item-list">-->
+<!--                    <div *ngFor="let item of selectedOrder.orderItems" class="order-item">-->
+<!--                        <div class="item-info">-->
+<!--                            <h5>{{ item.productName }}</h5>-->
+<!--                            <p>Quantity: {{ item.quantity }}</p>-->
+<!--                            <p>Price: {{ formatCurrency(item.unitPrice) }}</p>-->
 <!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="flex space-x-3">-->
-<!--                        <button-->
-<!--                                pButton-->
-<!--                                label="Edit Profile"-->
-<!--                                icon="pi pi-user-edit"-->
-<!--                                class="p-button-outlined"-->
-<!--                                (click)="showEditDialog = true">-->
-<!--                        </button>-->
-<!--                        <button-->
-<!--                                pButton-->
-<!--                                label="Settings"-->
-<!--                                icon="pi pi-cog"-->
-<!--                                class="p-button-outlined"-->
-<!--                                (click)="openSettings()">-->
-<!--                        </button>-->
+<!--                        <div class="item-total">-->
+<!--                            {{ formatCurrency(item.quantity * item.unitPrice) }}-->
+<!--                        </div>-->
 <!--                    </div>-->
 <!--                </div>-->
 <!--            </div>-->
+
+<!--            <p-divider></p-divider>-->
+
+<!--            <div class="order-summary">-->
+<!--                <div class="summary-row">-->
+<!--                    <span>Subtotal:</span>-->
+<!--                    <span>{{ formatCurrency(selectedOrder.totalAmount - (selectedOrder.shipping || 0)) }}</span>-->
+<!--                </div>-->
+<!--                <div class="summary-row" *ngIf="selectedOrder.shipping">-->
+<!--                    <span>Shipping:</span>-->
+<!--                    <span>{{ formatCurrency(selectedOrder.shipping) }}</span>-->
+<!--                </div>-->
+<!--                <div class="summary-row total">-->
+<!--                    <strong>Total: {{ formatCurrency(selectedOrder.totalAmount) }}</strong>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="shipping-info" *ngIf="selectedOrder.shippingAddress">-->
+<!--                <h4>Shipping Address</h4>-->
+<!--                <address>-->
+<!--                    {{ selectedOrder.shippingAddress.address1 }}<br>-->
+<!--                    {{ selectedOrder.shippingAddress.city }}, {{ selectedOrder.shippingAddress.state }} {{ selectedOrder.shippingAddress.postalCode }}<br>-->
+<!--                    {{ selectedOrder.shippingAddress.country }}-->
+<!--                </address>-->
+<!--            </div>-->
 <!--        </div>-->
 
-<!--        &lt;!&ndash; Profile Tabs &ndash;&gt;-->
-<!--        <p-tabView>-->
-<!--            &lt;!&ndash; Dashboard Tab &ndash;&gt;-->
-<!--            <p-tabPanel header="Dashboard" leftIcon="pi pi-home">-->
-<!--                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">-->
-<!--                    &lt;!&ndash; Stats Cards &ndash;&gt;-->
-<!--                    <div *ngIf="user?.role === 'CLIENT'">-->
-<!--                        <p-card styleClass="text-center">-->
-<!--                            <div class="text-2xl font-bold text-blue-600">{{ userStats.totalOrders }}</div>-->
-<!--                            <div class="text-gray-600">Total Orders</div>-->
-<!--                        </p-card>-->
-<!--                    </div>-->
-<!--                    <div *ngIf="user?.role === 'CLIENT'">-->
-<!--                        <p-card styleClass="text-center">-->
-<!--                            <div class="text-2xl font-bold text-green-600">${{ userStats.totalSpent.toFixed(2) }}</div>-->
-<!--                            <div class="text-gray-600">Total Spent</div>-->
-<!--                        </p-card>-->
-<!--                    </div>-->
-<!--                    <div *ngIf="user?.role === 'SELLER'">-->
-<!--                        <p-card styleClass="text-center">-->
-<!--                            <div class="text-2xl font-bold text-purple-600">{{ sellerStats.totalProducts }}</div>-->
-<!--                            <div class="text-gray-600">Total Products</div>-->
-<!--                        </p-card>-->
-<!--                    </div>-->
-<!--                    <div *ngIf="user?.role === 'SELLER'">-->
-<!--                        <p-card styleClass="text-center">-->
-<!--                            <div class="text-2xl font-bold text-green-600">${{ sellerStats.totalRevenue.toFixed(2) }}</div>-->
-<!--                            <div class="text-gray-600">Total Revenue</div>-->
-<!--                        </p-card>-->
-<!--                    </div>-->
-<!--                    <div *ngIf="user?.role === 'SELLER'">-->
-<!--                        <p-card styleClass="text-center">-->
-<!--                            <div class="text-2xl font-bold text-blue-600">{{ sellerStats.totalOrders }}</div>-->
-<!--                            <div class="text-gray-600">Total Orders</div>-->
-<!--                        </p-card>-->
-<!--                    </div>-->
-<!--                    <div *ngIf="user?.role === 'SELLER'">-->
-<!--                        <p-card styleClass="text-center">-->
-<!--                            <div class="text-2xl font-bold text-yellow-600">{{ sellerStats.averageRating.toFixed(1) }}</div>-->
-<!--                            <div class="text-gray-600">Average Rating</div>-->
-<!--                        </p-card>-->
-<!--                    </div>-->
-<!--                </div>-->
+<!--        <ng-template pTemplate="footer">-->
+<!--            <p-button-->
+<!--                    label="Close"-->
+<!--                    icon="pi pi-times"-->
+<!--                    class="p-button-text"-->
+<!--                    (click)="closeOrderDialog()">-->
+<!--            </p-button>-->
+<!--            <p-button-->
+<!--                    label="Download Receipt"-->
+<!--                    icon="pi pi-download"-->
+<!--                    (click)="downloadReceipt(selectedOrder)">-->
+<!--            </p-button>-->
+<!--        </ng-template>-->
+<!--    </p-dialog>-->
 
-<!--                &lt;!&ndash; Charts Section &ndash;&gt;-->
-<!--                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">-->
-<!--                    <p-card header="Monthly Revenue" *ngIf="user?.role === 'SELLER'">-->
-<!--                        <p-chart-->
-<!--                                type="line"-->
-<!--                                [data]="revenueChartData"-->
-<!--                                [options]="chartOptions"-->
-<!--                                class="w-full h-64">-->
-<!--                        </p-chart>-->
-<!--                    </p-card>-->
+<!-- Order Tracking Dialog -->
+<!--    <p-dialog-->
+<!--            header="Order Tracking"-->
+<!--            [(visible)]="showOrderTrackingDialog"-->
+<!--            [modal]="true"-->
+<!--            [closable]="true"-->
+<!--            [style]="{width: '600px'}"-->
+<!--            (onHide)="closeOrderTrackingDialog()"-->
+<!--            *ngIf="orderTrackingInfo">-->
 
-<!--                    <p-card header="Order Status Distribution">-->
-<!--                        <p-chart-->
-<!--                                type="doughnut"-->
-<!--                                [data]="statusChartData"-->
-<!--                                [options]="pieChartOptions"-->
-<!--                                class="w-full h-64">-->
-<!--                        </p-chart>-->
-<!--                    </p-card>-->
-<!--                </div>-->
-
-<!--                &lt;!&ndash; Best Products/Categories &ndash;&gt;-->
-<!--                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">-->
-<!--                    <p-card *ngIf="user?.role === 'SELLER'" header="Best Selling Products">-->
-<!--                        <div class="space-y-4">-->
-<!--                            <div-->
-<!--                                    *ngFor="let product of sellerStats.bestSellingProducts.slice(0, 5)"-->
-<!--                                    class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">-->
-<!--                                <img-->
-<!--                                        [src]="product.imageUrl"-->
-<!--                                        [alt]="product.productName"-->
-<!--                                        class="w-12 h-12 object-cover rounded-lg">-->
-<!--                                <div class="flex-1">-->
-<!--                                    <h4 class="font-medium text-gray-900">{{ product.productName }}</h4>-->
-<!--                                    <p class="text-sm text-gray-500">{{ product.totalOrders }} orders</p>-->
-<!--                                </div>-->
-<!--                                <div class="text-right">-->
-<!--                                    <div class="font-bold text-green-600">${{ product.totalRevenue.toFixed(2) }}</div>-->
-<!--                                    <div class="text-sm text-gray-500">{{ product.averageRating }} ⭐</div>-->
-<!--                                </div>-->
-<!--                            </div>-->
+<!--        <div class="tracking-info">-->
+<!--            <p-timeline [value]="orderTrackingInfo.events" layout="vertical">-->
+<!--                <ng-template pTemplate="content" let-event>-->
+<!--                    <p-card>-->
+<!--                        <div class="tracking-event">-->
+<!--                            <h5>{{ event.status }}</h5>-->
+<!--                            <p>{{ event.description }}</p>-->
+<!--                            <small>{{ formatDateTime(event.timestamp) }}</small>-->
+<!--                            <p *ngIf="event.location"><strong>Location:</strong> {{ event.location }}</p>-->
 <!--                        </div>-->
 <!--                    </p-card>-->
+<!--                </ng-template>-->
+<!--            </p-timeline>-->
 
-<!--                    <p-card *ngIf="user?.role === 'CLIENT'" header="Favorite Categories">-->
-<!--                        <div class="space-y-3">-->
-<!--                            <div *ngFor="let category of userStats.favoriteCategories" class="flex items-center justify-between">-->
-<!--                                <span class="font-medium">{{ category }}</span>-->
-<!--                                <p-progressBar-->
-<!--                                        [value]="getCategoryPercentage(category)"-->
-<!--                                        [showValue]="false"-->
-<!--                                        styleClass="w-32">-->
-<!--                                </p-progressBar>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </p-card>-->
-<!--                </div>-->
-<!--            </p-tabPanel>-->
-
-<!--            &lt;!&ndash; Orders Tab &ndash;&gt;-->
-<!--            <p-tabPanel header="Orders" leftIcon="pi pi-shopping-cart">-->
-<!--                <div class="mb-6">-->
-<!--                    <div class="flex justify-between items-center">-->
-<!--                        <h2 class="text-xl font-semibold text-gray-900">Order History</h2>-->
-<!--                        <div class="flex space-x-2">-->
-<!--                            <button-->
-<!--                                    pButton-->
-<!--                                    label="Export"-->
-<!--                                    icon="pi pi-download"-->
-<!--                                    class="p-button-outlined"-->
-<!--                                    (click)="exportOrders()">-->
-<!--                            </button>-->
-<!--                            <button-->
-<!--                                    pButton-->
-<!--                                    label="Refresh"-->
-<!--                                    icon="pi pi-refresh"-->
-<!--                                    class="p-button-outlined"-->
-<!--                                    (click)="loadOrders()">-->
-<!--                            </button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--                <p-table-->
-<!--                        [value]="orders"-->
-<!--                        [paginator]="true"-->
-<!--                        [rows]="10"-->
-<!--                        [showCurrentPageReport]="true"-->
-<!--                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"-->
-<!--                        [globalFilterFields]="['id', 'status']"-->
-<!--                        styleClass="p-datatable-gridlines">-->
-
-<!--                    <ng-template pTemplate="caption">-->
-<!--                        <div class="flex justify-between items-center">-->
-<!--                  <span>-->
-<!--                    <input-->
-<!--                            pInputText-->
-<!--                            type="text"-->
-<!--                            placeholder="Search orders..."-->
-<!--                            class="w-64"-->
-<!--                            (input)="applyFilter($event)">-->
-<!--                  </span>-->
-<!--                        </div>-->
-<!--                    </ng-template>-->
-
-<!--                    <ng-template pTemplate="header">-->
-<!--                        <tr>-->
-<!--                            <th pSortableColumn="id">Order ID <p-sortIcon field="id"></p-sortIcon></th>-->
-<!--                            <th pSortableColumn="orderDate">Date <p-sortIcon field="orderDate"></p-sortIcon></th>-->
-<!--                            <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>-->
-<!--                            <th pSortableColumn="total">Total <p-sortIcon field="total"></p-sortIcon></th>-->
-<!--                            <th>Items</th>-->
-<!--                            <th>Actions</th>-->
-<!--                        </tr>-->
-<!--                    </ng-template>-->
-
-<!--                    <ng-template pTemplate="body" let-order>-->
-<!--                        <tr>-->
-<!--                            <td>{{ order.id }}</td>-->
-<!--                            <td>{{ order.orderDate | date:'medium' }}</td>-->
-<!--                            <td>-->
-<!--                                <p-tag-->
-<!--                                        [value]="order.status"-->
-<!--                                        [severity]="getOrderStatusSeverity(order.status)">-->
-<!--                                </p-tag>-->
-<!--                            </td>-->
-<!--                            <td class="font-semibold">${{ order.total.toFixed(2) }}</td>-->
-<!--                            <td>-->
-<!--                                <div class="text-sm">-->
-<!--                                    <div *ngFor="let item of order.items.slice(0, 2)">-->
-<!--                                        {{ item.productName }} ({{ item.quantity }})-->
-<!--                                    </div>-->
-<!--                                    <div *ngIf="order.items.length > 2" class="text-gray-500">-->
-<!--                                        +{{ order.items.length - 2 }} more items-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <div class="flex space-x-2">-->
-<!--                                    <button-->
-<!--                                            pButton-->
-<!--                                            icon="pi pi-eye"-->
-<!--                                            class="p-button-text p-button-sm"-->
-<!--                                            (click)="viewOrder(order)"-->
-<!--                                            pTooltip="View Details">-->
-<!--                                    </button>-->
-<!--                                    <button-->
-<!--                                            pButton-->
-<!--                                            icon="pi pi-download"-->
-<!--                                            class="p-button-text p-button-sm"-->
-<!--                                            (click)="downloadInvoice(order)"-->
-<!--                                            pTooltip="Download Invoice">-->
-<!--                                    </button>-->
-<!--                                    <button-->
-<!--                                            *ngIf="order.status === 'pending' || order.status === 'processing'"-->
-<!--                                            pButton-->
-<!--                                            icon="pi pi-times"-->
-<!--                                            class="p-button-text p-button-sm p-button-danger"-->
-<!--                                            (click)="cancelOrder(order)"-->
-<!--                                            pTooltip="Cancel Order">-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                    </ng-template>-->
-
-<!--                    <ng-template pTemplate="emptymessage">-->
-<!--                        <tr>-->
-<!--                            <td colspan="6" class="text-center py-8">-->
-<!--                                <i class="pi pi-shopping-cart text-4xl text-gray-400 mb-4"></i>-->
-<!--                                <p class="text-gray-600">No orders found</p>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                    </ng-template>-->
-<!--                </p-table>-->
-<!--            </p-tabPanel>-->
-
-<!--            &lt;!&ndash; Products Tab (for Sellers) &ndash;&gt;-->
-<!--            <p-tabPanel *ngIf="user?.role === 'SELLER'" header="My Products" leftIcon="pi pi-box">-->
-<!--                <div class="mb-6">-->
-<!--                    <div class="flex justify-between items-center">-->
-<!--                        <h2 class="text-xl font-semibold text-gray-900">Product Management</h2>-->
-<!--                        <div class="flex space-x-2">-->
-<!--                            <button-->
-<!--                                    pButton-->
-<!--                                    label="Add Product"-->
-<!--                                    icon="pi pi-plus"-->
-<!--                                    (click)="addProduct()">-->
-<!--                            </button>-->
-<!--                            <button-->
-<!--                                    pButton-->
-<!--                                    label="Bulk Actions"-->
-<!--                                    icon="pi pi-list"-->
-<!--                                    class="p-button-outlined"-->
-<!--                                    (click)="openBulkActions()">-->
-<!--                            </button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">-->
-<!--                    <div *ngFor="let product of sellerStats.bestSellingProducts" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">-->
-<!--                        <div class="relative">-->
-<!--                            <img-->
-<!--                                    [src]="product.imageUrl"-->
-<!--                                    [alt]="product.productName"-->
-<!--                                    class="w-full h-48 object-cover">-->
-<!--                            <div class="absolute top-2 right-2">-->
-<!--                                <button-->
-<!--                                        pButton-->
-<!--                                        icon="pi pi-ellipsis-v"-->
-<!--                                        class="p-button-rounded p-button-text p-button-sm"-->
-<!--                                        (click)="openProductMenu(product)">-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="p-4">-->
-<!--                            <h3 class="font-semibold text-gray-900 mb-2">{{ product.productName }}</h3>-->
-<!--                            <div class="flex items-center justify-between mb-2">-->
-<!--                                <span class="text-lg font-bold text-green-600">${{ product.totalRevenue.toFixed(2) }}</span>-->
-<!--                                <div class="flex items-center text-sm text-gray-500">-->
-<!--                                    <span class="mr-1">{{ product.averageRating }}</span>-->
-<!--                                    <i class="pi pi-star-fill text-yellow-500"></i>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="text-sm text-gray-600">-->
-<!--                                {{ product.totalOrders }} orders-->
-<!--                            </div>-->
-<!--                            <div class="mt-3 flex space-x-2">-->
-<!--                                <button-->
-<!--                                        pButton-->
-<!--                                        label="Edit"-->
-<!--                                        icon="pi pi-pencil"-->
-<!--                                        class="p-button-outlined p-button-sm flex-1"-->
-<!--                                        (click)="editProduct(product)">-->
-<!--                                </button>-->
-<!--                                <button-->
-<!--                                        pButton-->
-<!--                                        label="Analytics"-->
-<!--                                        icon="pi pi-chart-line"-->
-<!--                                        class="p-button-outlined p-button-sm flex-1"-->
-<!--                                        (click)="viewProductAnalytics(product)">-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </p-tabPanel>-->
-
-<!--            &lt;!&ndash; Settings Tab &ndash;&gt;-->
-<!--            <p-tabPanel header="Settings" leftIcon="pi pi-cog">-->
-<!--                <div class="max-w-2xl">-->
-<!--                    <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">-->
-<!--                        <div class="space-y-6">-->
-<!--                            &lt;!&ndash; Personal Information &ndash;&gt;-->
-<!--                            <p-card header="Personal Information">-->
-<!--                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">-->
-<!--                                    <div class="flex flex-col">-->
-<!--                                        <label for="name" class="text-sm font-medium text-gray-700 mb-2">Full Name</label>-->
-<!--                                        <input-->
-<!--                                                pInputText-->
-<!--                                                id="name"-->
-<!--                                                formControlName="name"-->
-<!--                                                class="w-full">-->
-<!--                                    </div>-->
-<!--                                    <div class="flex flex-col">-->
-<!--                                        <label for="email" class="text-sm font-medium text-gray-700 mb-2">Email Address</label>-->
-<!--                                        <input-->
-<!--                                                pInputText-->
-<!--                                                id="email"-->
-<!--                                                formControlName="email"-->
-<!--                                                class="w-full">-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </p-card>-->
-
-<!--                            &lt;!&ndash; Account Preferences &ndash;&gt;-->
-<!--                            <p-card header="Account Preferences">-->
-<!--                                <div class="space-y-4">-->
-<!--                                    <div class="flex items-center justify-between">-->
-<!--                                        <div>-->
-<!--                                            <h4 class="font-medium text-gray-900">Email Notifications</h4>-->
-<!--                                            <p class="text-sm text-gray-600">Receive updates about your orders and account</p>-->
-<!--                                        </div>-->
-<!--                                        <p-inputSwitch formControlName="emailNotifications"></p-inputSwitch>-->
-<!--                                    </div>-->
-<!--                                    <div class="flex items-center justify-between">-->
-<!--                                        <div>-->
-<!--                                            <h4 class="font-medium text-gray-900">Marketing Emails</h4>-->
-<!--                                            <p class="text-sm text-gray-600">Receive promotional offers and product updates</p>-->
-<!--                                        </div>-->
-<!--                                        <p-inputSwitch formControlName="marketingEmails"></p-inputSwitch>-->
-<!--                                    </div>-->
-<!--                                    <div class="flex items-center justify-between">-->
-<!--                                        <div>-->
-<!--                                            <h4 class="font-medium text-gray-900">SMS Notifications</h4>-->
-<!--                                            <p class="text-sm text-gray-600">Get text updates for important order updates</p>-->
-<!--                                        </div>-->
-<!--                                        <p-inputSwitch formControlName="smsNotifications"></p-inputSwitch>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </p-card>-->
-
-<!--                            &lt;!&ndash; Security Settings &ndash;&gt;-->
-<!--                            <p-card header="Security Settings">-->
-<!--                                <div class="space-y-4">-->
-<!--                                    <button-->
-<!--                                            pButton-->
-<!--                                            label="Change Password"-->
-<!--                                            icon="pi pi-lock"-->
-<!--                                            class="p-button-outlined"-->
-<!--                                            (click)="changePassword()">-->
-<!--                                    </button>-->
-<!--                                    <button-->
-<!--                                            pButton-->
-<!--                                            label="Enable Two-Factor Authentication"-->
-<!--                                            icon="pi pi-shield"-->
-<!--                                            class="p-button-outlined"-->
-<!--                                            (click)="enableTwoFactor()">-->
-<!--                                    </button>-->
-<!--                                    <button-->
-<!--                                            pButton-->
-<!--                                            label="Download Account Data"-->
-<!--                                            icon="pi pi-download"-->
-<!--                                            class="p-button-outlined"-->
-<!--                                            (click)="downloadAccountData()">-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                            </p-card>-->
-
-<!--                            &lt;!&ndash; Danger Zone &ndash;&gt;-->
-<!--                            <p-card header="Danger Zone" styleClass="border-red-200">-->
-<!--                                <div class="space-y-4">-->
-<!--                                    <div class="bg-red-50 p-4 rounded-lg">-->
-<!--                                        <h4 class="font-medium text-red-800 mb-2">Delete Account</h4>-->
-<!--                                        <p class="text-sm text-red-600 mb-3">-->
-<!--                                            Once you delete your account, there is no going back. Please be certain.-->
-<!--                                        </p>-->
-<!--                                        <button-->
-<!--                                                pButton-->
-<!--                                                label="Delete Account"-->
-<!--                                                icon="pi pi-trash"-->
-<!--                                                class="p-button-danger p-button-outlined"-->
-<!--                                                (click)="deleteAccount()">-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </p-card>-->
-
-<!--                            &lt;!&ndash; Save Button &ndash;&gt;-->
-<!--                            <div class="flex justify-end">-->
-<!--                                <button-->
-<!--                                        pButton-->
-<!--                                        label="Save Changes"-->
-<!--                                        icon="pi pi-save"-->
-<!--                                        type="submit"-->
-<!--                                        [disabled]="profileForm.invalid">-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </form>-->
-<!--                </div>-->
-<!--            </p-tabPanel>-->
-<!--        </p-tabView>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Edit Profile Dialog &ndash;&gt;-->
-<!--<p-dialog-->
-<!--        [(visible)]="showEditDialog"-->
-<!--        header="Edit Profile"-->
-<!--        [modal]="true"-->
-<!--        [closable]="true"-->
-<!--        [style]="{ width: '500px' }">-->
-<!--    <form [formGroup]="editProfileForm" (ngSubmit)="saveProfile()">-->
-<!--        <div class="space-y-4">-->
-<!--            <div class="flex flex-col">-->
-<!--                <label for="editName" class="text-sm font-medium text-gray-700 mb-2">Full Name</label>-->
-<!--                <input-->
-<!--                        pInputText-->
-<!--                        id="editName"-->
-<!--                        formControlName="name"-->
-<!--                        class="w-full">-->
+<!--            <div class="tracking-number" *ngIf="orderTrackingInfo.trackingNumber">-->
+<!--                <h4>Tracking Number</h4>-->
+<!--                <p>{{ orderTrackingInfo.trackingNumber }}</p>-->
 <!--            </div>-->
-<!--            <div class="flex flex-col">-->
-<!--                <label for="editEmail" class="text-sm font-medium text-gray-700 mb-2">Email Address</label>-->
-<!--                <input-->
-<!--                        pInputText-->
-<!--                        id="editEmail"-->
-<!--                        formControlName="email"-->
-<!--                        class="w-full">-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="flex justify-end space-x-2 mt-6">-->
-<!--            <button-->
-<!--                    pButton-->
-<!--                    label="Cancel"-->
-<!--                    class="p-button-outlined"-->
-<!--                    type="button"-->
-<!--                    (click)="showEditDialog = false">-->
-<!--            </button>-->
-<!--            <button-->
-<!--                    pButton-->
-<!--                    label="Save"-->
-<!--                    type="submit"-->
-<!--                    [disabled]="editProfileForm.invalid">-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </form>-->
-<!--</p-dialog>-->
 
-<!--&lt;!&ndash; Avatar Upload Dialog &ndash;&gt;-->
-<!--<p-dialog-->
-<!--        [(visible)]="showAvatarDialog"-->
-<!--        header="Update Avatar"-->
-<!--        [modal]="true"-->
-<!--        [closable]="true"-->
-<!--        [style]="{ width: '400px' }">-->
-<!--    <div class="text-center">-->
-<!--        <p-fileUpload-->
-<!--                mode="basic"-->
-<!--                accept="image/*"-->
-<!--                [maxFileSize]="1000000"-->
-<!--                (onSelect)="onAvatarSelect($event)"-->
-<!--                chooseLabel="Choose Avatar"-->
-<!--                class="mb-4">-->
-<!--        </p-fileUpload>-->
-<!--        <div *ngIf="selectedAvatar" class="mb-4">-->
-<!--            <img [src]="selectedAvatar" alt="Preview" class="w-32 h-32 rounded-full mx-auto object-cover">-->
-<!--        </div>-->
-<!--        <div class="flex justify-center space-x-2">-->
-<!--            <button-->
-<!--                    pButton-->
-<!--                    label="Cancel"-->
-<!--                    class="p-button-outlined"-->
-<!--                    (click)="showAvatarDialog = false">-->
-<!--            </button>-->
-<!--            <button-->
-<!--                    pButton-->
-<!--                    label="Upload"-->
-<!--                    [disabled]="!selectedAvatar"-->
-<!--                    (click)="uploadAvatar()">-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</p-dialog>-->
-
-<!--&lt;!&ndash; Order Details Dialog &ndash;&gt;-->
-<!--<p-dialog-->
-<!--        [(visible)]="showOrderDialog"-->
-<!--        header="Order Details"-->
-<!--        [modal]="true"-->
-<!--        [closable]="true"-->
-<!--        [style]="{ width: '600px' }">-->
-<!--    <div *ngIf="selectedOrder" class="space-y-4">-->
-<!--        <div class="grid grid-cols-2 gap-4">-->
-<!--            <div>-->
-<!--                <h4 class="font-medium text-gray-900">Order ID</h4>-->
-<!--                <p class="text-gray-600">{{ selectedOrder.id }}</p>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h4 class="font-medium text-gray-900">Status</h4>-->
-<!--                <p-tag-->
-<!--                        [value]="selectedOrder.status"-->
-<!--                        [severity]="getOrderStatusSeverity(selectedOrder.status)">-->
-<!--                </p-tag>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h4 class="font-medium text-gray-900">Order Date</h4>-->
-<!--                <p class="text-gray-600">{{ selectedOrder.orderDate | date:'medium' }}</p>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h4 class="font-medium text-gray-900">Total</h4>-->
-<!--                <p class="text-lg font-bold text-green-600">${{ selectedOrder.total.toFixed(2) }}</p>-->
+<!--            <div class="estimated-delivery" *ngIf="orderTrackingInfo.estimatedDelivery">-->
+<!--                <h4>Estimated Delivery</h4>-->
+<!--                <p>{{ formatDate(orderTrackingInfo.estimatedDelivery) }}</p>-->
 <!--            </div>-->
 <!--        </div>-->
 
-<!--        <div>-->
-<!--            <h4 class="font-medium text-gray-900 mb-3">Items</h4>-->
-<!--            <div class="space-y-2">-->
-<!--                <div *ngFor="let item of selectedOrder.items" class="flex justify-between items-center p-3 bg-gray-50 rounded">-->
-<!--                    <div>-->
-<!--                        <p class="font-medium">{{ item.productName }}</p>-->
-<!--                        <p class="text-sm text-gray-600">Quantity: {{ item.quantity }}</p>-->
-<!--                    </div>-->
-<!--                    <p class="font-medium">${{ (item.price * item.quantity).toFixed(2) }}</p>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</p-dialog>-->
-
-<!--<p-toast></p-toast>-->
-<!--<p-confirmDialog></p-confirmDialog>-->
+<!--        <ng-template pTemplate="footer">-->
+<!--            <p-button-->
+<!--                    label="Close"-->
+<!--                    icon="pi pi-times"-->
+<!--                    class="p-button-text"-->
+<!--                    (click)="closeOrderTrackingDialog()">-->
+<!--            </p-button>-->
+<!--        </ng-template>-->
+<!--    </p-dialog>-->

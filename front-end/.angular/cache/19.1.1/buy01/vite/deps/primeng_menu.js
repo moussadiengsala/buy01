@@ -1,7 +1,14 @@
 import {
   Tooltip,
   TooltipModule
-} from "./chunk-SS7DO2H6.js";
+} from "./chunk-6BKJV5UR.js";
+import {
+  ConnectedOverlayScrollHandler
+} from "./chunk-5G7WYC4N.js";
+import {
+  Badge,
+  BadgeModule
+} from "./chunk-3UWSRPUF.js";
 import {
   zindexutils
 } from "./chunk-2ZXM7VXU.js";
@@ -12,20 +19,8 @@ import {
   trigger
 } from "./chunk-RV4YVARO.js";
 import {
-  ConnectedOverlayScrollHandler
-} from "./chunk-5G7WYC4N.js";
-import {
   Ripple
-} from "./chunk-NQUGQX3A.js";
-import {
-  Badge,
-  BadgeModule
-} from "./chunk-3UWSRPUF.js";
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterModule
-} from "./chunk-GTD2H755.js";
+} from "./chunk-7XPJOKQZ.js";
 import {
   BaseComponent
 } from "./chunk-DOKTYQFY.js";
@@ -48,6 +43,11 @@ import {
 } from "./chunk-ES46DI74.js";
 import "./chunk-CWYBPNCF.js";
 import "./chunk-NJ25EVEJ.js";
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from "./chunk-GTD2H755.js";
 import {
   DomSanitizer
 } from "./chunk-GM3J7K6K.js";
@@ -128,8 +128,8 @@ import {
   ɵɵtextInterpolate,
   ɵɵviewQuery
 } from "./chunk-HH4NLXCO.js";
-import "./chunk-5OPE3T2R.js";
 import "./chunk-4N4GOYJH.js";
+import "./chunk-5OPE3T2R.js";
 import "./chunk-FHTVLBLO.js";
 import "./chunk-WDMUDEB6.js";
 
