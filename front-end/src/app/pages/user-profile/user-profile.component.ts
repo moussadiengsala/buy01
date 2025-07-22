@@ -987,31 +987,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         return '';
     }
 
-    // Avatar selection options
-    getAvatarOptions(): string[] {
-        return [
-            '/assets/avatars/avatar-1.png',
-            '/assets/avatars/avatar-2.png',
-            '/assets/avatars/avatar-3.png',
-            '/assets/avatars/avatar-4.png',
-            '/assets/avatars/avatar-5.png',
-            '/assets/avatars/avatar-6.png',
-            '/assets/avatars/avatar-7.png',
-            '/assets/avatars/avatar-8.png'
-        ];
-    }
-
-    getUserInitials(): string {
-        if (!this.user?.name) return 'U';
-
-        const names = this.user.name.split(' ');
-        if (names.length >= 2) {
-            return (names[0][0] + names[1][0]).toUpperCase();
-        }
-        return names[0][0].toUpperCase();
-    }
-
-    // Order action helpers
     canCancelOrder(order: Order): boolean {
         const cancellableStatuses = [OrderStatus.PENDING];
         return cancellableStatuses.includes(order.status);
@@ -1049,22 +1024,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         });
     }
 
-    // Dialog control methods
-    closeOrderDialog(): void {
-        this.showOrderDialog = false;
-        this.selectedOrder = null;
-    }
-
-    closeEditDialog(): void {
-        this.showEditDialog = false;
-        this.editProfileForm.reset();
-    }
-
-    closePasswordDialog(): void {
-        this.showPasswordDialog = false;
-        this.passwordForm.reset();
-    }
-
     closeAvatarDialog(): void {
         this.showAvatarDialog = false;
         this.selectedAvatar = null;
@@ -1072,11 +1031,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     closeStatsDialog(): void {
         this.showStatsDialog = false;
-    }
-
-    closeOrderTrackingDialog(): void {
-        this.showOrderTrackingDialog = false;
-        this.orderTrackingInfo = null;
     }
 
     getTimelineEvents(): any[] {
