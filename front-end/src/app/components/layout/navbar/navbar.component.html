@@ -111,11 +111,9 @@
     </div>
 
     <div *ngIf="!isAuthPage" class="flex justify-center items-center justify-self-end gap-5">
-
-<!--        <i class="pi pi-shopping-cart text-xl" pBadge [value]="cartCount"></i>-->
-          <app-cart />
-<!--      <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page" class="card hidden tablet:flex justify-content-center px-4">-->
-<!--      </a>-->
+        <div  *ngIf="user.isAuthenticated && user.role === 'CLIENT'">
+            <app-cart/>
+        </div>
 
       <div *ngIf="user.isAuthenticated" class="flex justify-center items-center">
         <span class=" hidden desktop:block font-bold mr-2">Hi, {{user.name}}</span>

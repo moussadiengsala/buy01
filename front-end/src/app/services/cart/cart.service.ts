@@ -1,7 +1,8 @@
 import {Inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {CartItem, Cart, ProductMedia} from "../../types";
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import {CartItem, Cart, ProductMedia, UserPayload} from "../../types";
 import {isPlatformBrowser} from "@angular/common";
+import {AuthService} from "../auth/auth.service";
 
 @Injectable({
   providedIn: 'root',
@@ -12,14 +13,53 @@ export class CartService {
   private cartCountSubject = new BehaviorSubject<number>(0);
   public showCart = signal(false);
 
+  user$: Observable<UserPayload>;
+  user: UserPayload | null = null;
+
   public cart$ = this.cartSubject.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.loadCartFromStorage();
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private authService: AuthService) {
+    this.user$ = this.authService.userState$;
+
+    this.user$.subscribe(user => {
+      this.user = user;
+      if (user?.isAuthenticated) {
+        this.loadCartFromStorage();
+      } else {
+        this.clearCart().subscribe();
+      }
+    });
+  }
+
+  private isClient(): boolean {
+    return this.user?.role === 'CLIENT' && this.user?.isAuthenticated === true;
+  }
+
+  private isAuthenticated(): boolean {
+    return this.user?.isAuthenticated === true;
+  }
+
+  private throwUnauthorizedError(): Observable<never> {
+    return throwError(() => new Error('Unauthorized: Only client can manage cart operations'));
+  }
+
+  private throwUnauthenticatedError(): Observable<never> {
+    return throwError(() => new Error('Authentication required'));
   }
 
   public toggleCart(event: Event) {
     event.stopPropagation();
+
+    if (!this.isAuthenticated()) {
+      console.warn('Authentication required to access cart');
+      return;
+    }
+
+    if (!this.isClient()) {
+      console.warn('Only client can access cart functionality');
+      return;
+    }
+
     this.showCart.update(value => !value)
 
     // Handle body scrolling
@@ -32,11 +72,24 @@ export class CartService {
 
   // Load cart from localStorage
   private loadCartFromStorage(): void {
+    if (!this.isAuthenticated() || !this.user?.id) {
+      return;
+    }
+
     try {
       if (isPlatformBrowser(this.platformId)) {
-        const storedCart = localStorage.getItem(this.CART_STORAGE_KEY);
+        const cartKey = `${this.CART_STORAGE_KEY}_${this.user.id}`;
+        const storedCart = localStorage.getItem(cartKey);
         if (storedCart) {
           const cart: Cart = JSON.parse(storedCart);
+
+          // Verify cart belongs to current user
+          if (cart.userId !== this.user.id) {
+            console.warn('Cart user mismatch, clearing cart');
+            this.clearCartFromStorage();
+            return;
+          }
+
           // Convert date strings back to Date objects
           cart.createdAt = new Date(cart.createdAt);
           cart.updatedAt = new Date(cart.updatedAt);
@@ -55,8 +108,14 @@ export class CartService {
 
   // Save cart to localStorage
   private saveCartToStorage(cart: Cart): void {
+    if (!this.user?.id) {
+      console.error('Cannot save cart: User ID not available');
+      return;
+    }
+
     try {
-      localStorage.setItem(this.CART_STORAGE_KEY, JSON.stringify(cart));
+      const cartKey = `${this.CART_STORAGE_KEY}_${this.user.id}`;
+      localStorage.setItem(cartKey, JSON.stringify(cart));
     } catch (error) {
       console.error('Error saving cart to localStorage:', error);
     }
@@ -64,8 +123,13 @@ export class CartService {
 
   // Clear cart from localStorage
   private clearCartFromStorage(): void {
+    if (!this.user?.id) {
+      return;
+    }
+
     try {
-      localStorage.removeItem(this.CART_STORAGE_KEY);
+      const cartKey = `${this.CART_STORAGE_KEY}_${this.user.id}`;
+      localStorage.removeItem(cartKey);
     } catch (error) {
       console.error('Error clearing cart from localStorage:', error);
     }
@@ -73,6 +137,15 @@ export class CartService {
 
   // Get current cart
   getCart(): Cart | null {
+    if (!this.isAuthenticated()) {
+      console.warn('Authentication required to access cart');
+      return null;
+    }
+
+    if (!this.isClient()) {
+      console.warn('Only client can access cart');
+      return null;
+    }
     return this.cartSubject.value;
   }
 
@@ -83,8 +156,13 @@ export class CartService {
 
   // Create new cart
   private createNewCart(): Cart {
+    if (!this.user?.id) {
+      throw new Error('Cannot create cart: User ID not available');
+    }
+
     const now = new Date();
     return {
+      userId: this.user.id,
       items: [],
       totalItems: 0,
       totalAmount: 0,
@@ -102,6 +180,14 @@ export class CartService {
 
   // Add item to cart
   addToCart(product: ProductMedia, quantity: number = 1): Observable<Cart> {
+    if (!this.isAuthenticated()) {
+      return this.throwUnauthenticatedError();
+    }
+
+    if (!this.isClient()) {
+      return this.throwUnauthorizedError();
+    }
+
     let cart = this.getCart();
 
     if (!cart) {
@@ -140,6 +226,14 @@ export class CartService {
 
   // Update cart item quantity
   updateCartItem(cartItemId: string, quantity: number): Observable<Cart> {
+    if (!this.isAuthenticated()) {
+      return this.throwUnauthenticatedError();
+    }
+
+    if (!this.isClient()) {
+      return this.throwUnauthorizedError();
+    }
+
     const cart = this.getCart();
     if (!cart) return of(this.createNewCart());
 
@@ -162,6 +256,13 @@ export class CartService {
 
   // Remove item from cart
   removeFromCart(cartItemId: string): Observable<Cart> {
+    if (!this.isAuthenticated()) {
+      return this.throwUnauthenticatedError();
+    }
+
+    if (!this.isClient()) {
+      return this.throwUnauthorizedError();
+    }
     const cart = this.getCart();
     if (!cart) return of(this.createNewCart());
 
@@ -176,6 +277,8 @@ export class CartService {
 
   // Clear entire cart
   clearCart(): Observable<void> {
+    if (!this.isAuthenticated() || !this.isClient()) return of(void 0);
+
     this.clearCartFromStorage();
     this.cartSubject.next(null);
     this.cartCountSubject.next(0);
@@ -184,12 +287,20 @@ export class CartService {
 
   // Check if product is in cart
   isProductInCart(productId: string): boolean {
+    if (!this.isAuthenticated() || !this.isClient()) {
+      return false;
+    }
+
     const cart = this.getCart();
     return cart ? cart.items.some(item => item.item.product.id === productId) : false;
   }
 
   // Get cart item by product ID
   getCartItemByProductId(productId: string): CartItem | undefined {
+    if (!this.isAuthenticated() || !this.isClient()) {
+      return undefined;
+    }
+
     const cart = this.getCart();
     return cart ? cart.items.find(item => item.item.product.id === productId) : undefined;
   }

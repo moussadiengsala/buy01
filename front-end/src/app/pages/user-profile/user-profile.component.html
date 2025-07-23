@@ -33,23 +33,12 @@
                             [styleClass]="user?.role === Role.SELLER ? 'seller-badge' : 'user-badge'">
                     </p-chip>
                 </div>
-
-                <div class="header-actions">
-                    <p-button
-                            label="Statistics"
-                            icon="pi pi-chart-line"
-                            class="p-button-outlined"
-                            (click)="showStatistics()"
-                            [loading]="statsLoading">
-                    </p-button>
-                </div>
             </div>
         </p-card>
     </div>
 
     <!-- Main Content Tabs -->
     <p-tabView>
-        <!-- Profile Settings Tab -->
         <p-tabPanel header="Profile Settings" leftIcon="pi pi-user">
             <div class="profile-settings">
                 <div class="settings-grid">
@@ -159,7 +148,6 @@
             </div>
         </p-tabPanel>
 
-        <!-- Orders Tab -->
         <p-tabPanel header="My Orders" leftIcon="pi pi-shopping-cart">
             <div class="orders-section">
                 <!-- Search and Filter -->
@@ -228,12 +216,6 @@
                                         icon="pi pi-filter-slash"
                                         class="p-button-outlined"
                                         (click)="clearFilters()">
-                                </p-button>
-                                <p-button
-                                        label="Export"
-                                        icon="pi pi-download"
-                                        class="p-button-outlined"
-                                        (click)="exportOrderHistory()">
                                 </p-button>
                             </div>
                         </div>
@@ -359,77 +341,253 @@
             </div>
         </p-tabPanel>
 
-        <!-- Statistics Tab -->
-        <p-tabPanel header="Statistics" leftIcon="pi pi-chart-bar" *ngIf="userStats">
-            <div class="statistics-section">
-                <div class="stats-grid">
-                    <!-- Key Metrics Cards -->
-                    <p-card class="metric-card">
-                        <div class="metric-content">
-                            <div class="metric-icon orders-icon">
-                                <i class="pi pi-shopping-cart"></i>
-                            </div>
-                            <div class="metric-info">
-                                <h3>{{ userStats?.totalOrders || 0 }}</h3>
-                                <p>Total Orders</p>
+        <p-tabPanel header="Stats" leftIcon="pi pi-chart-line">
+            <div class="p-6 space-y-6">
+                <!-- User Statistics -->
+                <div *ngIf="isUserStats()" class="space-y-6">
+                    <!-- Order Overview Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-600 text-sm font-medium">Total Orders</p>
+                                    <p class="text-2xl font-bold text-blue-800">{{getUserStats().totalOrders}}</p>
+                                </div>
+                                <i class="pi pi-shopping-cart text-blue-500 text-2xl"></i>
                             </div>
                         </div>
-                    </p-card>
 
-                    <p-card class="metric-card">
-                        <div class="metric-content">
-                            <div class="metric-icon money-icon">
-                                <i class="pi pi-dollar"></i>
-                            </div>
-                            <div class="metric-info">
-                                <h3>{{ formatCurrency(getTotalMetric()) }}</h3>
-                                <p>{{ getTotalMetricLabel() }}</p>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-600 text-sm font-medium">Completed</p>
+                                    <p class="text-2xl font-bold text-green-800">{{getUserStats().completedOrders}}</p>
+                                </div>
+                                <i class="pi pi-check-circle text-green-500 text-2xl"></i>
                             </div>
                         </div>
-                    </p-card>
 
-                    <p-card class="metric-card">
-                        <div class="metric-content">
-                            <div class="metric-icon monthly-icon">
-                                <i class="pi pi-calendar"></i>
-                            </div>
-                            <div class="metric-info">
-                                <h3>{{ formatCurrency(getMonthlyMetric()) }}</h3>
-                                <p>{{ getMonthlyMetricLabel() }}</p>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-yellow-600 text-sm font-medium">Pending</p>
+                                    <p class="text-2xl font-bold text-yellow-800">{{getUserStats().pendingOrders}}</p>
+                                </div>
+                                <i class="pi pi-clock text-yellow-500 text-2xl"></i>
                             </div>
                         </div>
-                    </p-card>
 
-                    <p-card class="metric-card">
-                        <div class="metric-content">
-                            <div class="metric-icon completion-icon">
-                                <i class="pi pi-check-circle"></i>
-                            </div>
-                            <div class="metric-info">
-                                <h3>{{ getCompletionRate().toFixed(1) }}%</h3>
-                                <p>Completion Rate</p>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-600 text-sm font-medium">Cancelled</p>
+                                    <p class="text-2xl font-bold text-red-800">{{getUserStats().cancelledOrders}}</p>
+                                </div>
+                                <i class="pi pi-times-circle text-red-500 text-2xl"></i>
                             </div>
                         </div>
-                    </p-card>
+                    </div>
+
+                    <!-- Purchase Summary -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-dollar text-green-500 mr-2"></i>
+                                Purchase Summary
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Spent:</span>
+                                    <span class="font-semibold text-lg text-green-600">${{getUserStats().totalSpent | number:'1.2-2'}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Items Purchased:</span>
+                                    <span class="font-semibold">{{getUserStats().totalItemsPurchased}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">First Purchase:</span>
+                                    <span class="font-semibold">{{getUserStats().firstPurchaseDate | date:'mediumDate'}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Last Purchase:</span>
+                                    <span class="font-semibold">{{getUserStats().lastPurchaseDate | date:'mediumDate'}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Most Purchased Product -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-star text-yellow-500 mr-2"></i>
+                                Most Purchased Product
+                            </h3>
+                            <div class="flex items-center space-x-4" *ngIf="getUserStats().mostPurchasedProduct">
+                                <img
+                                        [src]="getUserStats().mostPurchasedProduct.media[0]?.imagePath || '/assets/placeholder.jpg'"
+                                        [alt]="getUserStats().mostPurchasedProduct.product.name"
+                                        class="w-16 h-16 object-cover rounded-lg border">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800">{{getUserStats().mostPurchasedProduct.product.name}}</p>
+                                    <p class="text-sm text-gray-600 mb-1">Quantity: {{getUserStats().mostPurchasedProductQuantity}}</p>
+                                    <p class="text-sm font-semibold text-green-600">${{getUserStats().mostPurchasedProduct.product.price | number:'1.2-2'}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Favorite Seller -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="pi pi-heart text-red-500 mr-2"></i>
+                            Favorite Seller
+                        </h3>
+                        <div class="flex items-center space-x-4" *ngIf="getUserStats().favoriteSeller">
+                            <p-avatar
+                                    image="{{environment.apiUrl}}user/avatar/{{getUserStats().favoriteSeller.avatar}}"
+                                    [label]="getUserStats().favoriteSeller.name.charAt(0)"
+                                    size="large"
+                                    shape="circle">
+                            </p-avatar>
+                            <div>
+                                <p class="font-medium text-gray-800">{{getUserStats().favoriteSeller.name}}</p>
+                                <p class="text-sm text-gray-600">{{getUserStats().favoriteSeller.email}}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Chart Section -->
-                <p-card header="Activity Overview" class="chart-card">
-                    <div class="chart-container">
-                        <p-chart
-                                type="line"
-                                [data]="chartData"
-                                [options]="chartOptions"
-                        >
-<!--                                [height]="300"-->
-                        </p-chart>
+                <!-- Seller Statistics -->
+                <div *ngIf="isSellerStats()" class="space-y-6">
+                    <!-- Revenue and Order Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 lg:col-span-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-purple-600 text-sm font-medium">Total Revenue</p>
+                                    <p class="text-2xl font-bold text-purple-800">${{getSellerStats().totalRevenue | number:'1.2-2'}}</p>
+                                </div>
+                                <i class="pi pi-dollar text-purple-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-600 text-sm font-medium">Total Orders</p>
+                                    <p class="text-2xl font-bold text-blue-800">{{getSellerStats().totalOrders}}</p>
+                                </div>
+                                <i class="pi pi-shopping-cart text-blue-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-600 text-sm font-medium">Completed</p>
+                                    <p class="text-2xl font-bold text-green-800">{{getSellerStats().completedOrders}}</p>
+                                </div>
+                                <i class="pi pi-check-circle text-green-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-yellow-600 text-sm font-medium">Pending</p>
+                                    <p class="text-2xl font-bold text-yellow-800">{{getSellerStats().pendingOrders}}</p>
+                                </div>
+                                <i class="pi pi-clock text-yellow-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-600 text-sm font-medium">Cancelled</p>
+                                    <p class="text-2xl font-bold text-red-800">{{getSellerStats().cancelledOrders}}</p>
+                                </div>
+                                <i class="pi pi-times-circle text-red-500 text-2xl"></i>
+                            </div>
+                        </div>
                     </div>
-                </p-card>
+
+                    <!-- Sales Performance -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-chart-bar text-blue-500 mr-2"></i>
+                                Sales Performance
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Items Sold:</span>
+                                    <span class="font-semibold">{{getSellerStats().totalItemsSold}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Customers:</span>
+                                    <span class="font-semibold">{{getSellerStats().totalCustomers}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">First Order:</span>
+                                    <span class="font-semibold">{{getSellerStats().firstOrderDate | date:'mediumDate'}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Last Order:</span>
+                                    <span class="font-semibold">{{getSellerStats().lastOrderDate | date:'mediumDate'}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best Selling Product -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-star text-yellow-500 mr-2"></i>
+                                Best Selling Product
+                            </h3>
+                            <div class="flex items-center space-x-4" *ngIf="getSellerStats().mostPurchasedProduct">
+                                <img
+                                        [src]="getSellerStats().mostPurchasedProduct.media[0]?.imagePath || '/assets/placeholder.jpg'"
+                                        [alt]="getSellerStats().mostPurchasedProduct.product.name"
+                                        class="w-16 h-16 object-cover rounded-lg border">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800">{{getSellerStats().mostPurchasedProduct.product.name}}</p>
+                                    <p class="text-sm text-gray-600 mb-1">Sold: {{getSellerStats().bestSellingProductQuantity}}</p>
+                                    <p class="text-sm font-semibold text-green-600">${{getSellerStats().mostPurchasedProduct.product.price | number:'1.2-2'}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Favorite Customer -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="pi pi-users text-blue-500 mr-2"></i>
+                            Top Customer
+                        </h3>
+                        <div class="flex items-center space-x-4" *ngIf="getSellerStats().favoriteCustomer">
+                            <p-avatar
+                                    [image]="getSellerStats().favoriteCustomer.avatar || ''"
+                                    [label]="getSellerStats().favoriteCustomer.name.charAt(0)"
+                                    size="large"
+                                    shape="circle">
+                            </p-avatar>
+                            <div>
+                                <p class="font-medium text-gray-800">{{getSellerStats().favoriteCustomer.name}}</p>
+                                <p class="text-sm text-gray-600">{{getSellerStats().favoriteCustomer.email}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Data State -->
+                <div *ngIf="!userStats" class="text-center py-12">
+                    <i class="pi pi-chart-line text-gray-400 text-6xl mb-4"></i>
+                    <p class="text-gray-500 text-lg">No statistics available</p>
+                </div>
             </div>
         </p-tabPanel>
     </p-tabView>
 
-    <!-- Avatar Selection Dialog -->
     <p-dialog
             header="Choose Avatar"
             [(visible)]="showAvatarDialog"
@@ -476,173 +634,6 @@
                     (click)="uploadAvatar()">
             </p-button>
         </div>
-    </p-dialog>
-
-    <!-- Statistics Modal -->
-    <p-dialog
-            header="Detailed Statistics"
-            [(visible)]="showStatsDialog"
-            [modal]="true"
-            [closable]="true"
-            [style]="{width: '90vw', height: '80vh'}"
-            (onHide)="closeStatsDialog()"
-            *ngIf="userStats">
-
-        <div class="detailed-stats">
-            <div class="stats-overview">
-                <div class="stat-card">
-                    <h3>{{ userStats.totalOrders }}</h3>
-                    <p>Total Orders</p>
-                </div>
-
-                <div class="stat-card">
-                    <h3>{{ formatCurrency(getTotalMetric()) }}</h3>
-                    <p>{{ getTotalMetricLabel() }}</p>
-                </div>
-
-                <div class="stat-card">
-                    <h3>{{ formatCurrency(getMonthlyMetric()) }}</h3>
-                    <p>{{ getMonthlyMetricLabel() }}</p>
-                </div>
-
-                <div class="stat-card">
-                    <h3>{{ getCompletionRate().toFixed(1) }}%</h3>
-                    <p>Completion Rate</p>
-                </div>
-            </div>
-
-            <p-divider></p-divider>
-
-            <div class="stats-content">
-                <div class="stats-charts">
-                    <p-card header="Activity Overview">
-                        <p-chart
-                                type="line"
-                                [data]="chartData"
-                                [options]="chartOptions"
-                        >
-<!--                                [height]="300"-->
-                        </p-chart>
-                    </p-card>
-                </div>
-
-                <div class="stats-details">
-                    <p-tabView>
-                        <!-- Orders Tab -->
-                        <p-tabPanel header="Orders">
-                            <div class="stats-table">
-                                <h4>Order Statistics</h4>
-                                <p-table [value]="[userStats]" responsiveLayout="scroll">
-                                    <ng-template pTemplate="body">
-                                        <tr>
-                                            <td><strong>Total Orders</strong></td>
-                                            <td>{{ userStats.totalOrders || 0 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Completed Orders</strong></td>
-                                            <td>{{ userStats.completedOrders || 0 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Pending Orders</strong></td>
-                                            <td>{{ userStats.pendingOrders || 0 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Cancelled Orders</strong></td>
-                                            <td>{{ userStats.cancelledOrders || 0 }}</td>
-                                        </tr>
-                                    </ng-template>
-                                </p-table>
-                            </div>
-                        </p-tabPanel>
-
-                        <!-- Financial Tab -->
-                        <p-tabPanel header="Financial">
-                            <div class="stats-table">
-                                <h4>Financial Statistics</h4>
-                                <p-table [value]="[userStats]" responsiveLayout="scroll">
-                                    <ng-template pTemplate="body">
-                                        <tr>
-                                            <td><strong>{{ getTotalMetricLabel() }}</strong></td>
-                                            <td>{{ formatCurrency(getTotalMetric()) }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>{{ getMonthlyMetricLabel() }}</strong></td>
-                                            <td>{{ formatCurrency(getMonthlyMetric()) }}</td>
-                                        </tr>
-                                        <tr *ngIf="isUserStatistics(userStats)">
-                                            <td><strong>Average Order Value</strong></td>
-                                            <td>{{ formatCurrency(userStats.averageOrderValue || 0) }}</td>
-                                        </tr>
-                                        <tr *ngIf="!isUserStatistics(userStats)">
-                                            <td><strong>Average Order Value</strong></td>
-                                            <td>{{ formatCurrency(userStats.averageOrderValue || 0) }}</td>
-                                        </tr>
-
-<!--                                        <tr *ngIf="userStats.netRevenue !== undefined">-->
-<!--                                            <td><strong>Net Revenue</strong></td>-->
-<!--                                            <td>{{ formatCurrency(0) }}</td>-->
-<!--                                        </tr>-->
-                                    </ng-template>
-                                </p-table>
-                            </div>
-                        </p-tabPanel>
-
-                        <!-- Products Tab -->
-                        <p-tabPanel header="Products">
-                            <div class="stats-table">
-                                <h4>Product Statistics</h4>
-                                <p-table [value]="[userStats]" responsiveLayout="scroll">
-                                    <ng-template pTemplate="body">
-                                        <tr *ngIf="isUserStatistics(userStats) && userStats.mostPurchasedProductName">
-                                            <td><strong>Most Purchased Product</strong></td>
-                                            <td>{{ userStats.mostPurchasedProductName }} ({{ userStats.mostPurchasedProductQuantity || 0 }} times)</td>
-                                        </tr>
-                                        <tr *ngIf="!isUserStatistics(userStats) && userStats.bestSellingProductName">
-                                            <td><strong>Best Selling Product</strong></td>
-                                            <td>{{ userStats.bestSellingProductName }} ({{ userStats.bestSellingProductQuantity || 0 }} sold)</td>
-                                        </tr>
-                                        <tr *ngIf="isUserStatistics(userStats)">
-                                            <td><strong>Total Items Purchased</strong></td>
-                                            <td>{{ userStats.totalItemsPurchased || 0 }}</td>
-                                        </tr>
-                                        <tr *ngIf="!isUserStatistics(userStats)">
-                                            <td><strong>Total Items Sold</strong></td>
-                                            <td>{{ userStats.totalItemsSold || 0 }}</td>
-                                        </tr>
-                                    </ng-template>
-                                </p-table>
-                            </div>
-                        </p-tabPanel>
-
-                        <!-- Timeline Tab -->
-                        <p-tabPanel header="Timeline">
-                            <div class="stats-timeline">
-                                <h4>Activity Timeline</h4>
-                                <p-timeline [value]="getTimelineEvents()" align="alternate">
-                                    <ng-template pTemplate="content" let-event>
-                                        <p-card>
-                                            <div class="timeline-event">
-                                                <h5>{{ event.title }}</h5>
-                                                <p>{{ event.description }}</p>
-                                                <small>{{ formatDateTime(event.date) }}</small>
-                                            </div>
-                                        </p-card>
-                                    </ng-template>
-                                </p-timeline>
-                            </div>
-                        </p-tabPanel>
-                    </p-tabView>
-                </div>
-            </div>
-        </div>
-
-        <ng-template pTemplate="footer">
-            <p-button
-                    label="Close"
-                    icon="pi pi-times"
-                    (click)="closeStatsDialog()">
-            </p-button>
-        </ng-template>
     </p-dialog>
 </div>
 

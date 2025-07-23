@@ -1,5 +1,6 @@
 package com.zone01.product.product;
 
+import com.zone01.product.dto.ProductSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,8 @@ import com.zone01.product.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/product")
@@ -33,6 +36,62 @@ public class ProductsController {
             @RequestParam(defaultValue = "0") int size
             ) {
         Page<Products> products = productsService.getAllProducts(page, size);
+        Response<Page<Products>> response = Response.<Page<Products>>builder()
+                .status(HttpStatus.OK.value())
+                .data(products)
+                .message("success")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Response<Page<Products>>> searchProducts(
+            // Basic search parameters
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String name,
+
+            // Single value filters (backward compatibility)
+            @RequestParam(required = false) String price,
+            @RequestParam(required = false) String quantity,
+
+            // Range filters
+            @RequestParam(required = false) Double priceMin,
+            @RequestParam(required = false) Double priceMax,
+            @RequestParam(required = false) Integer quantityMin,
+            @RequestParam(required = false) Integer quantityMax,
+
+            // Array filters
+            @RequestParam(required = false) List<String> userIds,
+            @RequestParam(required = false) List<String> categoryIds,
+            @RequestParam(required = false) List<String> tags,
+
+            // Sorting
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+
+            // Pagination
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        ProductSearchCriteria criteria = ProductSearchCriteria.builder()
+                .keyword(keyword)
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .priceMin(priceMin)
+                .priceMax(priceMax)
+                .quantityMin(quantityMin)
+                .quantityMax(quantityMax)
+                .userIds(userIds)
+                .categoryIds(categoryIds)
+                .tags(tags)
+                .sortBy(sortBy)
+                .sortOrder(sortOrder)
+                .page(page)
+                .size(size)
+                .build();
+        Page<Products> products = productsService.searchProducts(criteria);
         Response<Page<Products>> response = Response.<Page<Products>>builder()
                 .status(HttpStatus.OK.value())
                 .data(products)

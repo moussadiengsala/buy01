@@ -36,33 +36,76 @@ export class TokenService {
     }
   }
 
-  isTokenValid(): Observable<UserPayload | null> {
-    const tokenPayload: TokenPayload | null = this.parse();
-    if (!tokenPayload || !tokenPayload.user) return of(null);
+    isTokenValid(): Observable<UserPayload | null> {
+        const tokenPayload: TokenPayload | null = this.parse();
+        if (!tokenPayload || !tokenPayload.user) {
+            this.remove(); // Clean up invalid token
+            return of(null);
+        }
 
-    console.log("kkkkkkkkkk", tokenPayload.user)
-    return this.http
-        .get<ApiResponse<User>>(`${this.API_URL}/${tokenPayload.user.id}`, {
-          headers: {
-            'Authorization': `Bearer ${this.token?.accessToken}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        .pipe(
-            map(response => {
-              const isAuthenticated = response.status === HttpStatusCode.Ok;
-              if (!isAuthenticated) return null;
-              return { ...tokenPayload.user, isAuthenticated };
-            }),
-            catchError( (e) => {
-              return of(e);
+        const currentToken = this.token;
+        if (!currentToken?.accessToken) {
+            this.remove(); // Clean up missing access token
+            return of(null);
+        }
+
+        return this.http
+            .get<ApiResponse<User>>(`${this.API_URL}/${tokenPayload.user.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
             })
-        );
-  }
+            .pipe(
+                map(response => {
+                    const isAuthenticated = response.status === HttpStatusCode.Ok;
+                    if (!isAuthenticated) {
+                        this.remove(); // Clean up on non-OK response
+                        return null;
+                    }
 
-  parse(): TokenPayload | null {
-    const token = this.token?.accessToken;
-    if (token) return this.jwtHelper.decodeToken(token);
-    return null;
-  }
+                    // Return user payload with signature (user ID) and authentication status
+                    return {
+                        ...tokenPayload.user,
+                        isAuthenticated
+                    };
+                }),
+                catchError((error) => {
+                    if (error.status === HttpStatusCode.Unauthorized ||
+                        error.status === HttpStatusCode.Forbidden ||
+                        error.status === 401 ||
+                        error.status === 403) {
+                        this.remove();
+                    }
+
+                    return of(null);
+                })
+            );
+    }
+
+    parse(): TokenPayload | null {
+        const token = this.token?.accessToken;
+        if (!token) return null;
+
+        try {
+            const decoded = this.jwtHelper.decodeToken(token);
+
+            // Check if token is expired
+            if (this.jwtHelper.isTokenExpired(token)) {
+                this.remove();
+                return null;
+            }
+
+            return decoded;
+        } catch (error) {
+            this.remove();
+            return null;
+        }
+    }
+
+    // Helper method to check if user is authenticated
+    isAuthenticated(): boolean {
+        const tokenPayload = this.parse();
+        return !!tokenPayload && !!tokenPayload.user;
+    }
 }

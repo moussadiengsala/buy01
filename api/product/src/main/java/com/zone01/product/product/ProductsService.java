@@ -1,35 +1,37 @@
 package com.zone01.product.product;
 
+import com.mongodb.client.MongoClients;
 import com.zone01.product.config.AccessValidation;
 import com.zone01.product.config.kafka.MediaServices;
 import com.zone01.product.dto.CreateProductDTO;
+import com.zone01.product.dto.ProductSearchCriteria;
 import com.zone01.product.dto.UpdateProductsDTO;
 import com.zone01.product.dto.UserDTO;
 import com.zone01.product.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProductsService {
     private final ProductsRepository productsRepository;
-//    private final MediaClient mediaClient;
     private final MediaServices mediaServices;
-
-    @Autowired
-    public ProductsService(ProductsRepository productsRepository, MediaServices mediaServices) {
-        this.productsRepository = productsRepository;
-        this.mediaServices = mediaServices;
-    }
+    private final MongoTemplate mongoTemplate;
 
     public Page<Products> getAllProducts(int page, int size) {
         return productsRepository.findAll(PageRequest.of(page, size));
@@ -172,4 +174,116 @@ public class ProductsService {
     }
 
 
+    public Page<Products> searchProducts(ProductSearchCriteria searchCriteria) {
+        Query query = buildQuery(searchCriteria);
+
+        // Get total count for pagination
+        long totalCount = mongoTemplate.count(query, Products.class);
+        List<Products> products = mongoTemplate.find(applyPaginationAndSorting(query, searchCriteria), Products.class);
+
+        // Create pageable
+        Pageable pageable = PageRequest.of(searchCriteria.getPage(), searchCriteria.getSize());
+
+        // Return page
+        return new PageImpl<>(products, pageable, totalCount);
+
+    }
+
+
+    private Query buildQuery(ProductSearchCriteria criteria) {
+        Query query = new Query();
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        // Keyword search (searches in multiple fields)
+        if (criteria.getKeyword() != null && !criteria.getKeyword().trim().isEmpty()) {
+            String keywordRegex = ".*" + Pattern.quote(criteria.getKeyword()) + ".*";
+            Criteria keywordCriteria = new Criteria().orOperator(
+                    Criteria.where("name").regex(keywordRegex, "i"),
+                    Criteria.where("description").regex(keywordRegex, "i")
+            );
+            criteriaList.add(keywordCriteria);
+        }
+
+        // Name search
+        if (criteria.getName() != null && !criteria.getName().trim().isEmpty()) {
+            String nameRegex = ".*" + Pattern.quote(criteria.getName()) + ".*";
+            criteriaList.add(Criteria.where("name").regex(nameRegex, "i"));
+        }
+
+        // Price filters
+        if (criteria.getPrice() != null && !criteria.getPrice().trim().isEmpty()) {
+            try {
+                Double priceValue = Double.parseDouble(criteria.getPrice());
+                criteriaList.add(Criteria.where("price").is(priceValue));
+            } catch (NumberFormatException e) {
+                // Log error or handle invalid price format
+            }
+        }
+
+        if (criteria.getPriceMin() != null) {
+            criteriaList.add(Criteria.where("price").gte(criteria.getPriceMin()));
+        }
+
+        if (criteria.getPriceMax() != null) {
+            criteriaList.add(Criteria.where("price").lte(criteria.getPriceMax()));
+        }
+
+        // Quantity filters
+        if (criteria.getQuantity() != null && !criteria.getQuantity().trim().isEmpty()) {
+            try {
+                Integer quantityValue = Integer.parseInt(criteria.getQuantity());
+                criteriaList.add(Criteria.where("quantity").is(quantityValue));
+            } catch (NumberFormatException e) {
+                // Log error or handle invalid quantity format
+            }
+        }
+
+        if (criteria.getQuantityMin() != null) {
+            criteriaList.add(Criteria.where("quantity").gte(criteria.getQuantityMin()));
+        }
+
+        if (criteria.getQuantityMax() != null) {
+            criteriaList.add(Criteria.where("quantity").lte(criteria.getQuantityMax()));
+        }
+
+        // User IDs filter
+        if (criteria.getUserIds() != null && !criteria.getUserIds().isEmpty()) {
+            criteriaList.add(Criteria.where("userId").in(criteria.getUserIds()));
+        }
+
+        // Category IDs filter
+        if (criteria.getCategoryIds() != null && !criteria.getCategoryIds().isEmpty()) {
+            criteriaList.add(Criteria.where("categoryId").in(criteria.getCategoryIds()));
+        }
+
+        // Tags filter
+        if (criteria.getTags() != null && !criteria.getTags().isEmpty()) {
+            criteriaList.add(Criteria.where("tags").in(criteria.getTags()));
+        }
+
+        // Combine all criteria with AND operation
+        if (!criteriaList.isEmpty()) {
+            query.addCriteria(new Criteria().andOperator(
+                    criteriaList.toArray(new Criteria[0])
+            ));
+        }
+
+        return query;
+    }
+
+    private Query applyPaginationAndSorting(Query query, ProductSearchCriteria criteria) {
+        // Apply sorting
+        if (criteria.getSortBy() != null && !criteria.getSortBy().trim().isEmpty()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(criteria.getSortOrder())
+                    ? Sort.Direction.DESC
+                    : Sort.Direction.ASC;
+            query.with(Sort.by(direction, criteria.getSortBy()));
+        }
+
+        // Apply pagination
+        int skip = criteria.getPage() * criteria.getSize();
+        query.skip(skip).limit(criteria.getSize());
+
+        return query;
+    }
 }

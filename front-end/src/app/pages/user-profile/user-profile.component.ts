@@ -31,7 +31,6 @@ import { RippleModule } from 'primeng/ripple';
 import { TooltipModule } from 'primeng/tooltip';
 
 import {
-    User,
     UserPayload,
     Order,
     OrderStatus,
@@ -45,7 +44,6 @@ import { AuthService } from "../../services/auth/auth.service";
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import { OrderSearchParams } from "../../services/order/order.service";
 import { environment } from "../../environment";
-import {Message} from "primeng/message";
 import { UserService } from '../../services/user/user.service';
 import {FileData, FileService} from "../../services/file-service/file-service.service";
 
@@ -99,18 +97,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     passwordForm: FormGroup;
     Role = Role;
 
-    // Dialog states
-    showEditDialog = false;
     showAvatarDialog = false;
-    showOrderDialog = false;
-    showStatsDialog = false;
-    showPasswordDialog = false;
-    showOrderTrackingDialog = false;
-    selectedOrder: Order | null = null;
     selectedAvatar: string | null = null;
-    orderTrackingInfo: any = null;
 
-    // Orders and filtering
     orders: Order[] = [];
     filteredOrders: Order[] = [];
     loading = false;
@@ -123,10 +112,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     totalOrders = 0;
     totalPages = 0;
 
-    // Statistics
     userStats: UserStatisticsDTO | SellerStatisticsDTO | null = null;
-    chartData: any = {};
-    chartOptions: any = {};
 
     currentFile: FileData | null = null;
 
@@ -161,7 +147,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.editProfileForm = this.createEditProfileForm();
         this.searchForm = this.createSearchForm();
         this.passwordForm = this.createPasswordForm();
-        this.initializeChartData();
         this.fileService.fileData$.subscribe(fileData => {
             this.currentFile = fileData;
         });
@@ -283,7 +268,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (stats) => {
                     this.userStats = stats;
-                    this.updateChartData(stats);
                 },
                 error: (error) => {
                     console.error('Error loading seller statistics:', error);
@@ -305,7 +289,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (stats) => {
                     this.userStats = stats;
-                    this.updateChartData(stats);
+                    console.log("stats", this.userStats)
                 },
                 error: (error) => {
                     console.error('Error loading user statistics:', error);
@@ -318,253 +302,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             });
     }
 
-    private updateChartData(stats: UserStatisticsDTO | SellerStatisticsDTO): void {
-        try {
-            // Type guards to determine if it's UserStatisticsDTO or SellerStatisticsDTO
-            const isUserStats = this.isUserStatistics(stats);
-
-            let labels: string[] = [];
-            let primaryData: number[] = [];
-            let orderData: number[] = [];
-            let primaryLabel = '';
-
-            if (isUserStats) {
-                // Handle UserStatisticsDTO
-                const userStats = stats as UserStatisticsDTO;
-
-                // Safely extract chart data
-                const monthlySpending = userStats.monthlySpendingChart || {};
-                const monthlyOrders = userStats.monthlyOrderChart || {};
-
-                labels = Object.keys(monthlySpending).sort();
-                primaryData = labels.map(month => monthlySpending[month] || 0);
-                orderData = labels.map(month => monthlyOrders[month] || 0);
-                primaryLabel = 'Monthly Spending';
-
-                // If no chart data available, create default structure
-                if (labels.length === 0) {
-                    const currentDate = new Date();
-                    for (let i = 5; i >= 0; i--) {
-                        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                        labels.push(monthKey);
-                        primaryData.push(0);
-                        orderData.push(0);
-                    }
-                }
-            } else {
-                // Handle SellerStatisticsDTO
-                const sellerStats = stats as SellerStatisticsDTO;
-
-                // Safely extract chart data
-                const monthlyRevenue = sellerStats.monthlyRevenueChart || {};
-                const monthlyOrders = sellerStats.monthlyOrderChart || {};
-
-                labels = Object.keys(monthlyRevenue).sort();
-                primaryData = labels.map(month => monthlyRevenue[month] || 0);
-                orderData = labels.map(month => monthlyOrders[month] || 0);
-                primaryLabel = 'Monthly Revenue';
-
-                // If no chart data available, create default structure
-                if (labels.length === 0) {
-                    const currentDate = new Date();
-                    for (let i = 5; i >= 0; i--) {
-                        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                        labels.push(monthKey);
-                        primaryData.push(0);
-                        orderData.push(0);
-                    }
-                }
-            }
-
-            // Format labels for better display (e.g., "2024-01" -> "Jan 2024")
-            const formattedLabels = labels.map(label => {
-                try {
-                    const [year, month] = label.split('-');
-                    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                } catch {
-                    return label; // fallback to original label if parsing fails
-                }
-            });
-
-            this.chartData = {
-                labels: formattedLabels,
-                datasets: [
-                    {
-                        label: primaryLabel,
-                        data: primaryData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Orders',
-                        data: orderData,
-                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.4,
-                        yAxisID: 'y1'
-                    }
-                ]
-            };
-
-            this.chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Month'
-                        }
-                    },
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: {
-                            display: true,
-                            text: primaryLabel
-                        },
-                        ticks: {
-                            callback: (value: any) => '$' + Number(value).toFixed(2)
-                        }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'Number of Orders'
-                        },
-                        grid: {
-                            drawOnChartArea: false,
-                        },
-                        ticks: {
-                            callback: (value: any) => Number(value).toString()
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top' as const
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context: any) => {
-                                const label = context.dataset.label || '';
-                                const value = context.parsed.y;
-
-                                if (label.includes('Spending') || label.includes('Revenue')) {
-                                    return `${label}: $${Number(value).toFixed(2)}`;
-                                }
-                                return `${label}: ${Number(value)}`;
-                            }
-                        }
-                    }
-                }
-            };
-        } catch (error) {
-            console.error('Error updating chart data:', error);
-            this.initializeEmptyChartData();
-        }
-    }
-
-    public isUserStatistics(stats: UserStatisticsDTO | SellerStatisticsDTO): stats is UserStatisticsDTO {
-        return 'monthlySpendingChart' in stats && 'totalSpent' in stats;
-    }
-
-    private initializeChartData(): void {
-        this.initializeEmptyChartData();
-    }
-
-    private initializeEmptyChartData(): void {
-        this.chartData = {
-            labels: [],
-            datasets: [{
-                label: 'No Data Available',
-                data: [],
-                backgroundColor: 'rgba(128, 128, 128, 0.6)',
-                borderColor: 'rgba(128, 128, 128, 1)',
-                borderWidth: 1
-            }]
-        };
-
-        this.chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top' as const
-                }
-            }
-        };
-    }
-
-    // Helper methods for statistics display
-    getTotalMetric(): number {
-        if (!this.userStats) return 0;
-
-        if (this.isUserStatistics(this.userStats)) {
-            return this.userStats.totalSpent || 0;
-        } else {
-            return this.userStats.totalRevenue || 0;
-        }
-    }
-
-    getTotalMetricLabel(): string {
-        if (!this.userStats) return 'Total';
-
-        if (this.isUserStatistics(this.userStats)) {
-            return 'Total Spent';
-        } else {
-            return 'Total Revenue';
-        }
-    }
-
-    getMonthlyMetric(): number {
-        if (!this.userStats) return 0;
-
-        if (this.isUserStatistics(this.userStats)) {
-            return this.userStats.monthlySpending || 0;
-        } else {
-            return this.userStats.monthlyRevenue || 0;
-        }
-    }
-
-    getMonthlyMetricLabel(): string {
-        if (!this.userStats) return 'Monthly';
-
-        if (this.isUserStatistics(this.userStats)) {
-            return 'Monthly Spending';
-        } else {
-            return 'Monthly Revenue';
-        }
-    }
-
-    getCompletionRate(): number {
-        if (!this.userStats) return 0;
-
-        const totalOrders = this.userStats.totalOrders || 0;
-        const completedOrders = this.userStats.completedOrders || 0;
-
-        if (totalOrders === 0) return 0;
-        return (completedOrders / totalOrders) * 100;
-    }
-
-    // Rest of the methods remain the same...
     public searchOrders(): void {
         if (!this.user) return;
 
@@ -643,11 +380,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         };
 
         return severities[status] || 'secondary';
-    }
-
-    viewOrder(order: Order): void {
-        this.selectedOrder = order;
-        this.showOrderDialog = true;
     }
 
     reorderOrder(order: Order): void {
@@ -767,10 +499,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             });
     }
 
-    showStatistics(): void {
-        this.showStatsDialog = true;
-    }
-
     saveEditProfile(): void {
         if (!this.user) return;
         if (this.editProfileForm.valid) {
@@ -875,42 +603,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     }
 
-    exportOrderHistory(): void {
-        if (!this.user) return;
-
-        const searchParams: OrderSearchParams = {
-            userId: this.user.id
-        };
-
-        this.orderService.exportOrders(searchParams)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (blob) => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `order-history-${new Date().toISOString().split('T')[0]}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Export Complete',
-                        detail: 'Your order history has been exported successfully.'
-                    });
-                },
-                error: (error) => {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Export Failed',
-                        detail: 'Unable to export order history. Please try again.'
-                    });
-                }
-            });
-    }
-
     deleteAccount(): void {
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
@@ -948,7 +640,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         });
     }
 
-    // Utility methods
     private markFormGroupTouched(formGroup: FormGroup): void {
         Object.keys(formGroup.controls).forEach(key => {
             const control = formGroup.get(key);
@@ -1013,77 +704,25 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         });
     }
 
-    formatDateTime(date: Date | string): string {
-        const dateObj = typeof date === 'string' ? new Date(date) : date;
-        return dateObj.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-
     closeAvatarDialog(): void {
         this.showAvatarDialog = false;
         this.selectedAvatar = null;
     }
 
-    closeStatsDialog(): void {
-        this.showStatsDialog = false;
+    isUserStats(): boolean {
+        return !!(this.userStats && 'totalSpent' in this.userStats);
     }
 
-    getTimelineEvents(): any[] {
-        if (!this.userStats) return [];
+    isSellerStats(): boolean {
+        return !!(this.userStats && 'totalRevenue' in this.userStats);
+    }
 
-        const events = [];
+    getUserStats(): UserStatisticsDTO {
+        return this.userStats as UserStatisticsDTO;
+    }
 
-        // Add first purchase/last purchase events
-        if (this.isUserStatistics(this.userStats)) {
-            if (this.userStats.firstPurchaseDate) {
-                events.push({
-                    title: 'First Purchase',
-                    description: 'Your first order on our platform',
-                    date: this.userStats.firstPurchaseDate
-                });
-            }
-
-            if (this.userStats.lastPurchaseDate) {
-                events.push({
-                    title: 'Last Purchase',
-                    description: 'Your most recent order',
-                    date: this.userStats.lastPurchaseDate
-                });
-            }
-        } else {
-            if (this.userStats.firstOrderDate) {
-                events.push({
-                    title: 'First Order',
-                    description: 'First order received as a seller',
-                    date: this.userStats.firstOrderDate
-                });
-            }
-
-            if (this.userStats.lastOrderDate) {
-                events.push({
-                    title: 'Last Order',
-                    description: 'Most recent order received',
-                    date: this.userStats.lastOrderDate
-                });
-            }
-        }
-
-        // // Add account creation date
-        // if (this.user?.createdAt) {
-        //     events.push({
-        //         title: 'Account Created',
-        //         description: 'You joined our platform',
-        //         date: this.user.createdAt
-        //     });
-        // }
-
-        // Sort events by date
-        return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    getSellerStats(): SellerStatisticsDTO {
+        return this.userStats as SellerStatisticsDTO;
     }
 
     protected readonly environment = environment;

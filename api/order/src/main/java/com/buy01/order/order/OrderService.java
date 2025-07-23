@@ -163,10 +163,9 @@ public class OrderService {
 
         // If current user is seller, filter orderItems per order
         if (currentUser.getRole() == Role.SELLER) {
-            String sellerId = currentUser.getId();
             results = results.stream().peek(order -> {
                 List<OrderItem> filteredItems = order.getOrderItems().stream()
-                        .filter(item -> sellerId.equals(item.getSellerId()))
+                        .filter(item -> currentUser.getId().equals(item.getSellerId()))
                         .collect(Collectors.toList());
                 order.setOrderItems(filteredItems);
             }).collect(Collectors.toList());
