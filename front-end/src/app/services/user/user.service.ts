@@ -11,7 +11,7 @@ import {AuthService} from "../auth/auth.service";
   providedIn: 'root'
 })
 export class UserService {
-  private API_URL = environment.apiUrl + "users";
+  private API_URL = environment.apiUrl + "user";
 
   constructor(
       private http: HttpClient,
@@ -49,7 +49,6 @@ export class UserService {
         .pipe(
             map(response => {
               const body = response.body;
-              console.log(body);
               if (body?.data && HttpStatusCode.Ok === body.status) {
                 // Let the AuthService handle token storage and user state updates
                 this.authService.updateUserState(body.data);
@@ -71,7 +70,7 @@ export class UserService {
         .pipe(
             map(response => {
               // If the user deleted themselves, log them out
-              if (userId === this.tokenService.parse()?.id) {
+              if (userId === this.tokenService.parse()?.user.id) {
                 this.authService.logout();
               }
               return response;

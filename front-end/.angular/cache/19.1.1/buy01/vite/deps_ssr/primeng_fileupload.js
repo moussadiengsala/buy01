@@ -1,42 +1,42 @@
 import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
-  DomSanitizer
-} from "./chunk-4CX4EXVA.js";
+  ProgressBar
+} from "./chunk-D2Q3HAIF.js";
+import {
+  Message
+} from "./chunk-OEAWE7DQ.js";
 import {
   Button
-} from "./chunk-7EYAFZDN.js";
-import "./chunk-2X3Q2CVR.js";
-import "./chunk-TV7TBPSE.js";
+} from "./chunk-6OZ5FS2G.js";
+import "./chunk-UAWQEWAB.js";
+import "./chunk-N6625Q5J.js";
+import "./chunk-OJMCBPDQ.js";
 import {
   PlusIcon,
   TimesIcon,
   UploadIcon
-} from "./chunk-GY6NWUSN.js";
-import "./chunk-N6625Q5J.js";
-import {
-  animate,
-  style,
-  transition,
-  trigger
-} from "./chunk-HVMBKJWP.js";
-import {
-  Ripple
-} from "./chunk-IAMH6CTU.js";
+} from "./chunk-CRIWU6AY.js";
+import "./chunk-ONPYVQXA.js";
 import {
   BaseComponent
-} from "./chunk-SDDDZ3Q6.js";
+} from "./chunk-6PGN5VLG.js";
+import "./chunk-UG6YDIHZ.js";
 import {
   BaseStyle
-} from "./chunk-QLLMGZMM.js";
-import "./chunk-DGO2XRGV.js";
+} from "./chunk-JNEUC7RM.js";
 import {
   PrimeTemplate,
   SharedModule,
   TranslationKeys,
   addClass,
   removeClass
-} from "./chunk-NGN3AAQS.js";
-import "./chunk-EMGRNPNB.js";
+} from "./chunk-2VIIWB3Q.js";
+import "./chunk-HVMBKJWP.js";
+import "./chunk-74KF2TMX.js";
+import "./chunk-252YNDN6.js";
+import {
+  DomSanitizer
+} from "./chunk-4CX4EXVA.js";
 import {
   HttpClient,
   HttpEventType
@@ -67,7 +67,6 @@ import {
   inject,
   numberAttribute,
   setClassMetadata,
-  signal,
   ɵsetClassDebugInfo,
   ɵɵInheritDefinitionFeature,
   ɵɵInputTransformsFeature,
@@ -92,21 +91,16 @@ import {
   ɵɵlistener,
   ɵɵloadQuery,
   ɵɵnextContext,
-  ɵɵprojection,
-  ɵɵprojectionDef,
   ɵɵproperty,
   ɵɵpureFunction1,
-  ɵɵpureFunction2,
   ɵɵpureFunction5,
   ɵɵpureFunction8,
   ɵɵqueryRefresh,
-  ɵɵreference,
   ɵɵrepeater,
   ɵɵrepeaterCreate,
   ɵɵrepeaterTrackByIdentity,
   ɵɵresetView,
   ɵɵrestoreView,
-  ɵɵsanitizeHtml,
   ɵɵsanitizeUrl,
   ɵɵsetNgModuleScope,
   ɵɵstyleMap,
@@ -116,7 +110,6 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
-  ɵɵtextInterpolate2,
   ɵɵviewQuery
 } from "./chunk-UAD7MVBV.js";
 import "./chunk-TDK5NIWS.js";
@@ -124,1374 +117,8 @@ import "./chunk-WBQSER3X.js";
 import "./chunk-RK6XMIZN.js";
 import "./chunk-YHCV7DAQ.js";
 
-// node_modules/primeng/fesm2022/primeng-message.mjs
-var theme = ({
-  dt
-}) => `
-.p-message {
-    border-radius: ${dt("message.border.radius")};
-    outline-width: ${dt("message.border.width")};
-    outline-style: solid;
-}
-
-.p-message-content {
-    display: flex;
-    align-items: center;
-    padding: ${dt("message.content.padding")};
-    gap: ${dt("message.content.gap")};
-    height: 100%;
-}
-
-.p-message-icon {
-    flex-shrink: 0;
-}
-
-.p-message-close-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-inline-start: auto;
-    overflow: hidden;
-    position: relative;
-    width: ${dt("message.close.button.width")};
-    height: ${dt("message.close.button.height")};
-    border-radius: ${dt("message.close.button.border.radius")};
-    background: transparent;
-    transition: background ${dt("message.transition.duration")}, color ${dt("message.transition.duration")}, outline-color ${dt("message.transition.duration")}, box-shadow ${dt("message.transition.duration")}, opacity 0.3s;
-    outline-color: transparent;
-    color: inherit;
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    user-select: none;
-}
-
-.p-message-close-icon {
-    font-size: ${dt("message.close.icon.size")};
-    width: ${dt("message.close.icon.size")};
-    height: ${dt("message.close.icon.size")};
-}
-
-.p-message-close-button:focus-visible {
-    outline-width: ${dt("message.close.button.focus.ring.width")};
-    outline-style: ${dt("message.close.button.focus.ring.style")};
-    outline-offset: ${dt("message.close.button.focus.ring.offset")};
-}
-
-.p-message-info {
-    background: ${dt("message.info.background")};
-    outline-color: ${dt("message.info.border.color")};
-    color: ${dt("message.info.color")};
-    box-shadow: ${dt("message.info.shadow")};
-}
-
-.p-message-info .p-message-close-button:focus-visible {
-    outline-color: ${dt("message.info.close.button.focus.ring.color")};
-    box-shadow: ${dt("message.info.close.button.focus.ring.shadow")};
-}
-
-.p-message-info .p-message-close-button:hover {
-    background: ${dt("message.info.close.button.hover.background")};
-}
-
-.p-message-info.p-message-outlined {
-    color: ${dt("message.info.outlined.color")};
-    outline-color: ${dt("message.info.outlined.border.color")};
-}
-
-.p-message-info.p-message-simple {
-    color: ${dt("message.info.simple.color")};
-}
-
-.p-message-success {
-    background: ${dt("message.success.background")};
-    outline-color: ${dt("message.success.border.color")};
-    color: ${dt("message.success.color")};
-    box-shadow: ${dt("message.success.shadow")};
-}
-
-.p-message-success .p-message-close-button:focus-visible {
-    outline-color: ${dt("message.success.close.button.focus.ring.color")};
-    box-shadow: ${dt("message.success.close.button.focus.ring.shadow")};
-}
-
-.p-message-success .p-message-close-button:hover {
-    background: ${dt("message.success.close.button.hover.background")};
-}
-
-.p-message-success.p-message-outlined {
-    color: ${dt("message.success.outlined.color")};
-    outline-color: ${dt("message.success.outlined.border.color")};
-}
-
-.p-message-success.p-message-simple {
-    color: ${dt("message.success.simple.color")};
-}
-
-.p-message-warn {
-    background: ${dt("message.warn.background")};
-    outline-color: ${dt("message.warn.border.color")};
-    color: ${dt("message.warn.color")};
-    box-shadow: ${dt("message.warn.shadow")};
-}
-
-.p-message-warn .p-message-close-button:focus-visible {
-    outline-color: ${dt("message.warn.close.button.focus.ring.color")};
-    box-shadow: ${dt("message.warn.close.button.focus.ring.shadow")};
-}
-
-.p-message-warn .p-message-close-button:hover {
-    background: ${dt("message.warn.close.button.hover.background")};
-}
-
-.p-message-warn.p-message-outlined {
-    color: ${dt("message.warn.outlined.color")};
-    outline-color: ${dt("message.warn.outlined.border.color")};
-}
-
-.p-message-warn.p-message-simple {
-    color: ${dt("message.warn.simple.color")};
-}
-
-.p-message-error {
-    background: ${dt("message.error.background")};
-    outline-color: ${dt("message.error.border.color")};
-    color: ${dt("message.error.color")};
-    box-shadow: ${dt("message.error.shadow")};
-}
-
-.p-message-error .p-message-close-button:focus-visible {
-    outline-color: ${dt("message.error.close.button.focus.ring.color")};
-    box-shadow: ${dt("message.error.close.button.focus.ring.shadow")};
-}
-
-.p-message-error .p-message-close-button:hover {
-    background: ${dt("message.error.close.button.hover.background")};
-}
-
-.p-message-error.p-message-outlined {
-    color: ${dt("message.error.outlined.color")};
-    outline-color: ${dt("message.error.outlined.border.color")};
-}
-
-.p-message-error.p-message-simple {
-    color: ${dt("message.error.simple.color")};
-}
-
-.p-message-secondary {
-    background: ${dt("message.secondary.background")};
-    outline-color: ${dt("message.secondary.border.color")};
-    color: ${dt("message.secondary.color")};
-    box-shadow: ${dt("message.secondary.shadow")};
-}
-
-.p-message-secondary .p-message-close-button:focus-visible {
-    outline-color: ${dt("message.secondary.close.button.focus.ring.color")};
-    box-shadow: ${dt("message.secondary.close.button.focus.ring.shadow")};
-}
-
-.p-message-secondary .p-message-close-button:hover {
-    background: ${dt("message.secondary.close.button.hover.background")};
-}
-
-.p-message-secondary.p-message-outlined {
-    color: ${dt("message.secondary.outlined.color")};
-    outline-color: ${dt("message.secondary.outlined.border.color")};
-}
-
-.p-message-secondary.p-message-simple {
-    color: ${dt("message.secondary.simple.color")};
-}
-
-.p-message-contrast {
-    background: ${dt("message.contrast.background")};
-    outline-color: ${dt("message.contrast.border.color")};
-    color: ${dt("message.contrast.color")};
-    box-shadow: ${dt("message.contrast.shadow")};
-}
-
-.p-message-contrast .p-message-close-button:focus-visible {
-    outline-color: ${dt("message.contrast.close.button.focus.ring.color")};
-    box-shadow: ${dt("message.contrast.close.button.focus.ring.shadow")};
-}
-
-.p-message-contrast .p-message-close-button:hover {
-    background: ${dt("message.contrast.close.button.hover.background")};
-}
-
-.p-message-contrast.p-message-outlined {
-    color: ${dt("message.contrast.outlined.color")};
-    outline-color: ${dt("message.contrast.outlined.border.color")};
-}
-
-.p-message-contrast.p-message-simple {
-    color: ${dt("message.contrast.simple.color")};
-}
-
-.p-message-text {
-    font-size: ${dt("message.text.font.size")};
-    font-weight: ${dt("message.text.font.weight")};
-}
-
-.p-message-icon {
-    font-size: ${dt("message.icon.size")};
-    width: ${dt("message.icon.size")};
-    height: ${dt("message.icon.size")};
-}
-
-.p-message-enter-from {
-    opacity: 0;
-}
-
-.p-message-enter-active {
-    transition: opacity 0.3s;
-}
-
-.p-message.p-message-leave-from {
-    max-height: 1000px;
-}
-
-.p-message.p-message-leave-to {
-    max-height: 0;
-    opacity: 0;
-    margin: 0;
-}
-
-.p-message-leave-active {
-    overflow: hidden;
-    transition: max-height 0.45s cubic-bezier(0, 1, 0, 1), opacity 0.3s, margin 0.3s;
-}
-
-.p-message-leave-active .p-message-close-button {
-    opacity: 0;
-}
-
-.p-message-sm .p-message-content {
-    padding: ${dt("message.content.sm.padding")};
-}
-
-.p-message-sm .p-message-text {
-    font-size: ${dt("message.text.sm.font.size")};
-}
-
-.p-message-sm .p-message-icon {
-    font-size: ${dt("message.icon.sm.size")};
-    width: ${dt("message.icon.sm.size")};
-    height: ${dt("message.icon.sm.size")};
-}
-
-.p-message-sm .p-message-close-icon {
-    font-size: ${dt("message.close.icon.sm.size")};
-    width: ${dt("message.close.icon.sm.size")};
-    height: ${dt("message.close.icon.sm.size")};
-}
-
-.p-message-lg .p-message-content {
-    padding: ${dt("message.content.lg.padding")};
-}
-
-.p-message-lg .p-message-text {
-    font-size: ${dt("message.text.lg.font.size")};
-}
-
-.p-message-lg .p-message-icon {
-    font-size: ${dt("message.icon.lg.size")};
-    width: ${dt("message.icon.lg.size")};
-    height: ${dt("message.icon.lg.size")};
-}
-
-.p-message-lg .p-message-close-icon {
-    font-size: ${dt("message.close.icon.lg.size")};
-    width: ${dt("message.close.icon.lg.size")};
-    height: ${dt("message.close.icon.lg.size")};
-}
-
-.p-message-outlined {
-    background: transparent;
-    outline-width: ${dt("message.outlined.border.width")};
-}
-
-.p-message-simple {
-    background: transparent;
-    outline-color: transparent;
-    box-shadow: none;
-}
-
-.p-message-simple .p-message-content {
-    padding: ${dt("message.simple.content.padding")};
-}
-
-.p-message-outlined .p-message-close-button:hover,
-.p-message-simple .p-message-close-button:hover {
-    background: transparent;
-}`;
-var classes = {
-  root: ({
-    props
-  }) => ["p-message p-component p-message-" + props.severity, {
-    "p-message-simple": props.variant === "simple"
-  }],
-  content: "p-message-content",
-  icon: "p-message-icon",
-  text: "p-message-text",
-  closeButton: "p-message-close-button",
-  closeIcon: "p-message-close-icon"
-};
-var MessageStyle = class _MessageStyle extends BaseStyle {
-  name = "message";
-  theme = theme;
-  classes = classes;
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵMessageStyle_BaseFactory;
-    return function MessageStyle_Factory(__ngFactoryType__) {
-      return (ɵMessageStyle_BaseFactory || (ɵMessageStyle_BaseFactory = ɵɵgetInheritedFactory(_MessageStyle)))(__ngFactoryType__ || _MessageStyle);
-    };
-  })();
-  static ɵprov = ɵɵdefineInjectable({
-    token: _MessageStyle,
-    factory: _MessageStyle.ɵfac
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MessageStyle, [{
-    type: Injectable
-  }], null, null);
-})();
-var MessageClasses;
-(function(MessageClasses2) {
-  MessageClasses2["root"] = "p-message";
-  MessageClasses2["content"] = "p-message-content";
-  MessageClasses2["icon"] = "p-message-icon";
-  MessageClasses2["text"] = "p-message-text";
-  MessageClasses2["closeButton"] = "p-message-close-button";
-  MessageClasses2["closeIcon"] = "p-message-close-icon";
-})(MessageClasses || (MessageClasses = {}));
-var _c0 = ["container"];
-var _c1 = ["icon"];
-var _c2 = ["closeicon"];
-var _c3 = ["*"];
-var _c4 = (a0, a1) => ({
-  showTransitionParams: a0,
-  hideTransitionParams: a1
-});
-var _c5 = (a0) => ({
-  value: "visible()",
-  params: a0
-});
-var _c6 = (a0) => ({
-  closeCallback: a0
-});
-function Message_Conditional_0_Conditional_2_ng_container_0_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementContainer(0);
-  }
-}
-function Message_Conditional_0_Conditional_2_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵtemplate(0, Message_Conditional_0_Conditional_2_ng_container_0_Template, 1, 0, "ng-container", 7);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵproperty("ngTemplateOutlet", ctx_r0.iconTemplate || ctx_r0.iconTemplate);
-  }
-}
-function Message_Conditional_0_Conditional_3_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelement(0, "i", 3);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵproperty("ngClass", ctx_r0.icon);
-  }
-}
-function Message_Conditional_0_div_4_span_1_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelement(0, "span", 9);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(3);
-    ɵɵproperty("ngClass", ctx_r0.cx("text"))("innerHTML", ctx_r0.text, ɵɵsanitizeHtml);
-  }
-}
-function Message_Conditional_0_div_4_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "div");
-    ɵɵtemplate(1, Message_Conditional_0_div_4_span_1_Template, 1, 2, "span", 8);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵadvance();
-    ɵɵproperty("ngIf", !ctx_r0.escape);
-  }
-}
-function Message_Conditional_0_ng_template_5_span_0_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "span", 5);
-    ɵɵtext(1);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(3);
-    ɵɵproperty("ngClass", ctx_r0.cx("text"));
-    ɵɵadvance();
-    ɵɵtextInterpolate(ctx_r0.text);
-  }
-}
-function Message_Conditional_0_ng_template_5_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵtemplate(0, Message_Conditional_0_ng_template_5_span_0_Template, 2, 2, "span", 10);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵproperty("ngIf", ctx_r0.escape && ctx_r0.text);
-  }
-}
-function Message_Conditional_0_Conditional_7_ng_container_0_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementContainer(0);
-  }
-}
-function Message_Conditional_0_Conditional_7_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵtemplate(0, Message_Conditional_0_Conditional_7_ng_container_0_Template, 1, 0, "ng-container", 11);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵproperty("ngTemplateOutlet", ctx_r0.containerTemplate || ctx_r0.containerTemplate)("ngTemplateOutletContext", ɵɵpureFunction1(2, _c6, ctx_r0.close.bind(ctx_r0)));
-  }
-}
-function Message_Conditional_0_Conditional_8_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "span", 5);
-    ɵɵprojection(1);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵproperty("ngClass", ctx_r0.cx("text"));
-  }
-}
-function Message_Conditional_0_Conditional_9_Conditional_1_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelement(0, "i", 13);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(3);
-    ɵɵproperty("ngClass", ctx_r0.closeIcon);
-  }
-}
-function Message_Conditional_0_Conditional_9_Conditional_2_ng_container_0_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementContainer(0);
-  }
-}
-function Message_Conditional_0_Conditional_9_Conditional_2_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵtemplate(0, Message_Conditional_0_Conditional_9_Conditional_2_ng_container_0_Template, 1, 0, "ng-container", 7);
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(3);
-    ɵɵproperty("ngTemplateOutlet", ctx_r0.closeIconTemplate || ctx_r0._closeIconTemplate);
-  }
-}
-function Message_Conditional_0_Conditional_9_Conditional_3_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelement(0, "TimesIcon", 14);
-  }
-}
-function Message_Conditional_0_Conditional_9_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r2 = ɵɵgetCurrentView();
-    ɵɵelementStart(0, "button", 12);
-    ɵɵlistener("click", function Message_Conditional_0_Conditional_9_Template_button_click_0_listener($event) {
-      ɵɵrestoreView(_r2);
-      const ctx_r0 = ɵɵnextContext(2);
-      return ɵɵresetView(ctx_r0.close($event));
-    });
-    ɵɵtemplate(1, Message_Conditional_0_Conditional_9_Conditional_1_Template, 1, 1, "i", 13)(2, Message_Conditional_0_Conditional_9_Conditional_2_Template, 1, 1, "ng-container")(3, Message_Conditional_0_Conditional_9_Conditional_3_Template, 1, 0, "TimesIcon", 14);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵadvance();
-    ɵɵconditional(ctx_r0.closeIcon ? 1 : -1);
-    ɵɵadvance();
-    ɵɵconditional(ctx_r0.closeIconTemplate || ctx_r0._closeIconTemplate ? 2 : -1);
-    ɵɵadvance();
-    ɵɵconditional(!ctx_r0.closeIconTemplate && !ctx_r0._closeIconTemplate && !ctx_r0.closeIcon ? 3 : -1);
-  }
-}
-function Message_Conditional_0_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "div", 1)(1, "div", 2);
-    ɵɵtemplate(2, Message_Conditional_0_Conditional_2_Template, 1, 1, "ng-container")(3, Message_Conditional_0_Conditional_3_Template, 1, 1, "i", 3)(4, Message_Conditional_0_div_4_Template, 2, 1, "div", 4)(5, Message_Conditional_0_ng_template_5_Template, 1, 1, "ng-template", null, 0, ɵɵtemplateRefExtractor)(7, Message_Conditional_0_Conditional_7_Template, 1, 4, "ng-container")(8, Message_Conditional_0_Conditional_8_Template, 2, 1, "span", 5)(9, Message_Conditional_0_Conditional_9_Template, 4, 3, "button", 6);
-    ɵɵelementEnd()();
-  }
-  if (rf & 2) {
-    const escapeOut_r3 = ɵɵreference(6);
-    const ctx_r0 = ɵɵnextContext();
-    ɵɵproperty("ngClass", ctx_r0.containerClass)("@messageAnimation", ɵɵpureFunction1(13, _c5, ɵɵpureFunction2(10, _c4, ctx_r0.showTransitionOptions, ctx_r0.hideTransitionOptions)));
-    ɵɵattribute("aria-live", "polite")("role", "alert");
-    ɵɵadvance(2);
-    ɵɵconditional(ctx_r0.iconTemplate || ctx_r0._iconTemplate ? 2 : -1);
-    ɵɵadvance();
-    ɵɵconditional(ctx_r0.icon ? 3 : -1);
-    ɵɵadvance();
-    ɵɵproperty("ngIf", !ctx_r0.escape)("ngIfElse", escapeOut_r3);
-    ɵɵadvance(3);
-    ɵɵconditional(ctx_r0.containerTemplate || ctx_r0._containerTemplate ? 7 : 8);
-    ɵɵadvance(2);
-    ɵɵconditional(ctx_r0.closable ? 9 : -1);
-  }
-}
-var Message = class _Message extends BaseComponent {
-  /**
-   * Severity level of the message.
-   * @defaultValue 'info'
-   * @group Props
-   */
-  severity = "info";
-  /**
-   * Text content.
-   * @group Props
-   */
-  text;
-  /**
-   * Whether displaying messages would be escaped or not.
-   * @deprecated Use content projection instead '<p-message>Content</p-message>'.
-   * @group Props
-   */
-  escape = true;
-  /**
-   * Inline style of the component.
-   * @group Props
-   */
-  style;
-  /**
-   * Style class of the component.
-   * @group Props
-   */
-  styleClass;
-  /**
-   * Whether the message can be closed manually using the close icon.
-   * @group Props
-   * @defaultValue false
-   */
-  closable = false;
-  /**
-   * Icon to display in the message.
-   * @group Props
-   * @defaultValue undefined
-   */
-  icon;
-  /**
-   * Icon to display in the message close button.
-   * @group Props
-   * @defaultValue undefined
-   */
-  closeIcon;
-  /**
-   * Delay in milliseconds to close the message automatically.
-   * @defaultValue undefined
-   */
-  life;
-  /**
-   * Transition options of the show animation.
-   * @defaultValue '300ms ease-out'
-   * @group Props
-   */
-  showTransitionOptions = "300ms ease-out";
-  /**
-   * Transition options of the hide animation.
-   * @defaultValue '200ms cubic-bezier(0.86, 0, 0.07, 1)'
-   * @group Props
-   */
-  hideTransitionOptions = "200ms cubic-bezier(0.86, 0, 0.07, 1)";
-  /**
-   * Defines the size of the component.
-   * @group Props
-   */
-  size;
-  /**
-   * Specifies the input variant of the component.
-   * @group Props
-   */
-  variant;
-  /**
-   * Emits when the message is closed.
-   * @param {{ originalEvent: Event }} event - The event object containing the original event.
-   * @group Emits
-   */
-  onClose = new EventEmitter();
-  get containerClass() {
-    const variantClass = this.variant === "outlined" ? "p-message-outlined" : this.variant === "simple" ? "p-message-simple" : "";
-    const sizeClass = this.size === "small" ? "p-message-sm" : this.size === "large" ? "p-message-lg" : "";
-    return `p-message-${this.severity} ${variantClass} ${sizeClass}`.trim() + (this.styleClass ? " " + this.styleClass : "");
-  }
-  visible = signal(true);
-  _componentStyle = inject(MessageStyle);
-  /**
-   * Custom template of the message container.
-   * @group Templates
-   */
-  containerTemplate;
-  /**
-   * Custom template of the message icon.
-   * @group Templates
-   */
-  iconTemplate;
-  /**
-   * Custom template of the close icon.
-   * @group Templates
-   */
-  closeIconTemplate;
-  templates;
-  _containerTemplate;
-  _iconTemplate;
-  _closeIconTemplate;
-  ngOnInit() {
-    super.ngOnInit();
-    if (this.life) {
-      setTimeout(() => {
-        this.visible.set(false);
-      }, this.life);
-    }
-  }
-  ngAfterContentInit() {
-    this.templates?.forEach((item) => {
-      switch (item.getType()) {
-        case "container":
-          this._containerTemplate = item.template;
-          break;
-        case "icon":
-          this._iconTemplate = item.template;
-          break;
-        case "closeicon":
-          this._closeIconTemplate = item.template;
-          break;
-      }
-    });
-  }
-  /**
-   * Closes the message.
-   * @param {Event} event - Browser event.
-   * @group Method
-   */
-  close(event) {
-    this.visible.set(false);
-    this.onClose.emit({
-      originalEvent: event
-    });
-  }
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵMessage_BaseFactory;
-    return function Message_Factory(__ngFactoryType__) {
-      return (ɵMessage_BaseFactory || (ɵMessage_BaseFactory = ɵɵgetInheritedFactory(_Message)))(__ngFactoryType__ || _Message);
-    };
-  })();
-  static ɵcmp = ɵɵdefineComponent({
-    type: _Message,
-    selectors: [["p-message"]],
-    contentQueries: function Message_ContentQueries(rf, ctx, dirIndex) {
-      if (rf & 1) {
-        ɵɵcontentQuery(dirIndex, _c0, 4);
-        ɵɵcontentQuery(dirIndex, _c1, 4);
-        ɵɵcontentQuery(dirIndex, _c2, 4);
-        ɵɵcontentQuery(dirIndex, PrimeTemplate, 4);
-      }
-      if (rf & 2) {
-        let _t;
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.containerTemplate = _t.first);
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.iconTemplate = _t.first);
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.closeIconTemplate = _t.first);
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.templates = _t);
-      }
-    },
-    inputs: {
-      severity: "severity",
-      text: "text",
-      escape: [2, "escape", "escape", booleanAttribute],
-      style: "style",
-      styleClass: "styleClass",
-      closable: [2, "closable", "closable", booleanAttribute],
-      icon: "icon",
-      closeIcon: "closeIcon",
-      life: "life",
-      showTransitionOptions: "showTransitionOptions",
-      hideTransitionOptions: "hideTransitionOptions",
-      size: "size",
-      variant: "variant"
-    },
-    outputs: {
-      onClose: "onClose"
-    },
-    features: [ɵɵProvidersFeature([MessageStyle]), ɵɵInputTransformsFeature, ɵɵInheritDefinitionFeature],
-    ngContentSelectors: _c3,
-    decls: 1,
-    vars: 1,
-    consts: [["escapeOut", ""], [1, "p-message", "p-component", 3, "ngClass"], [1, "p-message-content"], [1, "p-message-icon", 3, "ngClass"], [4, "ngIf", "ngIfElse"], [3, "ngClass"], ["pRipple", "", "type", "button", 1, "p-message-close-button"], [4, "ngTemplateOutlet"], [3, "ngClass", "innerHTML", 4, "ngIf"], [3, "ngClass", "innerHTML"], [3, "ngClass", 4, "ngIf"], [4, "ngTemplateOutlet", "ngTemplateOutletContext"], ["pRipple", "", "type", "button", 1, "p-message-close-button", 3, "click"], [1, "p-message-close-icon", 3, "ngClass"], ["styleClass", "p-message-close-icon"]],
-    template: function Message_Template(rf, ctx) {
-      if (rf & 1) {
-        ɵɵprojectionDef();
-        ɵɵtemplate(0, Message_Conditional_0_Template, 10, 15, "div", 1);
-      }
-      if (rf & 2) {
-        ɵɵconditional(ctx.visible() ? 0 : -1);
-      }
-    },
-    dependencies: [CommonModule, NgClass, NgIf, NgTemplateOutlet, TimesIcon, Ripple, SharedModule],
-    encapsulation: 2,
-    data: {
-      animation: [trigger("messageAnimation", [transition(":enter", [style({
-        opacity: 0,
-        transform: "translateY(-25%)"
-      }), animate("{{showTransitionParams}}")]), transition(":leave", [animate("{{hideTransitionParams}}", style({
-        height: 0,
-        marginTop: 0,
-        marginBottom: 0,
-        marginLeft: 0,
-        marginRight: 0,
-        opacity: 0
-      }))])])]
-    },
-    changeDetection: 0
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Message, [{
-    type: Component,
-    args: [{
-      selector: "p-message",
-      standalone: true,
-      imports: [CommonModule, TimesIcon, Ripple, SharedModule],
-      template: `
-        @if (visible()) {
-            <div
-                class="p-message p-component"
-                [attr.aria-live]="'polite'"
-                [ngClass]="containerClass"
-                [attr.role]="'alert'"
-                [@messageAnimation]="{
-                    value: 'visible()',
-                    params: {
-                        showTransitionParams: showTransitionOptions,
-                        hideTransitionParams: hideTransitionOptions
-                    }
-                }"
-            >
-                <div class="p-message-content">
-                    @if (iconTemplate || _iconTemplate) {
-                        <ng-container *ngTemplateOutlet="iconTemplate || iconTemplate"></ng-container>
-                    }
-                    @if (icon) {
-                        <i class="p-message-icon" [ngClass]="icon"></i>
-                    }
-
-                    <div *ngIf="!escape; else escapeOut">
-                        <span *ngIf="!escape" [ngClass]="cx('text')" [innerHTML]="text"></span>
-                    </div>
-
-                    <ng-template #escapeOut>
-                        <span *ngIf="escape && text" [ngClass]="cx('text')">{{ text }}</span>
-                    </ng-template>
-
-                    @if (containerTemplate || _containerTemplate) {
-                        <ng-container *ngTemplateOutlet="containerTemplate || containerTemplate; context: { closeCallback: close.bind(this) }"></ng-container>
-                    } @else {
-                        <span [ngClass]="cx('text')">
-                            <ng-content></ng-content>
-                        </span>
-                    }
-                    @if (closable) {
-                        <button pRipple type="button" class="p-message-close-button" (click)="close($event)">
-                            @if (closeIcon) {
-                                <i class="p-message-close-icon" [ngClass]="closeIcon"></i>
-                            }
-                            @if (closeIconTemplate || _closeIconTemplate) {
-                                <ng-container *ngTemplateOutlet="closeIconTemplate || _closeIconTemplate"></ng-container>
-                            }
-                            @if (!closeIconTemplate && !_closeIconTemplate && !closeIcon) {
-                                <TimesIcon styleClass="p-message-close-icon" />
-                            }
-                        </button>
-                    }
-                </div>
-            </div>
-        }
-    `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      encapsulation: ViewEncapsulation.None,
-      providers: [MessageStyle],
-      animations: [trigger("messageAnimation", [transition(":enter", [style({
-        opacity: 0,
-        transform: "translateY(-25%)"
-      }), animate("{{showTransitionParams}}")]), transition(":leave", [animate("{{hideTransitionParams}}", style({
-        height: 0,
-        marginTop: 0,
-        marginBottom: 0,
-        marginLeft: 0,
-        marginRight: 0,
-        opacity: 0
-      }))])])]
-    }]
-  }], null, {
-    severity: [{
-      type: Input
-    }],
-    text: [{
-      type: Input
-    }],
-    escape: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    style: [{
-      type: Input
-    }],
-    styleClass: [{
-      type: Input
-    }],
-    closable: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    icon: [{
-      type: Input
-    }],
-    closeIcon: [{
-      type: Input
-    }],
-    life: [{
-      type: Input
-    }],
-    showTransitionOptions: [{
-      type: Input
-    }],
-    hideTransitionOptions: [{
-      type: Input
-    }],
-    size: [{
-      type: Input
-    }],
-    variant: [{
-      type: Input
-    }],
-    onClose: [{
-      type: Output
-    }],
-    containerTemplate: [{
-      type: ContentChild,
-      args: ["container", {
-        descendants: false
-      }]
-    }],
-    iconTemplate: [{
-      type: ContentChild,
-      args: ["icon", {
-        descendants: false
-      }]
-    }],
-    closeIconTemplate: [{
-      type: ContentChild,
-      args: ["closeicon", {
-        descendants: false
-      }]
-    }],
-    templates: [{
-      type: ContentChildren,
-      args: [PrimeTemplate]
-    }]
-  });
-})();
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassDebugInfo(Message, {
-    className: "Message",
-    filePath: "message.ts",
-    lineNumber: 95
-  });
-})();
-var MessageModule = class _MessageModule {
-  static ɵfac = function MessageModule_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _MessageModule)();
-  };
-  static ɵmod = ɵɵdefineNgModule({
-    type: _MessageModule
-  });
-  static ɵinj = ɵɵdefineInjector({
-    imports: [Message, SharedModule, SharedModule]
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MessageModule, [{
-    type: NgModule,
-    args: [{
-      imports: [Message, SharedModule],
-      exports: [Message, SharedModule]
-    }]
-  }], null, null);
-})();
-(function() {
-  (typeof ngJitMode === "undefined" || ngJitMode) && ɵɵsetNgModuleScope(MessageModule, {
-    imports: [Message, SharedModule],
-    exports: [Message, SharedModule]
-  });
-})();
-
-// node_modules/primeng/fesm2022/primeng-progressbar.mjs
-var theme2 = ({
-  dt
-}) => `
-.p-progressbar {
-    position: relative;
-    overflow: hidden;
-    height: ${dt("progressbar.height")};
-    background: ${dt("progressbar.background")};
-    border-radius: ${dt("progressbar.border.radius")};
-}
-
-.p-progressbar-value {
-    margin: 0;
-    background: ${dt("progressbar.value.background")};
-}
-
-.p-progressbar-label {
-    color: ${dt("progressbar.label.color")};
-    font-size: ${dt("progressbar.label.font.size")};
-    font-weight: ${dt("progressbar.label.font.weight")};
-}
-
-.p-progressbar-determinate .p-progressbar-value {
-    height: 100%;
-    width: 0%;
-    position: absolute;
-    display: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    transition: width 1s ease-in-out;
-}
-
-.p-progressbar-determinate .p-progressbar-label {
-    display: inline-flex;
-}
-
-.p-progressbar-indeterminate .p-progressbar-value::before {
-    content: "";
-    position: absolute;
-    background: inherit;
-    top: 0;
-    inset-inline-start: 0;
-    bottom: 0;
-    will-change: inset-inline-start, inset-inline-end;
-    animation: p-progressbar-indeterminate-anim 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
-}
-
-.p-progressbar-indeterminate .p-progressbar-value::after {
-    content: "";
-    position: absolute;
-    background: inherit;
-    top: 0;
-    inset-inline-start: 0;
-    bottom: 0;
-    will-change: inset-inline-start, inset-inline-end;
-    animation: p-progressbar-indeterminate-anim-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-    animation-delay: 1.15s;
-}
-
-@-webkit-keyframes p-progressbar-indeterminate-anim {
-    0% {
-        inset-inline-start: -35%;
-        inset-inline-end: 100%;
-    }
-    60% {
-        inset-inline-start: 100%;
-        inset-inline-end: -90%;
-    }
-    100% {
-        inset-inline-start: 100%;
-        inset-inline-end: -90%;
-    }
-}
-@keyframes p-progressbar-indeterminate-anim {
-    0% {
-        inset-inline-start: -35%;
-        inset-inline-end: 100%;
-    }
-    60% {
-        inset-inline-start: 100%;
-        inset-inline-end: -90%;
-    }
-    100% {
-        inset-inline-start: 100%;
-        inset-inline-end: -90%;
-    }
-}
-@-webkit-keyframes p-progressbar-indeterminate-anim-short {
-    0% {
-        inset-inline-start: -200%;
-        inset-inline-end: 100%;
-    }
-    60% {
-        inset-inline-start: 107%;
-        inset-inline-end: -8%;
-    }
-    100% {
-        inset-inline-start: 107%;
-        inset-inline-end: -8%;
-    }
-}
-@keyframes p-progressbar-indeterminate-anim-short {
-    0% {
-        inset-inline-start: -200%;
-        inset-inline-end: 100%;
-    }
-    60% {
-        inset-inline-start: 107%;
-        inset-inline-end: -8%;
-    }
-    100% {
-        inset-inline-start: 107%;
-        inset-inline-end: -8%;
-    }
-}
-`;
-var classes2 = {
-  root: ({
-    instance
-  }) => ["p-progressbar p-component", {
-    "p-progressbar-determinate": instance.determinate,
-    "p-progressbar-indeterminate": instance.indeterminate
-  }],
-  value: "p-progressbar-value",
-  label: "p-progressbar-label"
-};
-var ProgressBarStyle = class _ProgressBarStyle extends BaseStyle {
-  name = "progressbar";
-  theme = theme2;
-  classes = classes2;
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵProgressBarStyle_BaseFactory;
-    return function ProgressBarStyle_Factory(__ngFactoryType__) {
-      return (ɵProgressBarStyle_BaseFactory || (ɵProgressBarStyle_BaseFactory = ɵɵgetInheritedFactory(_ProgressBarStyle)))(__ngFactoryType__ || _ProgressBarStyle);
-    };
-  })();
-  static ɵprov = ɵɵdefineInjectable({
-    token: _ProgressBarStyle,
-    factory: _ProgressBarStyle.ɵfac
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ProgressBarStyle, [{
-    type: Injectable
-  }], null, null);
-})();
-var ProgressBarClasses;
-(function(ProgressBarClasses2) {
-  ProgressBarClasses2["root"] = "p-progressbar";
-  ProgressBarClasses2["value"] = "p-progressbar-value";
-  ProgressBarClasses2["label"] = "p-progressbar-label";
-})(ProgressBarClasses || (ProgressBarClasses = {}));
-var _c02 = ["content"];
-var _c12 = (a0, a1) => ({
-  "p-progressbar p-component": true,
-  "p-progressbar-determinate": a0,
-  "p-progressbar-indeterminate": a1
-});
-var _c22 = (a0) => ({
-  $implicit: a0
-});
-function ProgressBar_div_1_div_2_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "div");
-    ɵɵtext(1);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext(2);
-    ɵɵstyleProp("display", ctx_r0.value != null && ctx_r0.value !== 0 ? "flex" : "none");
-    ɵɵattribute("data-pc-section", "label");
-    ɵɵadvance();
-    ɵɵtextInterpolate2("", ctx_r0.value, "", ctx_r0.unit, "");
-  }
-}
-function ProgressBar_div_1_ng_container_3_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementContainer(0);
-  }
-}
-function ProgressBar_div_1_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "div", 3)(1, "div", 4);
-    ɵɵtemplate(2, ProgressBar_div_1_div_2_Template, 2, 5, "div", 5)(3, ProgressBar_div_1_ng_container_3_Template, 1, 0, "ng-container", 6);
-    ɵɵelementEnd()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext();
-    ɵɵclassMap(ctx_r0.valueStyleClass);
-    ɵɵstyleProp("width", ctx_r0.value + "%")("background", ctx_r0.color);
-    ɵɵproperty("ngClass", "p-progressbar-value p-progressbar-value-animate");
-    ɵɵattribute("data-pc-section", "value");
-    ɵɵadvance(2);
-    ɵɵproperty("ngIf", ctx_r0.showValue && !ctx_r0.contentTemplate && !ctx_r0._contentTemplate);
-    ɵɵadvance();
-    ɵɵproperty("ngTemplateOutlet", ctx_r0.contentTemplate || ctx_r0._contentTemplate)("ngTemplateOutletContext", ɵɵpureFunction1(11, _c22, ctx_r0.value));
-  }
-}
-function ProgressBar_div_2_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "div", 7);
-    ɵɵelement(1, "div", 8);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = ɵɵnextContext();
-    ɵɵclassMap(ctx_r0.valueStyleClass);
-    ɵɵproperty("ngClass", "p-progressbar-indeterminate-container");
-    ɵɵattribute("data-pc-section", "container");
-    ɵɵadvance();
-    ɵɵstyleProp("background", ctx_r0.color);
-    ɵɵattribute("data-pc-section", "value");
-  }
-}
-var ProgressBar = class _ProgressBar extends BaseComponent {
-  /**
-   * Current value of the progress.
-   * @group Props
-   */
-  value;
-  /**
-   * Whether to display the progress bar value.
-   * @group Props
-   */
-  showValue = true;
-  /**
-   * Style class of the element.
-   * @group Props
-   */
-  styleClass;
-  /**
-   * Style class of the value element.
-   * @group Props
-   */
-  valueStyleClass;
-  /**
-   * Inline style of the element.
-   * @group Props
-   */
-  style;
-  /**
-   * Unit sign appended to the value.
-   * @group Props
-   */
-  unit = "%";
-  /**
-   * Defines the mode of the progress
-   * @group Props
-   */
-  mode = "determinate";
-  /**
-   * Color for the background of the progress.
-   * @group Props
-   */
-  color;
-  /**
-   * Template of the content.
-   * @group templates
-   */
-  contentTemplate;
-  _componentStyle = inject(ProgressBarStyle);
-  templates;
-  _contentTemplate;
-  ngAfterContentInit() {
-    this.templates?.forEach((item) => {
-      switch (item.getType()) {
-        case "content":
-          this._contentTemplate = item.template;
-          break;
-        default:
-          this._contentTemplate = item.template;
-      }
-    });
-  }
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵProgressBar_BaseFactory;
-    return function ProgressBar_Factory(__ngFactoryType__) {
-      return (ɵProgressBar_BaseFactory || (ɵProgressBar_BaseFactory = ɵɵgetInheritedFactory(_ProgressBar)))(__ngFactoryType__ || _ProgressBar);
-    };
-  })();
-  static ɵcmp = ɵɵdefineComponent({
-    type: _ProgressBar,
-    selectors: [["p-progressBar"], ["p-progressbar"], ["p-progress-bar"]],
-    contentQueries: function ProgressBar_ContentQueries(rf, ctx, dirIndex) {
-      if (rf & 1) {
-        ɵɵcontentQuery(dirIndex, _c02, 4);
-        ɵɵcontentQuery(dirIndex, PrimeTemplate, 4);
-      }
-      if (rf & 2) {
-        let _t;
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.contentTemplate = _t.first);
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.templates = _t);
-      }
-    },
-    inputs: {
-      value: [2, "value", "value", numberAttribute],
-      showValue: [2, "showValue", "showValue", booleanAttribute],
-      styleClass: "styleClass",
-      valueStyleClass: "valueStyleClass",
-      style: "style",
-      unit: "unit",
-      mode: "mode",
-      color: "color"
-    },
-    features: [ɵɵProvidersFeature([ProgressBarStyle]), ɵɵInputTransformsFeature, ɵɵInheritDefinitionFeature],
-    decls: 3,
-    vars: 14,
-    consts: [["role", "progressbar", 3, "ngStyle", "ngClass"], ["style", "display:flex", 3, "ngClass", "class", "width", "background", 4, "ngIf"], [3, "ngClass", "class", 4, "ngIf"], [2, "display", "flex", 3, "ngClass"], [1, "p-progressbar-label"], [3, "display", 4, "ngIf"], [4, "ngTemplateOutlet", "ngTemplateOutletContext"], [3, "ngClass"], [1, "p-progressbar-value", "p-progressbar-value-animate"]],
-    template: function ProgressBar_Template(rf, ctx) {
-      if (rf & 1) {
-        ɵɵelementStart(0, "div", 0);
-        ɵɵtemplate(1, ProgressBar_div_1_Template, 4, 13, "div", 1)(2, ProgressBar_div_2_Template, 2, 7, "div", 2);
-        ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        ɵɵclassMap(ctx.styleClass);
-        ɵɵproperty("ngStyle", ctx.style)("ngClass", ɵɵpureFunction2(11, _c12, ctx.mode === "determinate", ctx.mode === "indeterminate"));
-        ɵɵattribute("aria-valuemin", 0)("aria-valuenow", ctx.value)("aria-valuemax", 100)("data-pc-name", "progressbar")("data-pc-section", "root");
-        ɵɵadvance();
-        ɵɵproperty("ngIf", ctx.mode === "determinate");
-        ɵɵadvance();
-        ɵɵproperty("ngIf", ctx.mode === "indeterminate");
-      }
-    },
-    dependencies: [CommonModule, NgClass, NgIf, NgTemplateOutlet, NgStyle, SharedModule],
-    encapsulation: 2,
-    changeDetection: 0
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ProgressBar, [{
-    type: Component,
-    args: [{
-      selector: "p-progressBar, p-progressbar, p-progress-bar",
-      standalone: true,
-      imports: [CommonModule, SharedModule],
-      template: `
-        <div
-            role="progressbar"
-            [class]="styleClass"
-            [ngStyle]="style"
-            [attr.aria-valuemin]="0"
-            [attr.aria-valuenow]="value"
-            [attr.aria-valuemax]="100"
-            [attr.data-pc-name]="'progressbar'"
-            [attr.data-pc-section]="'root'"
-            [ngClass]="{
-                'p-progressbar p-component': true,
-                'p-progressbar-determinate': mode === 'determinate',
-                'p-progressbar-indeterminate': mode === 'indeterminate'
-            }"
-        >
-            <div *ngIf="mode === 'determinate'" [ngClass]="'p-progressbar-value p-progressbar-value-animate'" [class]="valueStyleClass" [style.width]="value + '%'" style="display:flex" [style.background]="color" [attr.data-pc-section]="'value'">
-                <div class="p-progressbar-label">
-                    <div *ngIf="showValue && !contentTemplate && !_contentTemplate" [style.display]="value != null && value !== 0 ? 'flex' : 'none'" [attr.data-pc-section]="'label'">{{ value }}{{ unit }}</div>
-                    <ng-container *ngTemplateOutlet="contentTemplate || _contentTemplate; context: { $implicit: value }"></ng-container>
-                </div>
-            </div>
-            <div *ngIf="mode === 'indeterminate'" [ngClass]="'p-progressbar-indeterminate-container'" [class]="valueStyleClass" [attr.data-pc-section]="'container'">
-                <div class="p-progressbar-value p-progressbar-value-animate" [style.background]="color" [attr.data-pc-section]="'value'"></div>
-            </div>
-        </div>
-    `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      encapsulation: ViewEncapsulation.None,
-      providers: [ProgressBarStyle]
-    }]
-  }], null, {
-    value: [{
-      type: Input,
-      args: [{
-        transform: numberAttribute
-      }]
-    }],
-    showValue: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    styleClass: [{
-      type: Input
-    }],
-    valueStyleClass: [{
-      type: Input
-    }],
-    style: [{
-      type: Input
-    }],
-    unit: [{
-      type: Input
-    }],
-    mode: [{
-      type: Input
-    }],
-    color: [{
-      type: Input
-    }],
-    contentTemplate: [{
-      type: ContentChild,
-      args: ["content", {
-        descendants: false
-      }]
-    }],
-    templates: [{
-      type: ContentChildren,
-      args: [PrimeTemplate]
-    }]
-  });
-})();
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassDebugInfo(ProgressBar, {
-    className: "ProgressBar",
-    filePath: "progressbar.ts",
-    lineNumber: 46
-  });
-})();
-var ProgressBarModule = class _ProgressBarModule {
-  static ɵfac = function ProgressBarModule_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _ProgressBarModule)();
-  };
-  static ɵmod = ɵɵdefineNgModule({
-    type: _ProgressBarModule
-  });
-  static ɵinj = ɵɵdefineInjector({
-    imports: [ProgressBar, SharedModule, SharedModule]
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ProgressBarModule, [{
-    type: NgModule,
-    args: [{
-      imports: [ProgressBar, SharedModule],
-      exports: [ProgressBar, SharedModule]
-    }]
-  }], null, null);
-})();
-(function() {
-  (typeof ngJitMode === "undefined" || ngJitMode) && ɵɵsetNgModuleScope(ProgressBarModule, {
-    imports: [ProgressBar, SharedModule],
-    exports: [ProgressBar, SharedModule]
-  });
-})();
-
 // node_modules/primeng/fesm2022/primeng-fileupload.mjs
-var theme3 = ({
+var theme = ({
   dt
 }) => `
 .p-fileupload input[type="file"] {
@@ -1584,7 +211,7 @@ var theme3 = ({
     gap: ${dt("fileupload.basic.gap")};
 }
 `;
-var classes3 = {
+var classes = {
   root: ({
     instance
   }) => `p-fileupload p-fileupload-${instance.mode} p-component`,
@@ -1605,8 +232,8 @@ var classes3 = {
 };
 var FileUploadStyle = class _FileUploadStyle extends BaseStyle {
   name = "fileupload";
-  theme = theme3;
-  classes = classes3;
+  theme = theme;
+  classes = classes;
   static ɵfac = /* @__PURE__ */ (() => {
     let ɵFileUploadStyle_BaseFactory;
     return function FileUploadStyle_Factory(__ngFactoryType__) {
@@ -1641,13 +268,13 @@ var FileUploadClasses;
   FileUploadClasses2["fileActions"] = "p-fileupload-file-actions";
   FileUploadClasses2["pcFileRemoveButton"] = "p-fileupload-file-remove-button";
 })(FileUploadClasses || (FileUploadClasses = {}));
-var _c03 = ["file"];
-var _c13 = ["header"];
-var _c23 = ["content"];
-var _c32 = ["toolbar"];
-var _c42 = ["chooseicon"];
-var _c52 = ["filelabel"];
-var _c62 = ["uploadicon"];
+var _c0 = ["file"];
+var _c1 = ["header"];
+var _c2 = ["content"];
+var _c3 = ["toolbar"];
+var _c4 = ["chooseicon"];
+var _c5 = ["filelabel"];
+var _c6 = ["uploadicon"];
 var _c7 = ["cancelicon"];
 var _c8 = ["empty"];
 var _c9 = ["advancedfileinput"];
@@ -1659,7 +286,7 @@ var _c11 = (a0, a1, a2, a3, a4) => ({
   clearCallback: a3,
   uploadCallback: a4
 });
-var _c122 = (a0, a1, a2, a3, a4, a5, a6, a7) => ({
+var _c12 = (a0, a1, a2, a3, a4, a5, a6, a7) => ({
   $implicit: a0,
   uploadedFiles: a1,
   chooseCallback: a2,
@@ -1669,7 +296,7 @@ var _c122 = (a0, a1, a2, a3, a4, a5, a6, a7) => ({
   progress: a6,
   messages: a7
 });
-var _c132 = (a0) => ({
+var _c13 = (a0) => ({
   $implicit: a0
 });
 function FileUpload_div_0_ng_container_4_span_4_Template(rf, ctx) {
@@ -2128,7 +755,7 @@ function FileUpload_div_0_Template(rf, ctx) {
     ɵɵadvance(2);
     ɵɵproperty("ngIf", ctx_r1.hasFiles());
     ɵɵadvance();
-    ɵɵproperty("ngTemplateOutlet", ctx_r1.contentTemplate || ctx_r1._contentTemplate)("ngTemplateOutletContext", ɵɵpureFunction8(30, _c122, ctx_r1.files, ctx_r1.uploadedFiles, ctx_r1.choose.bind(ctx_r1), ctx_r1.clear.bind(ctx_r1), ctx_r1.removeUploadedFile.bind(ctx_r1), ctx_r1.remove.bind(ctx_r1), ctx_r1.progress, ctx_r1.msgs));
+    ɵɵproperty("ngTemplateOutlet", ctx_r1.contentTemplate || ctx_r1._contentTemplate)("ngTemplateOutletContext", ɵɵpureFunction8(30, _c12, ctx_r1.files, ctx_r1.uploadedFiles, ctx_r1.choose.bind(ctx_r1), ctx_r1.clear.bind(ctx_r1), ctx_r1.removeUploadedFile.bind(ctx_r1), ctx_r1.remove.bind(ctx_r1), ctx_r1.progress, ctx_r1.msgs));
     ɵɵadvance();
     ɵɵconditional((ctx_r1.emptyTemplate || ctx_r1._emptyTemplate) && !ctx_r1.hasFiles() && !ctx_r1.hasUploadedFiles() ? 14 : -1);
   }
@@ -2285,7 +912,7 @@ function FileUpload_div_1_Conditional_8_Conditional_1_Template(rf, ctx) {
   }
   if (rf & 2) {
     const ctx_r1 = ɵɵnextContext(3);
-    ɵɵproperty("ngTemplateOutlet", ctx_r1.fileLabelTemplate || ctx_r1._fileLabelTemplate)("ngTemplateOutletContext", ɵɵpureFunction1(2, _c132, ctx_r1.files));
+    ɵɵproperty("ngTemplateOutlet", ctx_r1.fileLabelTemplate || ctx_r1._fileLabelTemplate)("ngTemplateOutletContext", ɵɵpureFunction1(2, _c13, ctx_r1.files));
   }
 }
 function FileUpload_div_1_Conditional_8_Template(rf, ctx) {
@@ -3130,13 +1757,13 @@ var FileUpload = class _FileUpload extends BaseComponent {
     selectors: [["p-fileupload"], ["p-fileUpload"]],
     contentQueries: function FileUpload_ContentQueries(rf, ctx, dirIndex) {
       if (rf & 1) {
-        ɵɵcontentQuery(dirIndex, _c03, 4);
-        ɵɵcontentQuery(dirIndex, _c13, 4);
-        ɵɵcontentQuery(dirIndex, _c23, 4);
-        ɵɵcontentQuery(dirIndex, _c32, 4);
-        ɵɵcontentQuery(dirIndex, _c42, 4);
-        ɵɵcontentQuery(dirIndex, _c52, 4);
-        ɵɵcontentQuery(dirIndex, _c62, 4);
+        ɵɵcontentQuery(dirIndex, _c0, 4);
+        ɵɵcontentQuery(dirIndex, _c1, 4);
+        ɵɵcontentQuery(dirIndex, _c2, 4);
+        ɵɵcontentQuery(dirIndex, _c3, 4);
+        ɵɵcontentQuery(dirIndex, _c4, 4);
+        ɵɵcontentQuery(dirIndex, _c5, 4);
+        ɵɵcontentQuery(dirIndex, _c6, 4);
         ɵɵcontentQuery(dirIndex, _c7, 4);
         ɵɵcontentQuery(dirIndex, _c8, 4);
         ɵɵcontentQuery(dirIndex, PrimeTemplate, 4);
@@ -3159,7 +1786,7 @@ var FileUpload = class _FileUpload extends BaseComponent {
       if (rf & 1) {
         ɵɵviewQuery(_c9, 5);
         ɵɵviewQuery(_c10, 5);
-        ɵɵviewQuery(_c23, 5);
+        ɵɵviewQuery(_c2, 5);
       }
       if (rf & 2) {
         let _t;

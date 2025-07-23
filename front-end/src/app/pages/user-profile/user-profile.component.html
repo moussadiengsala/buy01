@@ -1,494 +1,784 @@
-<div class="w-full min-h-screen bg-gradient-to-b from-indigo-50 to-white py-8">
-    <div class="max-w-4xl mx-auto px-4">
-        <!-- Header Section -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl tablet:text-3xl font-bold text-gray-900">Account Settings</h1>
-            <p class="text-gray-600 mt-2">Manage your personal information and preferences</p>
-        </div>
+<div class="profile-container">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
 
-        <!-- Profile Settings Card -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-            <div class="border-b border-gray-100">
-                <div class="flex justify-between items-center p-6">
-                    <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Profile Settings</h2>
-                        <p class="text-sm text-gray-500 mt-1">Manage your account information and security</p>
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <p-card>
+            <div class="header-content">
+                <div class="avatar-section">
+                    <p-avatar *ngIf="!user?.avatar"
+                              icon="pi pi-user"
+                              styleClass="profile-avatar"
+                              [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
+                              shape="circle" />
+                    <p-avatar *ngIf="user?.avatar"
+                              image="{{environment.apiUrl}}user/avatar/{{user?.avatar}}"
+                              styleClass="mr-2"
+                              [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
+                              shape="circle" />
+                    <p-button
+                            icon="pi pi-camera"
+                            class="p-button-rounded p-button-secondary avatar-upload-btn"
+                            (click)="showAvatarDialog = true"
+                            pTooltip="Change Avatar">
+                    </p-button>
+                </div>
+
+                <div class="user-info">
+                    <h2>{{ user?.name || 'User' }}</h2>
+                    <p class="user-email">{{ user?.email }}</p>
+                    <p-chip
+                            [label]="user?.role || 'USER'"
+                            [styleClass]="user?.role === Role.SELLER ? 'seller-badge' : 'user-badge'">
+                    </p-chip>
+                </div>
+            </div>
+        </p-card>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <p-tabView>
+        <p-tabPanel header="Profile Settings" leftIcon="pi pi-user">
+            <div class="profile-settings">
+                <div class="settings-grid">
+                    <!-- Basic Information -->
+                        <form [formGroup]="editProfileForm" (ngSubmit)="saveEditProfile()">
+                            <div class="dialog-form">
+                                <div class="form-field">
+                                    <label for="editName">First Name *</label>
+                                    <input
+                                            pInputText
+                                            id="editName"
+                                            formControlName="name"
+                                            [class.ng-invalid]="isFieldInvalid(editProfileForm, 'name')">
+                                    <small class="error-text" *ngIf="isFieldInvalid(editProfileForm, 'name')">
+                                        {{ getFieldError(editProfileForm, 'name') }}
+                                    </small>
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="editEmail">Email *</label>
+                                    <input
+                                            pInputText
+                                            id="editEmail"
+                                            formControlName="email"
+                                            [class.ng-invalid]="isFieldInvalid(editProfileForm, 'email')">
+                                    <small class="error-text" *ngIf="isFieldInvalid(editProfileForm, 'email')">
+                                        {{ getFieldError(editProfileForm, 'email') }}
+                                    </small>
+                                </div>
+                            </div>
+                            <p-button
+                                    label="Save Changes"
+                                    icon="pi pi-check"
+                                    (onClick)="saveEditProfile()"
+                                    [disabled]="editProfileForm.invalid"
+                            >
+                            </p-button>
+                        </form>
+
+                </div>
+
+                <!-- Change Password -->
+                <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+                        <div class="dialog-form">
+                            <div class="form-field">
+                                <label for="currentPassword">Current Password *</label>
+                                <input
+                                        pInputText
+                                        type="password"
+                                        id="currentPassword"
+                                        formControlName="currentPassword"
+                                        [class.ng-invalid]="isFieldInvalid(passwordForm, 'currentPassword')">
+                                <small class="error-text" *ngIf="isFieldInvalid(passwordForm, 'currentPassword')">
+                                    {{ getFieldError(passwordForm, 'currentPassword') }}
+                                </small>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="newPassword">New Password *</label>
+                                <input
+                                        pInputText
+                                        type="password"
+                                        id="newPassword"
+                                        formControlName="newPassword"
+                                        [class.ng-invalid]="isFieldInvalid(passwordForm, 'newPassword')">
+                                <small class="error-text" *ngIf="isFieldInvalid(passwordForm, 'newPassword')">
+                                    {{ getFieldError(passwordForm, 'newPassword') }}
+                                </small>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="confirmPassword">Confirm Password *</label>
+                                <input
+                                        pInputText
+                                        type="password"
+                                        id="confirmPassword"
+                                        formControlName="confirmPassword"
+                                        [class.ng-invalid]="isFieldInvalid(passwordForm, 'confirmPassword')">
+                                <small class="error-text" *ngIf="isFieldInvalid(passwordForm, 'confirmPassword')">
+                                    {{ getFieldError(passwordForm, 'confirmPassword') }}
+                                </small>
+                            </div>
+                        </div>
+                        <p-button
+                                label="Change Password"
+                                icon="pi pi-check"
+                                (click)="changePassword()"
+                                [disabled]="passwordForm.invalid">
+                        </p-button>
+                    </form>
+
+                <!-- Danger Zone -->
+                <p-card header="Danger Zone" class="danger-card">
+                    <div class="danger-actions">
+                        <div class="danger-info">
+                            <h4>Delete Account</h4>
+                            <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                        </div>
+                        <p-button
+                                label="Delete Account"
+                                icon="pi pi-trash"
+                                class="p-button-danger"
+                                (click)="deleteAccount()">
+                        </p-button>
                     </div>
-                    <button
-                            (click)="toggle()"
-                            class="flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-white hover:bg-red-500 transition-all duration-200 group"
-                            [class.opacity-50]="deleting"
-                            [disabled]="deleting"
-                            aria-label="Delete account">
-                        <i class="pi pi-trash text-lg group-hover:scale-110 transition-transform"></i>
+                </p-card>
+            </div>
+        </p-tabPanel>
+
+        <p-tabPanel header="My Orders" leftIcon="pi pi-shopping-cart">
+            <div class="orders-section">
+                <!-- Search and Filter -->
+                <p-card class="search-card">
+                    <form [formGroup]="searchForm">
+                        <div class="search-grid">
+                            <div class="search-field">
+                                <label for="searchKeyword">Search Orders</label>
+                                <input
+                                        pInputText
+                                        id="searchKeyword"
+                                        placeholder="Search by order ID, product name..."
+                                        (input)="onSearchInput($event)"
+                                        class="search-input">
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="statusFilter">Order Status</label>
+                                <p-dropdown
+                                        id="statusFilter"
+                                        formControlName="status"
+                                        [options]="statusOptions"
+                                        placeholder="All Statuses"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        [showClear]="true">
+                                </p-dropdown>
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="paymentFilter">Payment Status</label>
+                                <p-dropdown
+                                        id="paymentFilter"
+                                        formControlName="paymentStatus"
+                                        [options]="paymentStatusOptions"
+                                        placeholder="All Payment Status"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        [showClear]="true">
+                                </p-dropdown>
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="startDate">Start Date</label>
+                                <p-calendar
+                                        id="startDate"
+                                        formControlName="startDate"
+                                        [showIcon]="true"
+                                        placeholder="From date">
+                                </p-calendar>
+                            </div>
+
+                            <div class="filter-field">
+                                <label for="endDate">End Date</label>
+                                <p-calendar
+                                        id="endDate"
+                                        formControlName="endDate"
+                                        [showIcon]="true"
+                                        placeholder="To date">
+                                </p-calendar>
+                            </div>
+
+                            <div class="action-buttons">
+                                <p-button
+                                        label="Clear Filters"
+                                        icon="pi pi-filter-slash"
+                                        class="p-button-outlined"
+                                        (click)="clearFilters()">
+                                </p-button>
+                            </div>
+                        </div>
+                    </form>
+                </p-card>
+
+                <!-- Orders Table -->
+                <p-card class="orders-table-card">
+                    <ng-container *ngIf="!ordersLoading; else loadingSkeleton">
+                        <p-table
+                                [value]="filteredOrders"
+                                [paginator]="false"
+                                [responsive]="true"
+                                styleClass="p-datatable-gridlines">
+
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-order>
+                                <tr>
+                                    <td>
+                                        <strong>#{{ order.id }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ formatDate(order.createdAt) }}
+                                    </td>
+                                    <td>
+                                        {{ order.orderItems?.length || 0 }} item(s)
+                                    </td>
+                                    <td>
+                                        <strong>{{ formatCurrency(order.totalAmount) }}</strong>
+                                    </td>
+                                    <td>
+                                        <p-tag
+                                                [value]="order.orderStatus"
+                                                [severity]="getOrderStatusSeverity(order.orderStatus)">
+                                        </p-tag>
+                                    </td>
+                                    <td>
+                                        <p-tag
+                                                [value]="order.paymentStatus"
+                                                [severity]="getPaymentStatusSeverity(order.paymentStatus)">
+                                        </p-tag>
+                                    </td>
+                                    <td>
+                                        <div class="order-actions">
+                                            <p-button
+                                                    icon="pi pi-eye"
+                                                    class="p-button-text p-button-rounded"
+                                                    pTooltip="View Details"
+                                                    [routerLink]="['/order']"
+                                                    [queryParams]="{ id: order.id }"
+                                                    routerLinkActive="active"
+                                                    ariaCurrentWhenActive="page">
+                                            </p-button>
+
+                                            <p-button
+                                                    icon="pi pi-refresh"
+                                                    class="p-button-text p-button-rounded"
+                                                    (click)="reorderOrder(order)"
+                                                    [disabled]="!canReorder(order)"
+                                                    pTooltip="Reorder">
+                                            </p-button>
+
+                                            <p-button
+                                                    icon="pi pi-times"
+                                                    class="p-button-text p-button-rounded"
+                                                    (click)="cancelOrder(order)"
+                                                    [disabled]="!canCancelOrder(order)"
+                                                    pTooltip="Cancel Order">
+                                            </p-button>
+
+                                            <p-button
+                                                    icon="pi pi-download"
+                                                    class="p-button-text p-button-rounded"
+                                                    (click)="downloadReceipt(order)"
+                                                    pTooltip="Download Receipt">
+                                            </p-button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <div class="empty-state">
+                                            <i class="pi pi-shopping-cart" style="font-size: 3rem; color: red"></i>
+                                            <h3>No Orders Found</h3>
+                                            <p>You haven't placed any orders yet or no orders match your search criteria.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-container>
+
+                    <ng-template #loadingSkeleton>
+                        <div class="loading-skeleton">
+                            <p-skeleton height="3rem" class="mb-2" *ngFor="let item of [1,2,3,4,5]"></p-skeleton>
+                        </div>
+                    </ng-template>
+
+                    <!-- Pagination -->
+                    <p-paginator
+                            *ngIf="totalOrders > 0"
+                            [rows]="pageSize"
+                            [totalRecords]="totalOrders"
+                            [first]="currentPage * pageSize"
+                            (onPageChange)="onPageChange($event)"
+                            [rowsPerPageOptions]="[5, 10, 20, 50]">
+                    </p-paginator>
+                </p-card>
+            </div>
+        </p-tabPanel>
+
+        <p-tabPanel header="Stats" leftIcon="pi pi-chart-line">
+            <div class="p-6 space-y-6">
+                <!-- User Statistics -->
+                <div *ngIf="isUserStats()" class="space-y-6">
+                    <!-- Order Overview Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-600 text-sm font-medium">Total Orders</p>
+                                    <p class="text-2xl font-bold text-blue-800">{{getUserStats().totalOrders}}</p>
+                                </div>
+                                <i class="pi pi-shopping-cart text-blue-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-600 text-sm font-medium">Completed</p>
+                                    <p class="text-2xl font-bold text-green-800">{{getUserStats().completedOrders}}</p>
+                                </div>
+                                <i class="pi pi-check-circle text-green-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-yellow-600 text-sm font-medium">Pending</p>
+                                    <p class="text-2xl font-bold text-yellow-800">{{getUserStats().pendingOrders}}</p>
+                                </div>
+                                <i class="pi pi-clock text-yellow-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-600 text-sm font-medium">Cancelled</p>
+                                    <p class="text-2xl font-bold text-red-800">{{getUserStats().cancelledOrders}}</p>
+                                </div>
+                                <i class="pi pi-times-circle text-red-500 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Summary -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-dollar text-green-500 mr-2"></i>
+                                Purchase Summary
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Spent:</span>
+                                    <span class="font-semibold text-lg text-green-600">${{getUserStats().totalSpent | number:'1.2-2'}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Items Purchased:</span>
+                                    <span class="font-semibold">{{getUserStats().totalItemsPurchased}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">First Purchase:</span>
+                                    <span class="font-semibold">{{getUserStats().firstPurchaseDate | date:'mediumDate'}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Last Purchase:</span>
+                                    <span class="font-semibold">{{getUserStats().lastPurchaseDate | date:'mediumDate'}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Most Purchased Product -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-star text-yellow-500 mr-2"></i>
+                                Most Purchased Product
+                            </h3>
+                            <div class="flex items-center space-x-4" *ngIf="getUserStats().mostPurchasedProduct">
+                                <img
+                                        [src]="getUserStats().mostPurchasedProduct.media[0]?.imagePath || '/assets/placeholder.jpg'"
+                                        [alt]="getUserStats().mostPurchasedProduct.product.name"
+                                        class="w-16 h-16 object-cover rounded-lg border">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800">{{getUserStats().mostPurchasedProduct.product.name}}</p>
+                                    <p class="text-sm text-gray-600 mb-1">Quantity: {{getUserStats().mostPurchasedProductQuantity}}</p>
+                                    <p class="text-sm font-semibold text-green-600">${{getUserStats().mostPurchasedProduct.product.price | number:'1.2-2'}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Favorite Seller -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="pi pi-heart text-red-500 mr-2"></i>
+                            Favorite Seller
+                        </h3>
+                        <div class="flex items-center space-x-4" *ngIf="getUserStats().favoriteSeller">
+                            <p-avatar
+                                    image="{{environment.apiUrl}}user/avatar/{{getUserStats().favoriteSeller.avatar}}"
+                                    [label]="getUserStats().favoriteSeller.name.charAt(0)"
+                                    size="large"
+                                    shape="circle">
+                            </p-avatar>
+                            <div>
+                                <p class="font-medium text-gray-800">{{getUserStats().favoriteSeller.name}}</p>
+                                <p class="text-sm text-gray-600">{{getUserStats().favoriteSeller.email}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seller Statistics -->
+                <div *ngIf="isSellerStats()" class="space-y-6">
+                    <!-- Revenue and Order Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 lg:col-span-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-purple-600 text-sm font-medium">Total Revenue</p>
+                                    <p class="text-2xl font-bold text-purple-800">${{getSellerStats().totalRevenue | number:'1.2-2'}}</p>
+                                </div>
+                                <i class="pi pi-dollar text-purple-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-600 text-sm font-medium">Total Orders</p>
+                                    <p class="text-2xl font-bold text-blue-800">{{getSellerStats().totalOrders}}</p>
+                                </div>
+                                <i class="pi pi-shopping-cart text-blue-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-600 text-sm font-medium">Completed</p>
+                                    <p class="text-2xl font-bold text-green-800">{{getSellerStats().completedOrders}}</p>
+                                </div>
+                                <i class="pi pi-check-circle text-green-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-yellow-600 text-sm font-medium">Pending</p>
+                                    <p class="text-2xl font-bold text-yellow-800">{{getSellerStats().pendingOrders}}</p>
+                                </div>
+                                <i class="pi pi-clock text-yellow-500 text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-600 text-sm font-medium">Cancelled</p>
+                                    <p class="text-2xl font-bold text-red-800">{{getSellerStats().cancelledOrders}}</p>
+                                </div>
+                                <i class="pi pi-times-circle text-red-500 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Performance -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-chart-bar text-blue-500 mr-2"></i>
+                                Sales Performance
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Items Sold:</span>
+                                    <span class="font-semibold">{{getSellerStats().totalItemsSold}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Customers:</span>
+                                    <span class="font-semibold">{{getSellerStats().totalCustomers}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">First Order:</span>
+                                    <span class="font-semibold">{{getSellerStats().firstOrderDate | date:'mediumDate'}}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Last Order:</span>
+                                    <span class="font-semibold">{{getSellerStats().lastOrderDate | date:'mediumDate'}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best Selling Product -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="pi pi-star text-yellow-500 mr-2"></i>
+                                Best Selling Product
+                            </h3>
+                            <div class="flex items-center space-x-4" *ngIf="getSellerStats().mostPurchasedProduct">
+                                <img
+                                        [src]="getSellerStats().mostPurchasedProduct.media[0]?.imagePath || '/assets/placeholder.jpg'"
+                                        [alt]="getSellerStats().mostPurchasedProduct.product.name"
+                                        class="w-16 h-16 object-cover rounded-lg border">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-800">{{getSellerStats().mostPurchasedProduct.product.name}}</p>
+                                    <p class="text-sm text-gray-600 mb-1">Sold: {{getSellerStats().bestSellingProductQuantity}}</p>
+                                    <p class="text-sm font-semibold text-green-600">${{getSellerStats().mostPurchasedProduct.product.price | number:'1.2-2'}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Favorite Customer -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="pi pi-users text-blue-500 mr-2"></i>
+                            Top Customer
+                        </h3>
+                        <div class="flex items-center space-x-4" *ngIf="getSellerStats().favoriteCustomer">
+                            <p-avatar
+                                    [image]="getSellerStats().favoriteCustomer.avatar || ''"
+                                    [label]="getSellerStats().favoriteCustomer.name.charAt(0)"
+                                    size="large"
+                                    shape="circle">
+                            </p-avatar>
+                            <div>
+                                <p class="font-medium text-gray-800">{{getSellerStats().favoriteCustomer.name}}</p>
+                                <p class="text-sm text-gray-600">{{getSellerStats().favoriteCustomer.email}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Data State -->
+                <div *ngIf="!userStats" class="text-center py-12">
+                    <i class="pi pi-chart-line text-gray-400 text-6xl mb-4"></i>
+                    <p class="text-gray-500 text-lg">No statistics available</p>
+                </div>
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+
+    <p-dialog
+            header="Choose Avatar"
+            [(visible)]="showAvatarDialog"
+            [modal]="true"
+            [closable]="true"
+            [style]="{width: '600px'}"
+            (onHide)="closeAvatarDialog()">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Profile Picture</label>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div class="space-y-1 text-center">
+                    <div class="flex text-sm text-gray-600">
+                        <label for="avatar" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <span>Upload a file</span>
+                            <input id="avatar"
+                                   name="avatar"
+                                   type="file"
+                                   class="sr-only"
+                                   (change)="onFileChange($event)">
+                        </label>
+                        <p class="pl-1">or drag and drop</p>
+                    </div>
+                    <p class="text-xs text-gray-500">
+                        PNG, JPG, GIF up to 10MB
+                    </p>
+                </div>
+            </div>
+
+            <!-- Profile Picture Preview -->
+            <div *ngIf="currentFile" class="mt-4 flex flex-col items-center">
+                <div class="relative w-32 h-32 overflow-hidden border-2 border-indigo-200">
+                    <img [src]="currentFile.preview" alt="Profile Preview" class="w-full h-full object-cover">
+                    <button (click)="removeFile()" class="absolute top-1 right-1 bg-white/80 hover:bg-white p-1 shadow-md transition-all duration-300">
+                        <i class="pi pi-times text-gray-600"></i>
                     </button>
                 </div>
+                <p class="mt-2 text-sm text-gray-500">{{ currentFile.fileName }}</p>
             </div>
-
-            <div class="p-6">
-                <form class="space-y-6" [formGroup]="form" (ngSubmit)="updateProfile()">
-                    <div class="space-y-6">
-                        <!-- Name Field -->
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="pi pi-user text-gray-400"></i>
-                                </div>
-                                <input id="name"
-                                       name="name"
-                                       type="text"
-                                       formControlName="name"
-                                       class="pl-10 pr-3 py-2 block w-full rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                       placeholder="Enter your full name"
-                                       [ngClass]="{
-                                        'border-red-500 focus:border-red-500 focus:ring-red-500': form.get('name')?.invalid && form.get('name')?.touched,
-                                        'border-green-500 focus:border-green-500 focus:ring-green-500': form.get('name')?.valid && form.get('name')?.touched
-                                    }">
-                            </div>
-                            <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
-                                 class="text-red-500 text-xs mt-1">
-                                <span *ngIf="form.get('name')?.errors?.['required']">Name is required</span>
-                                <span *ngIf="form.get('name')?.errors?.['minlength']">Name must be at least 2 characters</span>
-                                <span *ngIf="form.get('name')?.errors?.['maxlength']">Name cannot exceed 20 characters</span>
-                                <span *ngIf="form.get('name')?.errors?.['pattern']">Only letters and spaces are allowed</span>
-                            </div>
-                        </div>
-
-                        <!-- Current Password Field -->
-                        <div>
-                            <label for="prev_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="pi pi-lock text-gray-400"></i>
-                                </div>
-                                <input id="prev_password"
-                                       name="prev_password"
-                                       type="password"
-                                       formControlName="prev_password"
-                                       class="pl-10 pr-3 py-2 block w-full rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                       placeholder="Enter your current password"
-                                       [ngClass]="{
-                                        'border-red-500 focus:border-red-500 focus:ring-red-500': form.get('prev_password')?.invalid && form.get('prev_password')?.touched,
-                                        'border-green-500 focus:border-green-500 focus:ring-green-500': form.get('prev_password')?.valid && form.get('prev_password')?.touched
-                                    }">
-                            </div>
-                            <div *ngIf="form.get('prev_password')?.invalid && form.get('prev_password')?.touched"
-                                 class="text-red-500 text-xs mt-1">
-                                <span *ngIf="form.get('prev_password')?.errors?.['required']">Current password is required</span>
-                                <span *ngIf="form.get('prev_password')?.errors?.['pattern']">
-                                    Must contain 8+ chars with uppercase, lowercase, number, and special character
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- New Password Field -->
-                        <div>
-                            <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="pi pi-key text-gray-400"></i>
-                                </div>
-                                <input id="new_password"
-                                       name="new_password"
-                                       type="password"
-                                       formControlName="new_password"
-                                       class="pl-10 pr-3 py-2 block w-full rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                       placeholder="Enter your new password"
-                                       [ngClass]="{
-                                        'border-red-500 focus:border-red-500 focus:ring-red-500': form.get('new_password')?.invalid && form.get('new_password')?.touched,
-                                        'border-green-500 focus:border-green-500 focus:ring-green-500': form.get('new_password')?.valid && form.get('new_password')?.touched
-                                    }">
-                            </div>
-                            <div *ngIf="form.get('new_password')?.invalid && form.get('new_password')?.touched"
-                                 class="text-red-500 text-xs mt-1">
-                                <span *ngIf="form.get('new_password')?.errors?.['required']">New password is required</span>
-                                <span *ngIf="form.get('new_password')?.errors?.['pattern']">
-                                    Must contain 8+ chars with uppercase, lowercase, number, and special character
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Profile Picture (Seller Only) -->
-                        <div *ngIf="isSeller()" class="pt-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Profile Picture</label>
-                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors duration-200">
-                                <div class="space-y-2 text-center">
-                                    <div class="mx-auto h-14 w-14 text-gray-400">
-                                        <i class="pi pi-image text-4xl"></i>
-                                    </div>
-                                    <div class="flex text-sm text-gray-600 justify-center">
-                                        <label for="avatar" class="relative cursor-pointer bg-indigo-50 hover:bg-indigo-100 rounded-md font-medium text-indigo-600 hover:text-indigo-500 px-3 py-2 transition-colors duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                            <span>Upload a file</span>
-                                            <input id="avatar"
-                                                   name="avatar"
-                                                   type="file"
-                                                   class="sr-only"
-                                                   accept="image/jpeg, image/png, image/gif"
-                                                   (change)="onFileSelected($event)">
-                                        </label>
-                                        <p class="pl-1 flex items-center">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500">
-                                        PNG, JPG, GIF up to 10MB
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Profile Picture Preview -->
-                            <div *ngIf="avatarPreview" class="mt-6 flex items-center justify-center">
-                                <div class="relative">
-                                    <div class="w-32 h-32 overflow-hidden border-2 border-indigo-200 rounded-full shadow-md">
-                                        <img [src]="avatarPreview" alt="Profile Preview" class="w-full h-full object-cover">
-                                    </div>
-                                    <button (click)="removeAvatar()"
-                                            class="absolute -top-2 -right-2 bg-white hover:bg-red-50 text-red-500 p-1.5 rounded-full shadow-md transition-all duration-300 border border-gray-200"
-                                            aria-label="Remove profile picture">
-                                        <i class="pi pi-times"></i>
-                                    </button>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-700">{{ avatarFileName }}</p>
-                                    <p class="text-xs text-gray-500 mt-1">Click the X to remove this image</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="pt-4">
-                        <button type="submit"
-                                [disabled]="form.invalid || updating"
-                                class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed">
-                            <i *ngIf="updating" class="pi pi-spin pi-spinner mr-2"></i>
-                            <i *ngIf="!updating" class="pi pi-user-edit mr-2"></i>
-                            {{ updating ? 'Updating...' : 'Update Profile' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <p-button
+                    label="Save Avatar"
+                    icon="pi pi-check"
+                    [disabled]="!currentFile"
+                    (click)="uploadAvatar()">
+            </p-button>
         </div>
-
-        <!-- Delete Confirmation Modal -->
-        <div *ngIf="isVisible"
-             class="fixed inset-0 z-50 overflow-y-auto"
-             role="dialog"
-             aria-modal="true">
-            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Background overlay -->
-                <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-opacity"
-                     aria-hidden="true"
-                     (click)="toggle()"></div>
-
-                <!-- Modal panel -->
-                <div class="inline-block align-bottom bg-white rounded-xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                    <div class="relative">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <i class="pi pi-exclamation-triangle text-red-600"></i>
-                            </div>
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                <h3 class="text-lg leading-6 font-medium text-gray-800">Delete Account</h3>
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-600">
-                                        To confirm, please type your name <span class="font-semibold">{{ userName }}</span> below:
-                                    </p>
-                                    <input type="text"
-                                           [(ngModel)]="nameConfirmation"
-                                           class="mt-3 w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                           placeholder="Type your name to confirm"
-                                           [ngClass]="{
-                                               'border-red-500 focus:border-red-500 focus:ring-red-500': nameConfirmationError,
-                                               'border-green-500 focus:border-green-500 focus:ring-green-500': nameConfirmation === userName && !nameConfirmationError
-                                           }">
-                                    <p *ngIf="nameConfirmationError" class="text-red-500 text-xs mt-1">
-                                        Name doesn't match. Please type your name exactly as shown.
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                    class="absolute top-0 right-0 text-gray-400 hover:text-gray-600 focus:outline-none p-2 transition-colors duration-200"
-                                    (click)="toggle()"
-                                    aria-label="Close modal">
-                                <i class="pi pi-times text-xl"></i>
-                            </button>
-                        </div>
-
-                        <div class="mt-6">
-                            <div class="p-4 bg-red-50 rounded-lg border border-red-100 mb-6">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <i class="pi pi-info-circle text-red-500"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-red-800">Warning</h3>
-                                        <div class="mt-2 text-sm text-red-700">
-                                            <ul class="list-disc pl-5 space-y-1">
-                                                <li>All your data will be permanently removed</li>
-                                                <li>If you're a seller, all your products will be deleted</li>
-                                                <li>You will be logged out immediately</li>
-                                                <li>This action cannot be undone</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">
-                                <button
-                                        type="button"
-                                        class="w-full sm:w-auto mt-3 sm:mt-0 px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
-                                        [disabled]="deleting"
-                                        (click)="toggle()">
-                                    Cancel
-                                </button>
-                                <button
-                                        type="button"
-                                        class="w-full sm:w-auto px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
-                                        [disabled]="nameConfirmation !== userName || deleting"
-                                        (click)="deleteUser()">
-                                    <i *ngIf="deleting" class="pi pi-spin pi-spinner mr-2"></i>
-                                    <span>{{ deleting ? 'Deleting...' : 'Delete Account' }}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <p-toast></p-toast>
-    </div>
+    </p-dialog>
 </div>
 
 
 
 
 
-<!--<div class="flex flex-col w-full p-5 max-w-4xl mx-auto">-->
-<!--    <div class="p-card p-6 shadow-lg rounded-xl bg-surface dark:bg-gray-800 transition-colors duration-300">-->
-<!--        <div class="flex justify-between items-start mb-6">-->
-<!--            <div>-->
-<!--                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Profile Settings</h2>-->
-<!--                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your account information and security</p>-->
+
+
+
+
+
+
+
+
+
+
+<!-- Order Details Dialog -->
+<!--    <p-dialog-->
+<!--            header="Order Details"-->
+<!--            [(visible)]="showOrderDialog"-->
+<!--            [modal]="true"-->
+<!--            [closable]="true"-->
+<!--            [style]="{width: '800px'}"-->
+<!--            (onHide)="closeOrderDialog()"-->
+<!--            *ngIf="selectedOrder">-->
+
+<!--        <div class="order-details">-->
+<!--            <div class="order-header">-->
+<!--                <div class="order-info">-->
+<!--                    <h3>Order #{{ selectedOrder.id }}</h3>-->
+<!--                    <p>Placed on {{ formatDateTime(selectedOrder.createdAt) }}</p>-->
+<!--                </div>-->
+<!--                <div class="order-status">-->
+<!--                    <p-tag-->
+<!--                            [value]="getOrderStatusSeverity(selectedOrder.orderStatus)"-->
+<!--                            [severity]="getOrderStatusSeverity(selectedOrder.orderStatus)">-->
+<!--                    </p-tag>-->
+<!--                    <p-tag-->
+<!--                            [value]="selectedOrder.paymentStatus"-->
+<!--                            [severity]="getPaymentStatusSeverity(selectedOrder.paymentStatus)">-->
+<!--                    </p-tag>-->
+<!--                </div>-->
 <!--            </div>-->
-<!--            <button-->
-<!--                    (click)="toggle()"-->
-<!--                    class="flex items-center justify-center w-9 h-9 rounded-full text-red-500 hover:text-white hover:bg-red-500 transition-all duration-200 group"-->
-<!--                    [class.opacity-50]="deleting"-->
-<!--                    [disabled]="deleting"-->
-<!--                    aria-label="Delete account">-->
-<!--                <i class="pi pi-trash text-lg group-hover:scale-110 transition-transform"></i>-->
-<!--            </button>-->
-<!--        </div>-->
 
-<!--        <form class="mt-4 space-y-6" [formGroup]="form" (ngSubmit)="updateProfile()">-->
-<!--            <div class="rounded-md shadow-sm space-y-6">-->
-<!--                &lt;!&ndash; Name Field &ndash;&gt;-->
-<!--                <div>-->
-<!--                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>-->
-<!--                    <input id="name"-->
-<!--                           name="name"-->
-<!--                           type="text"-->
-<!--                           formControlName="name"-->
-<!--                           class="input-field mt-1 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"-->
-<!--                           placeholder="Enter your full name"-->
-<!--                           [ngClass]="{-->
-<!--                               'border-red-500': form.get('name')?.invalid && form.get('name')?.touched,-->
-<!--                               'border-green-500': form.get('name')?.valid && form.get('name')?.touched-->
-<!--                           }">-->
-<!--                    <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched"-->
-<!--                         class="text-red-500 text-xs mt-1">-->
-<!--                        <span *ngIf="form.get('name')?.errors?.['required']">Name is required</span>-->
-<!--                        <span *ngIf="form.get('name')?.errors?.['minlength']">Name must be at least 2 characters</span>-->
-<!--                        <span *ngIf="form.get('name')?.errors?.['maxlength']">Name cannot exceed 20 characters</span>-->
-<!--                        <span *ngIf="form.get('name')?.errors?.['pattern']">Only letters and spaces are allowed</span>-->
-<!--                    </div>-->
-<!--                </div>-->
+<!--            <p-divider></p-divider>-->
 
-<!--                &lt;!&ndash; Current Password Field &ndash;&gt;-->
-<!--                <div>-->
-<!--                    <label for="prev_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>-->
-<!--                    <input id="prev_password"-->
-<!--                           name="prev_password"-->
-<!--                           type="password"-->
-<!--                           formControlName="prev_password"-->
-<!--                           class="input-field mt-1 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"-->
-<!--                           placeholder="Enter your current password"-->
-<!--                           [ngClass]="{-->
-<!--                               'border-red-500': form.get('prev_password')?.invalid && form.get('prev_password')?.touched,-->
-<!--                               'border-green-500': form.get('prev_password')?.valid && form.get('prev_password')?.touched-->
-<!--                           }">-->
-<!--                    <div *ngIf="form.get('prev_password')?.invalid && form.get('prev_password')?.touched"-->
-<!--                         class="text-red-500 text-xs mt-1">-->
-<!--                        <span *ngIf="form.get('prev_password')?.errors?.['required']">Current password is required</span>-->
-<!--                        <span *ngIf="form.get('prev_password')?.errors?.['pattern']">-->
-<!--                            Must contain 8+ chars with uppercase, lowercase, number, and special character-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--                &lt;!&ndash; New Password Field &ndash;&gt;-->
-<!--                <div>-->
-<!--                    <label for="new_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>-->
-<!--                    <input id="new_password"-->
-<!--                           name="new_password"-->
-<!--                           type="password"-->
-<!--                           formControlName="new_password"-->
-<!--                           class="input-field mt-1 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"-->
-<!--                           placeholder="Enter your new password"-->
-<!--                           [ngClass]="{-->
-<!--                               'border-red-500': form.get('new_password')?.invalid && form.get('new_password')?.touched,-->
-<!--                               'border-green-500': form.get('new_password')?.valid && form.get('new_password')?.touched-->
-<!--                           }">-->
-<!--                    <div *ngIf="form.get('new_password')?.invalid && form.get('new_password')?.touched"-->
-<!--                         class="text-red-500 text-xs mt-1">-->
-<!--                        <span *ngIf="form.get('new_password')?.errors?.['required']">New password is required</span>-->
-<!--                        <span *ngIf="form.get('new_password')?.errors?.['pattern']">-->
-<!--                            Must contain 8+ chars with uppercase, lowercase, number, and special character-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--                &lt;!&ndash; Profile Picture (Seller Only) &ndash;&gt;-->
-<!--                <div *ngIf="isSeller()">-->
-<!--                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profile Picture</label>-->
-<!--                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors duration-200 dark:border-gray-600">-->
-<!--                        <div class="space-y-1 text-center">-->
-<!--                            <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">-->
-<!--                                <label for="avatar" class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">-->
-<!--                                    <span>Upload a file</span>-->
-<!--                                    <input id="avatar"-->
-<!--                                           name="avatar"-->
-<!--                                           type="file"-->
-<!--                                           class="sr-only"-->
-<!--                                           accept="image/jpeg, image/png, image/gif"-->
-<!--                                           (change)="onFileSelected($event)">-->
-<!--                                </label>-->
-<!--                                <p class="pl-1">or drag and drop</p>-->
-<!--                            </div>-->
-<!--                            <p class="text-xs text-gray-500 dark:text-gray-400">-->
-<!--                                PNG, JPG, GIF up to 10MB-->
-<!--                            </p>-->
+<!--            <div class="order-items">-->
+<!--                <h4>Order Items</h4>-->
+<!--                <div class="item-list">-->
+<!--                    <div *ngFor="let item of selectedOrder.orderItems" class="order-item">-->
+<!--                        <div class="item-info">-->
+<!--                            <h5>{{ item.productName }}</h5>-->
+<!--                            <p>Quantity: {{ item.quantity }}</p>-->
+<!--                            <p>Price: {{ formatCurrency(item.unitPrice) }}</p>-->
 <!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; Profile Picture Preview &ndash;&gt;-->
-<!--                    <div *ngIf="avatarPreview" class="mt-4 flex flex-col items-center">-->
-<!--                        <div class="relative w-32 h-32 overflow-hidden border-2 border-indigo-200 dark:border-indigo-700 rounded-lg">-->
-<!--                            <img [src]="avatarPreview" alt="Profile Preview" class="w-full h-full object-cover">-->
-<!--                            <button (click)="removeAvatar()"-->
-<!--                                    class="absolute top-1 right-1 bg-white/80 hover:bg-white dark:bg-gray-700/80 dark:hover:bg-gray-700 p-1 rounded-full shadow-md transition-all duration-300"-->
-<!--                                    aria-label="Remove profile picture">-->
-<!--                                <i class="pi pi-times text-gray-600 dark:text-gray-300"></i>-->
-<!--                            </button>-->
+<!--                        <div class="item-total">-->
+<!--                            {{ formatCurrency(item.quantity * item.unitPrice) }}-->
 <!--                        </div>-->
-<!--                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ avatarFileName }}</p>-->
 <!--                    </div>-->
 <!--                </div>-->
 <!--            </div>-->
 
-<!--            &lt;!&ndash; Submit Button &ndash;&gt;-->
-<!--            <div>-->
-<!--                <button type="submit"-->
-<!--                        [disabled]="form.invalid || updating"-->
-<!--                        class="btn-primary w-full flex justify-center py-3 disabled:opacity-70 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform">-->
-<!--                    <span class="flex items-center">-->
-<!--                        <i *ngIf="updating" class="pi pi-spin pi-spinner mr-2"></i>-->
-<!--                        <i *ngIf="!updating" class="pi pi-user-edit mr-2"></i>-->
-<!--                        {{ updating ? 'Updating...' : 'Update Profile' }}-->
-<!--                    </span>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
+<!--            <p-divider></p-divider>-->
 
-<!--        &lt;!&ndash; Delete Confirmation Modal &ndash;&gt;-->
-<!--        <div *ngIf="isVisible"-->
-<!--             class="fixed inset-0 z-[100] overflow-y-auto"-->
-<!--             role="dialog"-->
-<!--             aria-modal="true">-->
-<!--            <div class="flex items-center justify-center min-h-full pt-4 px-4 pb-20 text-center sm:block sm:p-0">-->
-<!--                &lt;!&ndash; Background overlay &ndash;&gt;-->
-<!--                <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-opacity"-->
-<!--                     aria-hidden="true"-->
-<!--                     (click)="toggle()"></div>-->
-
-<!--                &lt;!&ndash; Modal panel &ndash;&gt;-->
-<!--                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">-->
-<!--                    <div class="relative">-->
-<!--                        <div class="sm:flex sm:items-start">-->
-<!--                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">-->
-<!--                                <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400"></i>-->
-<!--                            </div>-->
-<!--                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">-->
-<!--                                <h3 class="text-lg leading-6 font-medium text-gray-800 dark:text-white">Delete Account</h3>-->
-<!--                                <div class="mt-2">-->
-<!--                                    <p class="text-sm text-gray-600 dark:text-gray-300">-->
-<!--                                        To confirm, please type your name <span class="font-semibold">{{ userName }}</span> below:-->
-<!--                                    </p>-->
-<!--                                    <input type="text"-->
-<!--                                           [(ngModel)]="nameConfirmation"-->
-<!--                                           class="mt-3 w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"-->
-<!--                                           placeholder="Type your name to confirm"-->
-<!--                                           [ngClass]="{-->
-<!--                                               'border-red-500': nameConfirmationError,-->
-<!--                                               'border-green-500': nameConfirmation === userName && !nameConfirmationError-->
-<!--                                           }">-->
-<!--                                    <p *ngIf="nameConfirmationError" class="text-red-500 text-xs mt-1">-->
-<!--                                        Name doesn't match. Please type your name exactly as shown.-->
-<!--                                    </p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <button-->
-<!--                                    class="absolute top-0 right-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-colors duration-200"-->
-<!--                                    (click)="toggle()"-->
-<!--                                    aria-label="Close modal">-->
-<!--                                <i class="pi pi-times text-xl"></i>-->
-<!--                            </button>-->
-<!--                        </div>-->
-
-<!--                        <div class="mt-6">-->
-<!--                            <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-900/30 mb-6">-->
-<!--                                <div class="flex">-->
-<!--                                    <div class="flex-shrink-0">-->
-<!--                                        <i class="pi pi-info-circle text-red-500 dark:text-red-400"></i>-->
-<!--                                    </div>-->
-<!--                                    <div class="ml-3">-->
-<!--                                        <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Warning</h3>-->
-<!--                                        <div class="mt-2 text-sm text-red-700 dark:text-red-300">-->
-<!--                                            <ul class="list-disc pl-5 space-y-1">-->
-<!--                                                <li>All your data will be permanently removed</li>-->
-<!--                                                <li>If you're a seller, all your products will be deleted</li>-->
-<!--                                                <li>You will be logged out immediately</li>-->
-<!--                                            </ul>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-
-<!--                            <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">-->
-<!--                                <button-->
-<!--                                        type="button"-->
-<!--                                        class="w-full sm:w-auto mt-3 sm:mt-0 px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"-->
-<!--                                        [disabled]="deleting"-->
-<!--                                        (click)="toggle()">-->
-<!--                                    Cancel-->
-<!--                                </button>-->
-<!--                                <button-->
-<!--                                        type="button"-->
-<!--                                        class="w-full sm:w-auto px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"-->
-<!--                                        [disabled]="nameConfirmation !== userName || deleting"-->
-<!--                                        (click)="deleteUser()">-->
-<!--                                    <i *ngIf="deleting" class="pi pi-spin pi-spinner mr-2"></i>-->
-<!--                                    <span>{{ deleting ? 'Deleting...' : 'Delete Account' }}</span>-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
+<!--            <div class="order-summary">-->
+<!--                <div class="summary-row">-->
+<!--                    <span>Subtotal:</span>-->
+<!--                    <span>{{ formatCurrency(selectedOrder.totalAmount - (selectedOrder.shipping || 0)) }}</span>-->
 <!--                </div>-->
+<!--                <div class="summary-row" *ngIf="selectedOrder.shipping">-->
+<!--                    <span>Shipping:</span>-->
+<!--                    <span>{{ formatCurrency(selectedOrder.shipping) }}</span>-->
+<!--                </div>-->
+<!--                <div class="summary-row total">-->
+<!--                    <strong>Total: {{ formatCurrency(selectedOrder.totalAmount) }}</strong>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="shipping-info" *ngIf="selectedOrder.shippingAddress">-->
+<!--                <h4>Shipping Address</h4>-->
+<!--                <address>-->
+<!--                    {{ selectedOrder.shippingAddress.address1 }}<br>-->
+<!--                    {{ selectedOrder.shippingAddress.city }}, {{ selectedOrder.shippingAddress.state }} {{ selectedOrder.shippingAddress.postalCode }}<br>-->
+<!--                    {{ selectedOrder.shippingAddress.country }}-->
+<!--                </address>-->
 <!--            </div>-->
 <!--        </div>-->
 
-<!--        <p-toast></p-toast>-->
-<!--    </div>-->
-<!--</div>-->
+<!--        <ng-template pTemplate="footer">-->
+<!--            <p-button-->
+<!--                    label="Close"-->
+<!--                    icon="pi pi-times"-->
+<!--                    class="p-button-text"-->
+<!--                    (click)="closeOrderDialog()">-->
+<!--            </p-button>-->
+<!--            <p-button-->
+<!--                    label="Download Receipt"-->
+<!--                    icon="pi pi-download"-->
+<!--                    (click)="downloadReceipt(selectedOrder)">-->
+<!--            </p-button>-->
+<!--        </ng-template>-->
+<!--    </p-dialog>-->
+
+<!-- Order Tracking Dialog -->
+<!--    <p-dialog-->
+<!--            header="Order Tracking"-->
+<!--            [(visible)]="showOrderTrackingDialog"-->
+<!--            [modal]="true"-->
+<!--            [closable]="true"-->
+<!--            [style]="{width: '600px'}"-->
+<!--            (onHide)="closeOrderTrackingDialog()"-->
+<!--            *ngIf="orderTrackingInfo">-->
+
+<!--        <div class="tracking-info">-->
+<!--            <p-timeline [value]="orderTrackingInfo.events" layout="vertical">-->
+<!--                <ng-template pTemplate="content" let-event>-->
+<!--                    <p-card>-->
+<!--                        <div class="tracking-event">-->
+<!--                            <h5>{{ event.status }}</h5>-->
+<!--                            <p>{{ event.description }}</p>-->
+<!--                            <small>{{ formatDateTime(event.timestamp) }}</small>-->
+<!--                            <p *ngIf="event.location"><strong>Location:</strong> {{ event.location }}</p>-->
+<!--                        </div>-->
+<!--                    </p-card>-->
+<!--                </ng-template>-->
+<!--            </p-timeline>-->
+
+<!--            <div class="tracking-number" *ngIf="orderTrackingInfo.trackingNumber">-->
+<!--                <h4>Tracking Number</h4>-->
+<!--                <p>{{ orderTrackingInfo.trackingNumber }}</p>-->
+<!--            </div>-->
+
+<!--            <div class="estimated-delivery" *ngIf="orderTrackingInfo.estimatedDelivery">-->
+<!--                <h4>Estimated Delivery</h4>-->
+<!--                <p>{{ formatDate(orderTrackingInfo.estimatedDelivery) }}</p>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <ng-template pTemplate="footer">-->
+<!--            <p-button-->
+<!--                    label="Close"-->
+<!--                    icon="pi pi-times"-->
+<!--                    class="p-button-text"-->
+<!--                    (click)="closeOrderTrackingDialog()">-->
+<!--            </p-button>-->
+<!--        </ng-template>-->
+<!--    </p-dialog>-->

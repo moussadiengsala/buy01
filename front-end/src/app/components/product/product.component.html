@@ -1,46 +1,181 @@
-<div class="w-full h-full">
-    <div class="w-full h-full shadow-lg pb-6 rounded-xl border border-gray-200 overflow-hidden">
-        <!-- Product Image -->
-        <div class="relative">
+<div class="w-full h-full group"
+     [class.hover:shadow-xl]="enableHover"
+     [class.transition-all]="enableHover"
+     [class.duration-300]="enableHover">
+
+    <div class="w-full h-full shadow-lg pb-6 rounded-xl border border-gray-200 overflow-hidden bg-white
+                hover:border-gray-300 transition-colors duration-200">
+
+        <!-- Product Image Container -->
+        <div class="relative overflow-hidden">
             <a routerLink="/products/{{product.product.id}}"
                routerLinkActive="active"
-               ariaCurrentWhenActive="page">
-                <img *ngIf="product.media?.length"
-                     [src]="getMedia(product.product.id, product.media[0].imagePath)"
-                     [alt]="product.product.name"
-                     class="w-full h-72 object-cover">
+               ariaCurrentWhenActive="page"
+               class="block">
 
-                <div *ngIf="!product.media?.length"
-                     class="w-full h-72 bg-gray-100 flex items-center justify-center">
-                    <i class="pi pi-image text-3xl text-gray-400"></i>
+                <!-- Main Product Image -->
+                <img *ngIf="primaryImage() && !imageError()"
+                     [src]="primaryImage()"
+                     [alt]="product.product.name"
+                     [class]="'w-full object-cover transition-transform duration-300 ' + imageHeight"
+                     [class.group-hover:scale-105]="enableHover"
+                     (error)="onImageError()"
+                     (load)="onImageLoad()"
+                     loading="lazy">
+
+                <!-- Fallback Image -->
+                <div *ngIf="!primaryImage() || imageError()"
+                     [class]="'w-full bg-gray-100 flex items-center justify-center ' + imageHeight">
+                    <div class="text-center">
+                        <i class="pi pi-image text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-sm text-gray-500">No Image Available</p>
+                    </div>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div *ngIf="isLoading()"
+                     class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                    <i class="pi pi-spin pi-spinner text-white text-2xl"></i>
                 </div>
             </a>
 
             <!-- Stock Badge -->
             <div class="absolute top-3 left-3">
-        <span *ngIf="product.product.quantity === 0"
-              class="bg-gray-800 text-white px-3 py-1 rounded-lg text-xs uppercase">
-          Out-of-Stock
-        </span>
-                <span *ngIf="product.product.quantity > 0"
-                      class="bg-gray-800 text-white px-3 py-1 rounded-lg text-xs uppercase">
-          Full-Stock
-        </span>
+                <span [class]="stockStatus().class + ' text-white px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide shadow-lg'">
+                    {{ stockStatus().label }}
+                </span>
+            </div>
+
+            <!-- Quick Actions (appears on hover) -->
+            <div *ngIf="showQuickActions && enableHover"
+                 class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div class="flex flex-col space-y-2">
+                    <button
+                            routerLink="/products/{{product.product.id}}"
+                            routerLinkActive="active"
+                            ariaCurrentWhenActive="page"
+                            class="p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200
+                                   border border-gray-200 hover:border-gray-300"
+                            pTooltip="Quick View"
+                            tooltipPosition="left">
+                        <i class="pi pi-eye text-gray-600 hover:text-blue-500 transition-colors duration-200"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Product Info -->
-        <div class="mt-4 px-3 space-y-2">
-            <div class="flex justify-between">
-                <h3 class="text-lg font-normal text-gray-900 capitalize">{{ product.product.name }}</h3>
-                <p-button (onClick)="toggleCart()" [disabled]="product.product.quantity === 0">
-                    <i *ngIf="!isInCart" class="pi pi-plus-circle"></i>
-                    <i *ngIf="isInCart" class="pi pi-minus-circle"></i>
+        <div class="mt-4 px-4 space-y-3">
+            <!-- Header with title and cart button -->
+            <div class="flex justify-between items-start gap-3">
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-semibold text-gray-900 capitalize truncate hover:text-blue-600 transition-colors duration-200">
+                        <a routerLink="/products/{{product.product.id}}" class="hover:underline">
+                            {{ product.product.name }}
+                        </a>
+                    </h3>
+                </div>
+
+                <!-- Cart Button -->
+                <p-button
+                        *ngIf="canShowCart()"
+                        [disabled]="product.product.quantity === 0 || isLoading()"
+                        [loading]="isLoading()"
+                        (click)="addCart($event)"
+                        [pTooltip]="isInCart() ? 'Remove from Cart' : 'Add to Cart'"
+                        tooltipPosition="left"
+                        [severity]="isInCart() ? 'danger' : 'primary'"
+                        [outlined]="!isInCart()"
+                        size="small"
+                        pRipple>
+
+                    <i *ngIf="!isLoading() && !isInCart()" class="pi pi-shopping-cart"></i>
+                    <i *ngIf="!isLoading() && isInCart()" class="pi pi-trash"></i>
                 </p-button>
             </div>
-            <app-text-preview limit="100" text="{{product.product.description}}" textClass="text-gray-500 inline-block" buttonClass="text-blue-500 text-sm ml-1"></app-text-preview>
-            <span class="text-sm font-semibold text-blue-500">${{ product.product.price.toFixed(2) }}</span>
-        </div>
 
+            <!-- Description -->
+            <app-text-preview
+                    limit="100"
+                    [text]="product.product.description || 'No description available'"
+                    textClass="text-gray-600 text-sm leading-relaxed"
+                    buttonClass="text-blue-500 text-sm ml-1 hover:text-blue-700 transition-colors duration-200">
+            </app-text-preview>
+
+            <!-- Price Section -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl font-bold text-blue-600">
+                        {{ formattedPrice() }}
+                    </span>
+
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                <span *ngIf="product.product.quantity > 0">{{ product.product.quantity }} in stock</span>
+            </div>
+        </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<div class="w-full h-full">-->
+<!--    <div class="w-full h-full shadow-lg pb-6 rounded-xl border border-gray-200 overflow-hidden">-->
+<!--        &lt;!&ndash; Product Image &ndash;&gt;-->
+<!--        <div class="relative">-->
+<!--            <a routerLink="/products/{{product.product.id}}"-->
+<!--               routerLinkActive="active"-->
+<!--               ariaCurrentWhenActive="page">-->
+<!--                <img *ngIf="product.media?.length"-->
+<!--                     [src]="getMedia(product.product.id, product.media[0].imagePath)"-->
+<!--                     [alt]="product.product.name"-->
+<!--                     class="w-full h-72 object-cover">-->
+
+<!--                <div *ngIf="!product.media?.length"-->
+<!--                     class="w-full h-72 bg-gray-100 flex items-center justify-center">-->
+<!--                    <i class="pi pi-image text-3xl text-gray-400"></i>-->
+<!--                </div>-->
+<!--            </a>-->
+
+<!--            &lt;!&ndash; Stock Badge &ndash;&gt;-->
+<!--            <div class="absolute top-3 left-3">-->
+<!--        <span *ngIf="product.product.quantity === 0"-->
+<!--              class="bg-gray-800 text-white px-3 py-1 rounded-lg text-xs uppercase">-->
+<!--          Out-of-Stock-->
+<!--        </span>-->
+<!--                <span *ngIf="product.product.quantity > 0"-->
+<!--                      class="bg-gray-800 text-white px-3 py-1 rounded-lg text-xs uppercase">-->
+<!--          Full-Stock-->
+<!--        </span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Product Info &ndash;&gt;-->
+<!--        <div class="mt-4 px-3 space-y-2">-->
+<!--            <div class="flex justify-between">-->
+<!--                <h3 class="text-lg font-normal text-gray-900 capitalize">{{ product.product.name }}</h3>-->
+<!--                <p-button (click)="addCart($event)">-->
+<!--                    <i *ngIf="isProductInCart()" class="pi pi-shopping-cart text-xl"></i>-->
+<!--                    <i *ngIf="isProductInCart()" class="pi pi-delete"></i>-->
+<!--                </p-button>-->
+<!--            </div>-->
+<!--            <app-text-preview limit="100" text="{{product.product.description}}" textClass="text-gray-500 inline-block" buttonClass="text-blue-500 text-sm ml-1"></app-text-preview>-->
+<!--            <span class="text-sm font-semibold text-blue-500">${{ product.product.price.toFixed(2) }}</span>-->
+<!--        </div>-->
+
+<!--    </div>-->
+<!--</div>-->

@@ -6,30 +6,234 @@
         <p class="text-gray-600 max-w-xl">Browse our curated collection of premium products, selected for quality and value.</p>
     </div>
 
-    <!-- Product Filters (Optional) -->
-<!--    <div class="flex flex-wrap gap-4 mb-8">-->
-<!--        <div class="flex items-center p-2 bg-white rounded-lg shadow-sm border border-indigo-100">-->
-<!--            <i class="pi pi-filter text-indigo-600 mr-2"></i>-->
-<!--            <select class="bg-transparent focus:outline-none text-gray-700">-->
-<!--                <option>All Categories</option>-->
-<!--                <option>Electronics</option>-->
-<!--                <option>Clothing</option>-->
-<!--                <option>Home & Garden</option>-->
-<!--            </select>-->
-<!--        </div>-->
-<!--        <div class="flex items-center p-2 bg-white rounded-lg shadow-sm border border-indigo-100">-->
-<!--            <i class="pi pi-sort-alt text-indigo-600 mr-2"></i>-->
-<!--            <select class="bg-transparent focus:outline-none text-gray-700">-->
-<!--                <option>Sort by: Featured</option>-->
-<!--                <option>Price: Low to High</option>-->
-<!--                <option>Price: High to Low</option>-->
-<!--                <option>Newest First</option>-->
-<!--            </select>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- Filter Toggle and Search Bar -->
+    <div class="mb-6 space-y-4">
+        <!-- Quick Search and Filter Toggle -->
+        <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+            <!-- Search Input -->
+            <div class="flex-1 relative">
+                <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input
+                        type="text"
+                        pInputText
+                        [formControl]="keywordControl"
+                        placeholder="Search products by name or keyword..."
+                        class="w-full pl-10 pr-10 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                />
+                <button
+                        *ngIf="filterForm.get('keyword')?.value"
+                        (click)="clearKeyword()"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i class="pi pi-times"></i>
+                </button>
+            </div>
 
+            <!-- Filter Toggle Button -->
+            <button
+                    (click)="toggleFilters()"
+                    class="px-6 py-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 justify-center sm:justify-start whitespace-nowrap">
+                <i class="pi pi-filter"></i>
+                <span>Filters</span>
+                <span *ngIf="activeFiltersCount > 0" class="bg-indigo-600 text-white text-xs rounded-full px-2 py-1 ml-1">
+                    {{activeFiltersCount}}
+                </span>
+                <i class="pi" [ngClass]="showFilters ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+            </button>
+        </div>
+
+        <!-- Active Filters Summary -->
+        <div *ngIf="hasActiveFilters" class="flex flex-wrap gap-2 items-center">
+            <span class="text-sm text-gray-600">Active filters:</span>
+
+            <span *ngIf="filterForm.get('keyword')?.value"
+                  class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm">
+                Search: "{{filterForm.get('keyword')?.value}}"
+                <button (click)="clearKeyword()" class="hover:text-indigo-600">
+                    <i class="pi pi-times text-xs"></i>
+                </button>
+            </span>
+
+            <span *ngIf="selectedUsersCount > 0"
+                  class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                {{selectedUsersCount}} seller{{selectedUsersCount > 1 ? 's' : ''}}
+                <button (click)="clearUserFilter()" class="hover:text-green-600">
+                    <i class="pi pi-times text-xs"></i>
+                </button>
+            </span>
+
+            <button (click)="clearAllFilters()"
+                    class="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm hover:bg-red-200 transition-colors">
+                Clear all
+                <i class="pi pi-times text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Advanced Filters Panel -->
+        <form [formGroup]="filterForm" class="p-6">
+        <div *ngIf="showFilters" class="mb-8 bg-white rounded-xl shadow-md border border-indigo-100 overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+
+                    <!-- Price Range Filter -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-700">Price Range</label>
+                            <button (click)="clearPriceFilter()" class="text-xs text-indigo-600 hover:text-indigo-800">
+                                Reset
+                            </button>
+                        </div>
+                        <div class="px-2">
+                            <p-slider
+                                    [(ngModel)]="priceRange"
+                                    [ngModelOptions]="{standalone: true}"
+                                    (onSlideEnd)="onPriceRangeChange($event.values)"
+                                    [range]="true"
+                                    [min]="0"
+                                    [max]="maxPrice"
+                                    [step]="10"
+                                    class="w-full">
+                            </p-slider>
+                            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                                <span>{{formatPrice(priceRange[0])}}</span>
+                                <span>{{formatPrice(priceRange[1])}}</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-600">Min Price</label>
+                                <input
+                                        type="number"
+                                        pInputText
+                                        formControlName="minPrice"
+                                        class="w-full text-sm mt-1 p-2 border border-gray-200 rounded focus:border-indigo-500"
+                                        [min]="0"
+                                        [max]="maxPrice"
+                                />
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Max Price</label>
+                                <input
+                                        type="number"
+                                        pInputText
+                                        formControlName="maxPrice"
+                                        class="w-full text-sm mt-1 p-2 border border-gray-200 rounded focus:border-indigo-500"
+                                        [min]="0"
+                                        [max]="maxPrice"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Range Filter -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-700">Stock Range</label>
+                            <button (click)="clearQuantityFilter()" class="text-xs text-indigo-600 hover:text-indigo-800">
+                                Reset
+                            </button>
+                        </div>
+                        <div class="px-2">
+                            <p-slider
+                                    [(ngModel)]="quantityRange"
+                                    [ngModelOptions]="{standalone: true}"
+                                    (onSlideEnd)="onQuantityRangeChange($event.values)"
+                                    [range]="true"
+                                    [min]="0"
+                                    [max]="maxQuantity"
+                                    [step]="1"
+                                    class="w-full">
+                            </p-slider>
+                            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                                <span>{{quantityRange[0]}} items</span>
+                                <span>{{quantityRange[1]}} items</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-600">Min Stock</label>
+                                <input
+                                        type="number"
+                                        pInputText
+                                        formControlName="minQuantity"
+                                        class="w-full text-sm mt-1 p-2 border border-gray-200 rounded focus:border-indigo-500"
+                                        [min]="0"
+                                        [max]="maxQuantity"
+                                />
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Max Stock</label>
+                                <input
+                                        type="number"
+                                        pInputText
+                                        formControlName="maxQuantity"
+                                        class="w-full text-sm mt-1 p-2 border border-gray-200 rounded focus:border-indigo-500"
+                                        [min]="0"
+                                        [max]="maxQuantity"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-700">Sort By</label>
+                            <button (click)="resetSort()" class="text-xs text-indigo-600 hover:text-indigo-800">
+                                Reset
+                            </button>
+                        </div>
+                        <p-dropdown
+                                formControlName="sortBy"
+                                [options]="sortOptions"
+                                placeholder="Select sorting..."
+                                class="w-full">
+                        </p-dropdown>
+                    </div>
+
+                </div>
+
+            <!-- Filter Actions -->
+            <div class="mt-6 pt-6 border-t border-gray-200 flex flex-col sm:flex-row gap-3 justify-between items-center">
+                    <div class="text-sm text-gray-600">
+                        <span *ngIf="products">
+                            Showing {{products.content.length}} of {{products.page.totalElements}} products
+                        </span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                                type="button"
+                                (click)="clearAllFilters()"
+                                class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            Clear All Filters
+                        </button>
+                        <button
+                                type="button"
+                                (click)="toggleFilters()"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                            Hide Filters
+                        </button>
+                    </div>
+                </div>
+        </div>
+
+        <!-- Sort Bar (when filters are hidden) -->
+        <div *ngIf="!showFilters && products && products.content.length" class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="text-sm text-gray-600">
+                Showing {{products.content.length}} of {{products.page.totalElements}} products
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-600">Sort by:</span>
+                <p-dropdown
+                        formControlName="sortBy"
+                        [options]="sortOptions"
+                        [showClear]="false"
+                        class="min-w-48">
+                </p-dropdown>
+            </div>
+        </div>
+        </form>
     <!-- Loading State -->
-    <div *ngIf="products === null" class="flex justify-center items-center h-64">
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
         <div class="flex flex-col items-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
             <p class="mt-4 text-indigo-600">Loading products...</p>
@@ -37,25 +241,40 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="products && !products.content.length" class="bg-white rounded-xl shadow-md p-10 text-center border border-indigo-100">
+    <div *ngIf="!isLoading && products && !products.content.length" class="bg-white rounded-xl shadow-md p-10 text-center border border-indigo-100">
         <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-indigo-100 mb-6">
             <i class="pi pi-shopping-bag text-3xl text-indigo-600"></i>
         </div>
-        <h3 class="text-xl font-medium text-gray-800 mb-3">No Products Available Yet</h3>
-        <p class="text-gray-600 mb-6">Our team is working hard to add new products soon.</p>
-        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
-            <a class="flex items-center gap-2">
-                <i class="pi pi-bell"></i>
-                <span>Get Notified When Products Arrive</span>
-            </a>
-        </button>
+        <h3 class="text-xl font-medium text-gray-800 mb-3">
+            {{hasActiveFilters ? 'No Products Match Your Filters' : 'No Products Available Yet'}}
+        </h3>
+        <p class="text-gray-600 mb-6">
+            {{hasActiveFilters ? 'Try adjusting your search criteria or clear some filters.' : 'Our team is working hard to add new products soon.'}}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <button *ngIf="hasActiveFilters"
+                    (click)="clearAllFilters()"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                <span class="flex items-center gap-2">
+                    <i class="pi pi-filter-slash"></i>
+                    <span>Clear All Filters</span>
+                </span>
+            </button>
+            <button *ngIf="!hasActiveFilters"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                <span class="flex items-center gap-2">
+                    <i class="pi pi-bell"></i>
+                    <span>Get Notified When Products Arrive</span>
+                </span>
+            </button>
+        </div>
     </div>
 
-    <div *ngIf="products && products.content.length" class="space-y-8">
-        <!-- Products Grid -->
+    <!-- Products Grid -->
+    <div *ngIf="!isLoading && products && products.content.length" class="space-y-8">
         <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 xl:grid-cols-4 gap-6">
             <div *ngFor="let item of products.content; trackBy: trackByProductId"
-                 class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-indigo-50">
+                 class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-indigo-50 transform hover:-translate-y-1">
                 <app-product [product]="item" />
             </div>
         </div>
@@ -67,7 +286,7 @@
                     [first]="currentPage * pageSize"
                     [rows]="pageSize"
                     [totalRecords]="products.page.totalElements"
-                    [rowsPerPageOptions]="[5, 10, 15, 20, 30]"
+                    [rowsPerPageOptions]="[12, 24, 36, 48]"
                     styleClass="p-paginator-custom">
             </p-paginator>
         </div>
@@ -79,40 +298,73 @@
 
 
 
-<!--<div class="w-full px-5 py-10">-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<div class="w-full min-h-screen bg-gradient-to-b from-indigo-50 to-white px-5 py-10">-->
 <!--    &lt;!&ndash; Header Section &ndash;&gt;-->
 <!--    <div class="mb-8">-->
-<!--        <h1 class="text-3xl font-bold text-black mb-2">Products</h1>-->
-<!--        <p class="text-gray-600">Browse our collection of products</p>-->
+<!--        <h2 class="text-sm text-indigo-600 font-medium tracking-wide mb-2">Shop with confidence</h2>-->
+<!--        <h1 class="text-3xl tablet:text-4xl desktop:text-5xl font-bold text-gray-900 mb-3">Products</h1>-->
+<!--        <p class="text-gray-600 max-w-xl">Browse our curated collection of premium products, selected for quality and value.</p>-->
 <!--    </div>-->
 
 <!--    &lt;!&ndash; Loading State &ndash;&gt;-->
 <!--    <div *ngIf="products === null" class="flex justify-center items-center h-64">-->
-<!--        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>-->
+<!--        <div class="flex flex-col items-center">-->
+<!--            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>-->
+<!--            <p class="mt-4 text-indigo-600">Loading products...</p>-->
+<!--        </div>-->
 <!--    </div>-->
 
 <!--    &lt;!&ndash; Empty State &ndash;&gt;-->
-<!--    <div *ngIf="products && !products.content.length" class="text-center">-->
-<!--        <i class="pi pi-shopping-cart text-4xl text-gray-300 mb-4"></i>-->
-<!--        <h3 class="text-md tablet:text-lg desktop:text-xl font-medium text-gray-500 mb-4">No Products Added Yet</h3>-->
+<!--    <div *ngIf="products && !products.content.length" class="bg-white rounded-xl shadow-md p-10 text-center border border-indigo-100">-->
+<!--        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-indigo-100 mb-6">-->
+<!--            <i class="pi pi-shopping-bag text-3xl text-indigo-600"></i>-->
+<!--        </div>-->
+<!--        <h3 class="text-xl font-medium text-gray-800 mb-3">No Products Available Yet</h3>-->
+<!--        <p class="text-gray-600 mb-6">Our team is working hard to add new products soon.</p>-->
+<!--        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">-->
+<!--            <a class="flex items-center gap-2">-->
+<!--                <i class="pi pi-bell"></i>-->
+<!--                <span>Get Notified When Products Arrive</span>-->
+<!--            </a>-->
+<!--        </button>-->
 <!--    </div>-->
 
-<!--    <div *ngIf="products && products.content.length">-->
+<!--    <div *ngIf="products && products.content.length" class="space-y-8">-->
 <!--        &lt;!&ndash; Products Grid &ndash;&gt;-->
-<!--        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">-->
+<!--        <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 xl:grid-cols-4 gap-6">-->
 <!--            <div *ngFor="let item of products.content; trackBy: trackByProductId"-->
-<!--                 class="overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">-->
-<!--                    <app-product [product]="item" />-->
+<!--                 class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-indigo-50">-->
+<!--                <app-product [product]="item" />-->
 <!--            </div>-->
 <!--        </div>-->
 
 <!--        &lt;!&ndash; Pagination &ndash;&gt;-->
-<!--        <p-paginator-->
-<!--                (onPageChange)="onPageChange($event)"-->
-<!--                [first]="currentPage * pageSize"-->
-<!--                [rows]="pageSize"-->
-<!--                [totalRecords]="products.page.totalElements"-->
-<!--                [rowsPerPageOptions]="[5, 10, 15, 20, 30]">-->
-<!--        </p-paginator>-->
+<!--        <div class="flex justify-center mt-10">-->
+<!--            <p-paginator-->
+<!--                    (onPageChange)="onPageChange($event)"-->
+<!--                    [first]="currentPage * pageSize"-->
+<!--                    [rows]="pageSize"-->
+<!--                    [totalRecords]="products.page.totalElements"-->
+<!--                    [rowsPerPageOptions]="[5, 10, 15, 20, 30]"-->
+<!--                    styleClass="p-paginator-custom">-->
+<!--            </p-paginator>-->
+<!--        </div>-->
 <!--    </div>-->
 <!--</div>-->

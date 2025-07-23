@@ -1,54 +1,49 @@
 import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
-  Checkbox
-} from "./chunk-KBUIRWQ3.js";
-import {
   Overlay,
   Scroller
-} from "./chunk-3MIZSJBX.js";
-import {
-  InputIcon
-} from "./chunk-TBMTEAUS.js";
-import {
-  InputText
-} from "./chunk-7KPEHBYL.js";
+} from "./chunk-AZYO2U22.js";
 import {
   Tooltip
-} from "./chunk-D46CZK6H.js";
-import {
-  FormsModule,
-  NG_VALUE_ACCESSOR,
-  NgControlStatus,
-  NgModel
-} from "./chunk-G2N7PQFS.js";
+} from "./chunk-PYCTAELV.js";
 import {
   IconField
-} from "./chunk-E44PQCXY.js";
+} from "./chunk-RFGNP4T6.js";
+import {
+  InputIcon
+} from "./chunk-YYFDODOE.js";
+import {
+  Checkbox
+} from "./chunk-3LC7RNOO.js";
+import {
+  Chip
+} from "./chunk-7WYRO3LP.js";
+import {
+  InputText
+} from "./chunk-RCUICA4X.js";
 import "./chunk-3Z2JOHSW.js";
 import {
   AutoFocus
-} from "./chunk-TV7TBPSE.js";
+} from "./chunk-UAWQEWAB.js";
+import {
+  DomHandler
+} from "./chunk-N6625Q5J.js";
+import {
+  Ripple
+} from "./chunk-OJMCBPDQ.js";
 import {
   CheckIcon,
   ChevronDownIcon,
   SearchIcon,
-  TimesCircleIcon,
   TimesIcon
-} from "./chunk-GY6NWUSN.js";
-import {
-  DomHandler
-} from "./chunk-N6625Q5J.js";
-import "./chunk-HVMBKJWP.js";
-import {
-  Ripple
-} from "./chunk-IAMH6CTU.js";
+} from "./chunk-CRIWU6AY.js";
 import {
   BaseComponent
-} from "./chunk-SDDDZ3Q6.js";
+} from "./chunk-6PGN5VLG.js";
+import "./chunk-UG6YDIHZ.js";
 import {
   BaseStyle
-} from "./chunk-QLLMGZMM.js";
-import "./chunk-DGO2XRGV.js";
+} from "./chunk-JNEUC7RM.js";
 import {
   FilterService,
   Footer,
@@ -66,7 +61,9 @@ import {
   isHidden,
   unblockBodyScroll,
   uuid
-} from "./chunk-NGN3AAQS.js";
+} from "./chunk-2VIIWB3Q.js";
+import "./chunk-HVMBKJWP.js";
+import "./chunk-74KF2TMX.js";
 import {
   deepEquals,
   equals,
@@ -76,7 +73,13 @@ import {
   isObject,
   isPrintableCharacter,
   resolveFieldData
-} from "./chunk-EMGRNPNB.js";
+} from "./chunk-252YNDN6.js";
+import {
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  NgControlStatus,
+  NgModel
+} from "./chunk-G2N7PQFS.js";
 import {
   CommonModule,
   NgClass,
@@ -110,7 +113,6 @@ import {
   ɵsetClassDebugInfo,
   ɵɵInheritDefinitionFeature,
   ɵɵInputTransformsFeature,
-  ɵɵNgOnChangesFeature,
   ɵɵProvidersFeature,
   ɵɵadvance,
   ɵɵattribute,
@@ -144,7 +146,6 @@ import {
   ɵɵreference,
   ɵɵresetView,
   ɵɵrestoreView,
-  ɵɵsanitizeUrl,
   ɵɵsetNgModuleScope,
   ɵɵstyleMap,
   ɵɵstyleProp,
@@ -166,584 +167,8 @@ import {
   __spreadValues
 } from "./chunk-YHCV7DAQ.js";
 
-// node_modules/primeng/fesm2022/primeng-chip.mjs
-var theme = ({
-  dt
-}) => `
-.p-chip {
-    display: inline-flex;
-    align-items: center;
-    background: ${dt("chip.background")};
-    color: ${dt("chip.color")};
-    border-radius: ${dt("chip.border.radius")};
-    padding: ${dt("chip.padding.y")} ${dt("chip.padding.x")};
-    gap: ${dt("chip.gap")};
-}
-
-.p-chip-icon {
-    color: ${dt("chip.icon.color")};
-    font-size: ${dt("chip.icon.font.size")};
-    width: ${dt("chip.icon.size")};
-    height: ${dt("chip.icon.size")};
-}
-
-.p-chip-image {
-    border-radius: 50%;
-    width: ${dt("chip.image.width")};
-    height: ${dt("chip.image.height")};
-    margin-left: calc(-1 * ${dt("chip.padding.y")});
-}
-
-.p-chip:has(.p-chip-remove-icon) {
-    padding-inline-end: ${dt("chip.padding.y")};
-}
-
-.p-chip:has(.p-chip-image) {
-    padding-top: calc(${dt("chip.padding.y")} / 2);
-    padding-bottom: calc(${dt("chip.padding.y")} / 2);
-}
-
-.p-chip-remove-icon {
-    cursor: pointer;
-    font-size: ${dt("chip.remove.icon.font.size")};
-    width: ${dt("chip.remove.icon.size")};
-    height: ${dt("chip.remove.icon.size")};
-    color: ${dt("chip.remove.icon.color")};
-    border-radius: 50%;
-    transition: outline-color ${dt("chip.transition.duration")}, box-shadow ${dt("chip.transition.duration")};
-    outline-color: transparent;
-}
-
-.p-chip-remove-icon:focus-visible {
-    box-shadow: ${dt("chip.remove.icon.focus.ring.shadow")};
-    outline: ${dt("chip.remove.icon.focus.ring.width")} ${dt("chip.remove.icon.focus.ring.style")} ${dt("chip.remove.icon.focus.ring.color")};
-    outline-offset: ${dt("chip.remove.icon.focus.ring.offset")};
-}
-`;
-var classes = {
-  root: "p-chip p-component",
-  image: "p-chip-image",
-  icon: "p-chip-icon",
-  label: "p-chip-label",
-  removeIcon: "p-chip-remove-icon"
-};
-var ChipStyle = class _ChipStyle extends BaseStyle {
-  name = "chip";
-  theme = theme;
-  classes = classes;
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵChipStyle_BaseFactory;
-    return function ChipStyle_Factory(__ngFactoryType__) {
-      return (ɵChipStyle_BaseFactory || (ɵChipStyle_BaseFactory = ɵɵgetInheritedFactory(_ChipStyle)))(__ngFactoryType__ || _ChipStyle);
-    };
-  })();
-  static ɵprov = ɵɵdefineInjectable({
-    token: _ChipStyle,
-    factory: _ChipStyle.ɵfac
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ChipStyle, [{
-    type: Injectable
-  }], null, null);
-})();
-var ChipClasses;
-(function(ChipClasses2) {
-  ChipClasses2["root"] = "p-chip";
-  ChipClasses2["image"] = "p-chip-image";
-  ChipClasses2["icon"] = "p-chip-icon";
-  ChipClasses2["label"] = "p-chip-label";
-  ChipClasses2["removeIcon"] = "p-chip-remove-icon";
-})(ChipClasses || (ChipClasses = {}));
-var _c0 = ["removeicon"];
-var _c1 = ["*"];
-function Chip_img_1_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r1 = ɵɵgetCurrentView();
-    ɵɵelementStart(0, "img", 4);
-    ɵɵlistener("error", function Chip_img_1_Template_img_error_0_listener($event) {
-      ɵɵrestoreView(_r1);
-      const ctx_r1 = ɵɵnextContext();
-      return ɵɵresetView(ctx_r1.imageError($event));
-    });
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext();
-    ɵɵproperty("src", ctx_r1.image, ɵɵsanitizeUrl)("alt", ctx_r1.alt);
-  }
-}
-function Chip_ng_template_2_span_0_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelement(0, "span", 6);
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext(2);
-    ɵɵclassMap(ctx_r1.icon);
-    ɵɵproperty("ngClass", "p-chip-icon");
-    ɵɵattribute("data-pc-section", "icon");
-  }
-}
-function Chip_ng_template_2_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵtemplate(0, Chip_ng_template_2_span_0_Template, 1, 4, "span", 5);
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext();
-    ɵɵproperty("ngIf", ctx_r1.icon);
-  }
-}
-function Chip_div_4_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementStart(0, "div", 7);
-    ɵɵtext(1);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext();
-    ɵɵattribute("data-pc-section", "label");
-    ɵɵadvance();
-    ɵɵtextInterpolate(ctx_r1.label);
-  }
-}
-function Chip_ng_container_5_ng_container_1_span_1_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r3 = ɵɵgetCurrentView();
-    ɵɵelementStart(0, "span", 11);
-    ɵɵlistener("click", function Chip_ng_container_5_ng_container_1_span_1_Template_span_click_0_listener($event) {
-      ɵɵrestoreView(_r3);
-      const ctx_r1 = ɵɵnextContext(3);
-      return ɵɵresetView(ctx_r1.close($event));
-    })("keydown", function Chip_ng_container_5_ng_container_1_span_1_Template_span_keydown_0_listener($event) {
-      ɵɵrestoreView(_r3);
-      const ctx_r1 = ɵɵnextContext(3);
-      return ɵɵresetView(ctx_r1.onKeydown($event));
-    });
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext(3);
-    ɵɵclassMap(ctx_r1.removeIcon);
-    ɵɵproperty("ngClass", "p-chip-remove-icon");
-    ɵɵattribute("data-pc-section", "removeicon")("aria-label", ctx_r1.removeAriaLabel);
-  }
-}
-function Chip_ng_container_5_ng_container_1_TimesCircleIcon_2_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r4 = ɵɵgetCurrentView();
-    ɵɵelementStart(0, "TimesCircleIcon", 12);
-    ɵɵlistener("click", function Chip_ng_container_5_ng_container_1_TimesCircleIcon_2_Template_TimesCircleIcon_click_0_listener($event) {
-      ɵɵrestoreView(_r4);
-      const ctx_r1 = ɵɵnextContext(3);
-      return ɵɵresetView(ctx_r1.close($event));
-    })("keydown", function Chip_ng_container_5_ng_container_1_TimesCircleIcon_2_Template_TimesCircleIcon_keydown_0_listener($event) {
-      ɵɵrestoreView(_r4);
-      const ctx_r1 = ɵɵnextContext(3);
-      return ɵɵresetView(ctx_r1.onKeydown($event));
-    });
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext(3);
-    ɵɵclassMap("p-chip-remove-icon");
-    ɵɵattribute("data-pc-section", "removeicon")("aria-label", ctx_r1.removeAriaLabel);
-  }
-}
-function Chip_ng_container_5_ng_container_1_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementContainerStart(0);
-    ɵɵtemplate(1, Chip_ng_container_5_ng_container_1_span_1_Template, 1, 5, "span", 9)(2, Chip_ng_container_5_ng_container_1_TimesCircleIcon_2_Template, 1, 4, "TimesCircleIcon", 10);
-    ɵɵelementContainerEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext(2);
-    ɵɵadvance();
-    ɵɵproperty("ngIf", ctx_r1.removeIcon);
-    ɵɵadvance();
-    ɵɵproperty("ngIf", !ctx_r1.removeIcon);
-  }
-}
-function Chip_ng_container_5_span_2_1_ng_template_0_Template(rf, ctx) {
-}
-function Chip_ng_container_5_span_2_1_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵtemplate(0, Chip_ng_container_5_span_2_1_ng_template_0_Template, 0, 0, "ng-template");
-  }
-}
-function Chip_ng_container_5_span_2_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r5 = ɵɵgetCurrentView();
-    ɵɵelementStart(0, "span", 13);
-    ɵɵlistener("click", function Chip_ng_container_5_span_2_Template_span_click_0_listener($event) {
-      ɵɵrestoreView(_r5);
-      const ctx_r1 = ɵɵnextContext(2);
-      return ɵɵresetView(ctx_r1.close($event));
-    })("keydown", function Chip_ng_container_5_span_2_Template_span_keydown_0_listener($event) {
-      ɵɵrestoreView(_r5);
-      const ctx_r1 = ɵɵnextContext(2);
-      return ɵɵresetView(ctx_r1.onKeydown($event));
-    });
-    ɵɵtemplate(1, Chip_ng_container_5_span_2_1_Template, 1, 0, null, 14);
-    ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext(2);
-    ɵɵattribute("data-pc-section", "removeicon")("aria-label", ctx_r1.removeAriaLabel);
-    ɵɵadvance();
-    ɵɵproperty("ngTemplateOutlet", ctx_r1.removeIconTemplate || ctx_r1._removeIconTemplate);
-  }
-}
-function Chip_ng_container_5_Template(rf, ctx) {
-  if (rf & 1) {
-    ɵɵelementContainerStart(0);
-    ɵɵtemplate(1, Chip_ng_container_5_ng_container_1_Template, 3, 2, "ng-container", 3)(2, Chip_ng_container_5_span_2_Template, 2, 3, "span", 8);
-    ɵɵelementContainerEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = ɵɵnextContext();
-    ɵɵadvance();
-    ɵɵproperty("ngIf", !ctx_r1.removeIconTemplate && !ctx_r1._removeIconTemplate);
-    ɵɵadvance();
-    ɵɵproperty("ngIf", ctx_r1.removeIconTemplate || ctx_r1._removeIconTemplate);
-  }
-}
-var Chip = class _Chip extends BaseComponent {
-  /**
-   * Defines the text to display.
-   * @group Props
-   */
-  label;
-  /**
-   * Defines the icon to display.
-   * @group Props
-   */
-  icon;
-  /**
-   * Defines the image to display.
-   * @group Props
-   */
-  image;
-  /**
-   * Alt attribute of the image.
-   * @group Props
-   */
-  alt;
-  /**
-   * Inline style of the element.
-   * @group Props
-   */
-  style;
-  /**
-   * Class of the element.
-   * @group Props
-   */
-  styleClass;
-  /**
-   * Whether to display a remove icon.
-   * @group Props
-   */
-  removable = false;
-  /**
-   * Icon of the remove element.
-   * @group Props
-   */
-  removeIcon;
-  /**
-   * Callback to invoke when a chip is removed.
-   * @param {MouseEvent} event - Mouse event.
-   * @group Emits
-   */
-  onRemove = new EventEmitter();
-  /**
-   * This event is triggered if an error occurs while loading an image file.
-   * @param {Event} event - Browser event.
-   * @group Emits
-   */
-  onImageError = new EventEmitter();
-  visible = true;
-  get removeAriaLabel() {
-    return this.config.getTranslation(TranslationKeys.ARIA)["removeLabel"];
-  }
-  /**
-   * Used to pass all properties of the chipProps to the Chip component.
-   * @group Props
-   */
-  get chipProps() {
-    return this._chipProps;
-  }
-  set chipProps(val) {
-    this._chipProps = val;
-    if (val && typeof val === "object") {
-      Object.entries(val).forEach(([k, v]) => this[`_${k}`] !== v && (this[`_${k}`] = v));
-    }
-  }
-  _chipProps;
-  _componentStyle = inject(ChipStyle);
-  removeIconTemplate;
-  templates;
-  _removeIconTemplate;
-  ngAfterContentInit() {
-    this.templates.forEach((item) => {
-      switch (item.getType()) {
-        case "removeicon":
-          this._removeIconTemplate = item.template;
-          break;
-        default:
-          this._removeIconTemplate = item.template;
-          break;
-      }
-    });
-  }
-  ngOnChanges(simpleChanges) {
-    super.ngOnChanges(simpleChanges);
-    if (simpleChanges.chipProps && simpleChanges.chipProps.currentValue) {
-      const {
-        currentValue
-      } = simpleChanges.chipProps;
-      if (currentValue.label !== void 0) {
-        this.label = currentValue.label;
-      }
-      if (currentValue.icon !== void 0) {
-        this.icon = currentValue.icon;
-      }
-      if (currentValue.image !== void 0) {
-        this.image = currentValue.image;
-      }
-      if (currentValue.alt !== void 0) {
-        this.alt = currentValue.alt;
-      }
-      if (currentValue.style !== void 0) {
-        this.style = currentValue.style;
-      }
-      if (currentValue.styleClass !== void 0) {
-        this.styleClass = currentValue.styleClass;
-      }
-      if (currentValue.removable !== void 0) {
-        this.removable = currentValue.removable;
-      }
-      if (currentValue.removeIcon !== void 0) {
-        this.removeIcon = currentValue.removeIcon;
-      }
-    }
-  }
-  containerClass() {
-    let classes3 = "p-chip p-component";
-    if (this.styleClass) {
-      classes3 += ` ${this.styleClass}`;
-    }
-    return classes3;
-  }
-  close(event) {
-    this.visible = false;
-    this.onRemove.emit(event);
-  }
-  onKeydown(event) {
-    if (event.key === "Enter" || event.key === "Backspace") {
-      this.close(event);
-    }
-  }
-  imageError(event) {
-    this.onImageError.emit(event);
-  }
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵChip_BaseFactory;
-    return function Chip_Factory(__ngFactoryType__) {
-      return (ɵChip_BaseFactory || (ɵChip_BaseFactory = ɵɵgetInheritedFactory(_Chip)))(__ngFactoryType__ || _Chip);
-    };
-  })();
-  static ɵcmp = ɵɵdefineComponent({
-    type: _Chip,
-    selectors: [["p-chip"]],
-    contentQueries: function Chip_ContentQueries(rf, ctx, dirIndex) {
-      if (rf & 1) {
-        ɵɵcontentQuery(dirIndex, _c0, 4);
-        ɵɵcontentQuery(dirIndex, PrimeTemplate, 4);
-      }
-      if (rf & 2) {
-        let _t;
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.removeIconTemplate = _t.first);
-        ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.templates = _t);
-      }
-    },
-    hostVars: 9,
-    hostBindings: function Chip_HostBindings(rf, ctx) {
-      if (rf & 2) {
-        ɵɵattribute("data-pc-name", "chip")("aria-label", ctx.label)("data-pc-section", "root");
-        ɵɵstyleMap(ctx.style);
-        ɵɵclassMap(ctx.containerClass());
-        ɵɵstyleProp("display", !ctx.visible && "none");
-      }
-    },
-    inputs: {
-      label: "label",
-      icon: "icon",
-      image: "image",
-      alt: "alt",
-      style: "style",
-      styleClass: "styleClass",
-      removable: [2, "removable", "removable", booleanAttribute],
-      removeIcon: "removeIcon",
-      chipProps: "chipProps"
-    },
-    outputs: {
-      onRemove: "onRemove",
-      onImageError: "onImageError"
-    },
-    features: [ɵɵProvidersFeature([ChipStyle]), ɵɵInputTransformsFeature, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature],
-    ngContentSelectors: _c1,
-    decls: 6,
-    vars: 4,
-    consts: [["iconTemplate", ""], ["class", "p-chip-image", 3, "src", "alt", "error", 4, "ngIf", "ngIfElse"], ["class", "p-chip-label", 4, "ngIf"], [4, "ngIf"], [1, "p-chip-image", 3, "error", "src", "alt"], [3, "class", "ngClass", 4, "ngIf"], [3, "ngClass"], [1, "p-chip-label"], ["tabindex", "0", "class", "p-chip-remove-icon", "role", "button", 3, "click", "keydown", 4, "ngIf"], ["tabindex", "0", "role", "button", 3, "class", "ngClass", "click", "keydown", 4, "ngIf"], ["tabindex", "0", "role", "button", 3, "class", "click", "keydown", 4, "ngIf"], ["tabindex", "0", "role", "button", 3, "click", "keydown", "ngClass"], ["tabindex", "0", "role", "button", 3, "click", "keydown"], ["tabindex", "0", "role", "button", 1, "p-chip-remove-icon", 3, "click", "keydown"], [4, "ngTemplateOutlet"]],
-    template: function Chip_Template(rf, ctx) {
-      if (rf & 1) {
-        ɵɵprojectionDef();
-        ɵɵprojection(0);
-        ɵɵtemplate(1, Chip_img_1_Template, 1, 2, "img", 1)(2, Chip_ng_template_2_Template, 1, 1, "ng-template", null, 0, ɵɵtemplateRefExtractor)(4, Chip_div_4_Template, 2, 2, "div", 2)(5, Chip_ng_container_5_Template, 3, 2, "ng-container", 3);
-      }
-      if (rf & 2) {
-        const iconTemplate_r6 = ɵɵreference(3);
-        ɵɵadvance();
-        ɵɵproperty("ngIf", ctx.image)("ngIfElse", iconTemplate_r6);
-        ɵɵadvance(3);
-        ɵɵproperty("ngIf", ctx.label);
-        ɵɵadvance();
-        ɵɵproperty("ngIf", ctx.removable);
-      }
-    },
-    dependencies: [CommonModule, NgClass, NgIf, NgTemplateOutlet, TimesCircleIcon, SharedModule],
-    encapsulation: 2,
-    changeDetection: 0
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Chip, [{
-    type: Component,
-    args: [{
-      selector: "p-chip",
-      standalone: true,
-      imports: [CommonModule, TimesCircleIcon, SharedModule],
-      template: `
-        <ng-content></ng-content>
-        <img class="p-chip-image" [src]="image" *ngIf="image; else iconTemplate" (error)="imageError($event)" [alt]="alt" />
-        <ng-template #iconTemplate><span *ngIf="icon" [class]="icon" [ngClass]="'p-chip-icon'" [attr.data-pc-section]="'icon'"></span></ng-template>
-        <div class="p-chip-label" *ngIf="label" [attr.data-pc-section]="'label'">{{ label }}</div>
-        <ng-container *ngIf="removable">
-            <ng-container *ngIf="!removeIconTemplate && !_removeIconTemplate">
-                <span
-                    tabindex="0"
-                    *ngIf="removeIcon"
-                    [class]="removeIcon"
-                    [ngClass]="'p-chip-remove-icon'"
-                    [attr.data-pc-section]="'removeicon'"
-                    (click)="close($event)"
-                    (keydown)="onKeydown($event)"
-                    [attr.aria-label]="removeAriaLabel"
-                    role="button"
-                ></span>
-                <TimesCircleIcon tabindex="0" *ngIf="!removeIcon" [class]="'p-chip-remove-icon'" [attr.data-pc-section]="'removeicon'" (click)="close($event)" (keydown)="onKeydown($event)" [attr.aria-label]="removeAriaLabel" role="button" />
-            </ng-container>
-            <span *ngIf="removeIconTemplate || _removeIconTemplate" tabindex="0" [attr.data-pc-section]="'removeicon'" class="p-chip-remove-icon" (click)="close($event)" (keydown)="onKeydown($event)" [attr.aria-label]="removeAriaLabel" role="button">
-                <ng-template *ngTemplateOutlet="removeIconTemplate || _removeIconTemplate"></ng-template>
-            </span>
-        </ng-container>
-    `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      encapsulation: ViewEncapsulation.None,
-      providers: [ChipStyle],
-      host: {
-        "[class]": "containerClass()",
-        "[style]": "style",
-        "[style.display]": '!visible && "none"',
-        "[attr.data-pc-name]": "'chip'",
-        "[attr.aria-label]": "label",
-        "[attr.data-pc-section]": "'root'"
-      }
-    }]
-  }], null, {
-    label: [{
-      type: Input
-    }],
-    icon: [{
-      type: Input
-    }],
-    image: [{
-      type: Input
-    }],
-    alt: [{
-      type: Input
-    }],
-    style: [{
-      type: Input
-    }],
-    styleClass: [{
-      type: Input
-    }],
-    removable: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    removeIcon: [{
-      type: Input
-    }],
-    onRemove: [{
-      type: Output
-    }],
-    onImageError: [{
-      type: Output
-    }],
-    chipProps: [{
-      type: Input
-    }],
-    removeIconTemplate: [{
-      type: ContentChild,
-      args: ["removeicon", {
-        descendants: false
-      }]
-    }],
-    templates: [{
-      type: ContentChildren,
-      args: [PrimeTemplate]
-    }]
-  });
-})();
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassDebugInfo(Chip, {
-    className: "Chip",
-    filePath: "chip.ts",
-    lineNumber: 54
-  });
-})();
-var ChipModule = class _ChipModule {
-  static ɵfac = function ChipModule_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _ChipModule)();
-  };
-  static ɵmod = ɵɵdefineNgModule({
-    type: _ChipModule
-  });
-  static ɵinj = ɵɵdefineInjector({
-    imports: [Chip, SharedModule, SharedModule]
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ChipModule, [{
-    type: NgModule,
-    args: [{
-      imports: [Chip, SharedModule],
-      exports: [Chip, SharedModule]
-    }]
-  }], null, null);
-})();
-(function() {
-  (typeof ngJitMode === "undefined" || ngJitMode) && ɵɵsetNgModuleScope(ChipModule, {
-    imports: [Chip, SharedModule],
-    exports: [Chip, SharedModule]
-  });
-})();
-
 // node_modules/primeng/fesm2022/primeng-multiselect.mjs
-var theme2 = ({
+var theme = ({
   dt
 }) => `
 .p-multiselect {
@@ -981,7 +406,7 @@ var inlineStyles = {
     position: props.appendTo === "self" ? "relative" : void 0
   })
 };
-var classes2 = {
+var classes = {
   root: ({
     instance
   }) => ({
@@ -1034,8 +459,8 @@ var classes2 = {
 };
 var MultiSelectStyle = class _MultiSelectStyle extends BaseStyle {
   name = "multiselect";
-  theme = theme2;
-  classes = classes2;
+  theme = theme;
+  classes = classes;
   inlineStyles = inlineStyles;
   static ɵfac = /* @__PURE__ */ (() => {
     let ɵMultiSelectStyle_BaseFactory;
@@ -1074,10 +499,10 @@ var MultiSelectClasses;
   MultiSelectClasses2["option"] = "p-multiselect-option";
   MultiSelectClasses2["emptyMessage"] = "p-multiselect-empty-message";
 })(MultiSelectClasses || (MultiSelectClasses = {}));
-var _c02 = (a0) => ({
+var _c0 = (a0) => ({
   height: a0
 });
-var _c12 = (a0, a1) => ({
+var _c1 = (a0, a1) => ({
   "p-multiselect-option": true,
   "p-disabled": a0,
   "p-focus": a1
@@ -1139,7 +564,7 @@ var _c8 = ["filter"];
 var _c9 = ["footer"];
 var _c10 = ["emptyfilter"];
 var _c11 = ["empty"];
-var _c122 = ["selecteditems"];
+var _c12 = ["selecteditems"];
 var _c13 = ["checkicon"];
 var _c14 = ["loadingicon"];
 var _c15 = ["filtericon"];
@@ -1727,7 +1152,7 @@ function MultiSelect_ng_template_14_p_scroller_6_Template(rf, ctx) {
   }
   if (rf & 2) {
     const ctx_r1 = ɵɵnextContext(2);
-    ɵɵstyleMap(ɵɵpureFunction1(9, _c02, ctx_r1.scrollHeight));
+    ɵɵstyleMap(ɵɵpureFunction1(9, _c0, ctx_r1.scrollHeight));
     ɵɵproperty("items", ctx_r1.visibleOptions())("itemSize", ctx_r1.virtualScrollItemSize || ctx_r1._itemSize)("autoSize", true)("tabindex", -1)("lazy", ctx_r1.lazy)("options", ctx_r1.virtualScrollOptions);
     ɵɵadvance(4);
     ɵɵproperty("ngIf", ctx_r1.loaderTemplate || ctx_r1._loaderTemplate);
@@ -1785,7 +1210,7 @@ function MultiSelect_ng_template_14_ng_template_8_ng_template_2_ng_container_0_T
     const scrollerOptions_r21 = ɵɵnextContext().options;
     const ctx_r1 = ɵɵnextContext(2);
     ɵɵadvance();
-    ɵɵproperty("ngStyle", ɵɵpureFunction1(5, _c02, scrollerOptions_r21.itemSize + "px"));
+    ɵɵproperty("ngStyle", ɵɵpureFunction1(5, _c0, scrollerOptions_r21.itemSize + "px"));
     ɵɵattribute("id", ctx_r1.id + "_" + ctx_r1.getOptionIndex(i_r20, scrollerOptions_r21));
     ɵɵadvance();
     ɵɵproperty("ngIf", !ctx_r1.groupTemplate);
@@ -1868,7 +1293,7 @@ function MultiSelect_ng_template_14_ng_template_8_li_3_Template(rf, ctx) {
   if (rf & 2) {
     const scrollerOptions_r21 = ɵɵnextContext().options;
     const ctx_r1 = ɵɵnextContext(2);
-    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c02, scrollerOptions_r21.itemSize + "px"));
+    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c0, scrollerOptions_r21.itemSize + "px"));
     ɵɵadvance();
     ɵɵconditional(!ctx_r1.emptyFilterTemplate && !ctx_r1._emptyFilterTemplate && !ctx_r1.emptyTemplate && !ctx_r1._emptyTemplate ? 1 : 2);
   }
@@ -1905,7 +1330,7 @@ function MultiSelect_ng_template_14_ng_template_8_li_4_Template(rf, ctx) {
   if (rf & 2) {
     const scrollerOptions_r21 = ɵɵnextContext().options;
     const ctx_r1 = ɵɵnextContext(2);
-    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c02, scrollerOptions_r21.itemSize + "px"));
+    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c0, scrollerOptions_r21.itemSize + "px"));
     ɵɵadvance();
     ɵɵconditional(!ctx_r1.emptyTemplate && !ctx_r1._emptyTemplate ? 1 : 2);
   }
@@ -2079,7 +1504,7 @@ var MultiSelectItem = class _MultiSelectItem extends BaseComponent {
         ɵɵelementEnd();
       }
       if (rf & 2) {
-        ɵɵproperty("ngStyle", ɵɵpureFunction1(19, _c02, ctx.itemSize + "px"))("ngClass", ɵɵpureFunction2(21, _c12, ctx.disabled, ctx.focused))("id", ctx.id);
+        ɵɵproperty("ngStyle", ɵɵpureFunction1(19, _c0, ctx.itemSize + "px"))("ngClass", ɵɵpureFunction2(21, _c1, ctx.disabled, ctx.focused))("id", ctx.id);
         ɵɵattribute("aria-label", ctx.label)("aria-setsize", ctx.ariaSetSize)("aria-posinset", ctx.ariaPosInset)("aria-selected", ctx.selected)("data-p-focused", ctx.focused)("data-p-highlight", ctx.selected)("data-p-disabled", ctx.disabled)("aria-checked", ctx.selected);
         ɵɵadvance();
         ɵɵproperty("ngModel", ctx.selected)("binary", true)("tabindex", -1)("variant", ctx.variant);
@@ -2858,18 +2283,18 @@ var MultiSelect = class _MultiSelect extends BaseComponent {
   selectedOptions;
   clickInProgress = false;
   get hostClasses() {
-    const classes3 = [];
+    const classes2 = [];
     if (typeof this.rootClass === "string") {
-      classes3.push(this.rootClass);
+      classes2.push(this.rootClass);
     } else if (Array.isArray(this.rootClass)) {
-      classes3.push(...this.rootClass);
+      classes2.push(...this.rootClass);
     } else if (typeof this.rootClass === "object") {
-      Object.keys(this.rootClass).filter((key) => this.rootClass[key]).forEach((key) => classes3.push(key));
+      Object.keys(this.rootClass).filter((key) => this.rootClass[key]).forEach((key) => classes2.push(key));
     }
     if (this.styleClass) {
-      classes3.push(this.styleClass);
+      classes2.push(this.styleClass);
     }
-    return classes3.join(" ");
+    return classes2.join(" ");
   }
   get rootClass() {
     return this._componentStyle.classes.root({
@@ -3764,7 +3189,7 @@ var MultiSelect = class _MultiSelect extends BaseComponent {
         ɵɵcontentQuery(dirIndex, _c9, 4);
         ɵɵcontentQuery(dirIndex, _c10, 4);
         ɵɵcontentQuery(dirIndex, _c11, 4);
-        ɵɵcontentQuery(dirIndex, _c122, 4);
+        ɵɵcontentQuery(dirIndex, _c12, 4);
         ɵɵcontentQuery(dirIndex, _c13, 4);
         ɵɵcontentQuery(dirIndex, _c14, 4);
         ɵɵcontentQuery(dirIndex, _c15, 4);

@@ -8,7 +8,9 @@
                 <h3 class="text-xl font-medium text-gray-800 mb-2">Product Not Found</h3>
                 <p class="text-gray-600 mb-6">The product you're looking for is not available.</p>
                 <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <a routerLink="/products" class="flex items-center justify-center gap-2">
+                    <a routerLink="/products" routerLinkActive="active"
+                       ariaCurrentWhenActive="page"
+                       class="flex items-center justify-center gap-2">
                         <i class="pi pi-arrow-left"></i>
                         <span>Back to Products</span>
                     </a>
@@ -24,6 +26,7 @@
                         <i class="pi pi-image text-4xl text-indigo-300"></i>
                     </div>
                 </div>
+
                 <div *ngIf="product.media?.length" class="max-w-lg desktop:max-w-xl mx-auto">
                     <p-carousel
                             [value]="product.media"
@@ -65,8 +68,8 @@
 
                     <div class="flex justify-between items-center py-4 border-b border-indigo-100">
                         <span class="text-2xl desktop:text-3xl font-bold text-gray-900">${{ product.product.price }}</span>
-                        <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'"
-                               [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'"
+                        <p-tag [severity]="stockStatus().severity"
+                               [value]="stockStatus().label"
                                styleClass="rounded-full px-4 py-2" />
                     </div>
 
@@ -139,168 +142,26 @@
                         </p-accordion>
                     </div>
 
-                    <div class="flex gap-4 pt-4">
-                        <button class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 desktop:py-4 rounded-lg text-md tablet:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                            <i class="pi pi-shopping-cart"></i>
-                            <span>Add to Cart</span>
-                        </button>
-                        <button class="bg-white hover:bg-gray-50 text-indigo-600 p-3 desktop:p-4 rounded-lg border-2 border-indigo-200 hover:border-indigo-300 transition-all duration-300">
-                            <i class="pi pi-heart text-xl"></i>
-                        </button>
+                    <div class="flex gap-4 pt-4" *ngIf="canShowCart()">
+                        <p-button
+                                [disabled]="product.product.quantity === 0 || isLoading()"
+                                [loading]="isLoading()"
+                                (click)="addCart($event)"
+                                [pTooltip]="isInCart() ? 'Remove from Cart' : 'Add to Cart'"
+                                tooltipPosition="left"
+                                [severity]="isInCart() ? 'danger' : 'primary'"
+                                [outlined]="!isInCart()"
+                                size="small"
+                                pRipple
+                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 desktop:py-4 rounded-lg text-md tablet:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                        >
+
+                            <i *ngIf="!isLoading() && !isInCart()" class="pi pi-shopping-cart"></i>
+                            <i *ngIf="!isLoading() && isInCart()" class="pi pi-trash"></i>
+                        </p-button>
                     </div>
                 </div>
             </div>
-
-            <!-- Customer Reviews Section (Optional Enhancement) -->
-            <div class="mt-12 p-6 bg-white rounded-xl shadow-md border border-indigo-50">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">Customer Reviews</h3>
-                <div class="space-y-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-1">
-                            <i class="pi pi-star-fill text-yellow-400"></i>
-                            <i class="pi pi-star-fill text-yellow-400"></i>
-                            <i class="pi pi-star-fill text-yellow-400"></i>
-                            <i class="pi pi-star-fill text-yellow-400"></i>
-                            <i class="pi pi-star text-yellow-400"></i>
-                            <span class="ml-2 text-gray-700">4.0 out of 5</span>
-                        </div>
-                        <button class="text-indigo-600 hover:text-indigo-800 font-medium">Write a Review</button>
-                    </div>
-                    <p class="text-gray-500 italic">Be the first to review this product</p>
-                </div>
-            </div>
-
-            <!-- Related Products Section (Optional Enhancement) -->
-<!--            <div class="mt-12">-->
-<!--                <h3 class="text-xl font-bold text-gray-900 mb-6">You May Also Like</h3>-->
-<!--                <div class="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-4">-->
-<!--                    &lt;!&ndash; Placeholder for related products &ndash;&gt;-->
-<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
-<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
-<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
-<!--                    </div>-->
-<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
-<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
-<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
-<!--                    </div>-->
-<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
-<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
-<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
-<!--                    </div>-->
-<!--                    <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex flex-col items-center justify-center h-40">-->
-<!--                        <i class="pi pi-shopping-bag text-2xl text-indigo-200 mb-2"></i>-->
-<!--                        <p class="text-gray-400 text-center">Related Product</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-<!--<div class="w-full p-5">-->
-<!--    <div>-->
-
-<!--        <div *ngIf="!product">-->
-<!--            No product-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash;        &ndash;&gt;-->
-<!--        <div *ngIf="product">-->
-<!--            <div class="flex flex-col tablet:grid tablet:grid-rows-1 tablet:grid-cols-2 tablet:gap-8 tablet:p-8">-->
-<!--                &lt;!&ndash; Carousel Section &ndash;&gt;-->
-<!--                <div *ngIf="!product.media?.length" class="p-8 max-w-lg w-full desktop:max-w-xl mx-auto">-->
-<!--                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">-->
-<!--                        <i class="pi pi-image text-3xl text-gray-400"></i>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div *ngIf="product.media?.length" class="max-w-lg desktop:max-w-xl mx-auto">-->
-<!--                    <p-carousel-->
-<!--                            [value]="product.media"-->
-<!--                            [numVisible]="1"-->
-<!--                            [numScroll]="1"-->
-<!--                            [circular]="false"-->
-<!--                            [showNavigators]="false"-->
-<!--                            [responsiveOptions]="responsiveOptions"-->
-<!--                            class="shadow-lg rounded-lg overflow-hidden space-x-4"-->
-<!--                    >-->
-<!--                        <ng-template let-media pTemplate="item">-->
-<!--                                <div class="relative w-full flex items-center justify-center rounded-md overflow-hidden">-->
-<!--                                    <img [src]="getMedia(media.productId, media.imagePath)"-->
-<!--                                            [alt]="media.name"-->
-<!--                                            class="h-full object-contain"-->
-<!--                                    />-->
-<!--                                </div>-->
-<!--                        </ng-template>-->
-<!--                    </p-carousel>-->
-<!--                </div>-->
-
-<!--                &lt;!&ndash; Product Details Section &ndash;&gt;-->
-<!--                <div class="space-y-4">-->
-<!--                    <h2 class="text-xl tablet:text-2xl desktop:text-3xl font-semibold border-b-2 p-4 capitalize">{{ product.product.name }}</h2>-->
-<!--                    <div class="p-4 border-b-2 flex justify-between">-->
-<!--                        <span class="text-2xl">${{ product.product.price }}</span>-->
-<!--                        <p-tag [severity]="product.product.quantity > 0 ? 'info' : 'danger'" [value]="product.product.quantity > 0 ? product.product.quantity + ' in stock':'out of stock'" />-->
-<!--                    </div>-->
-
-<!--                    <div class="p-4 space-y-4">-->
-<!--                        <h3 class="">Choose The Size</h3>-->
-<!--                        <div class="flex space-x-4">-->
-<!--                            &lt;!&ndash; Custom Radio for Size S &ndash;&gt;-->
-<!--                            <div>-->
-<!--                                <input type="radio" id="size-s" name="size" class="hidden peer" />-->
-<!--                                <label for="size-s" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
-<!--                                    S-->
-<!--                                </label>-->
-<!--                            </div>-->
-
-<!--                            &lt;!&ndash; Custom Radio for Size M &ndash;&gt;-->
-<!--                            <div>-->
-<!--                                <input type="radio" id="size-m" name="size" class="hidden peer" />-->
-<!--                                <label for="size-m" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
-<!--                                    M-->
-<!--                                </label>-->
-<!--                            </div>-->
-
-<!--                            &lt;!&ndash; Custom Radio for Size L &ndash;&gt;-->
-<!--                            <div>-->
-<!--                                <input type="radio" id="size-l" name="size" class="hidden peer" />-->
-<!--                                <label for="size-l" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
-<!--                                    L-->
-<!--                                </label>-->
-<!--                            </div>-->
-
-<!--                            &lt;!&ndash; Custom Radio for Size XL &ndash;&gt;-->
-<!--                            <div>-->
-<!--                                <input type="radio" id="size-xl" name="size" class="hidden peer" />-->
-<!--                                <label for="size-xl" class="border px-4 py-2 rounded cursor-pointer peer-checked:bg-black peer-checked:text-white">-->
-<!--                                    XL-->
-<!--                                </label>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    <div class="py-10">-->
-<!--                        <p-accordion>-->
-<!--                            <p-accordionTab header="Product Description" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">-->
-<!--                                <p class="m-0">{{ product.product.description }}</p>-->
-<!--                            </p-accordionTab>-->
-<!--                            <p-accordionTab header="Delivery and Returns" [headerStyle]="{ 'font-weight': 'normal', 'padding': '1.5rem 15px' }">-->
-<!--                                <p class="m-0">Free delivery and returns within 30 days.</p>-->
-<!--                            </p-accordionTab>-->
-<!--                        </p-accordion>-->
-<!--                    </div>-->
-
-<!--                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white py-2 desktop:py-4 rounded text-md tablet:text-lg">Purchase Now</button>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->

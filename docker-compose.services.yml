@@ -28,7 +28,7 @@ services:
 
   gateway:
     build:
-      context: ./api/gateways/
+      context: api/gateway/
       dockerfile: Dockerfile
     container_name: gateways
     ports:

@@ -111,10 +111,9 @@
     </div>
 
     <div *ngIf="!isAuthPage" class="flex justify-center items-center justify-self-end gap-5">
-
-      <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page" class="card hidden tablet:flex justify-content-center px-4">
-        <i class="pi pi-shopping-cart text-xl" pBadge [value]="cartCount"></i>
-      </a>
+        <div  *ngIf="user.isAuthenticated && user.role === 'CLIENT'">
+            <app-cart/>
+        </div>
 
       <div *ngIf="user.isAuthenticated" class="flex justify-center items-center">
         <span class=" hidden desktop:block font-bold mr-2">Hi, {{user.name}}</span>
@@ -124,7 +123,7 @@
           [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
           shape="circle" />
         <p-avatar *ngIf="user.avatar"
-          image="https://localhost:8082/api/v1/users/avatar/{{user.avatar}}"
+          image="{{environment.apiUrl}}user/avatar/{{user.avatar}}"
           styleClass="mr-2"
           [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
           shape="circle" />
